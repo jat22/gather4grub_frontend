@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, {useContext} from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,21 +12,39 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import { Link as RouterLink } from 'react-router-dom';
+import UserContext from '../context/UserContext';
 
-const baseUrl = 'http://localhost:3000'
-const user = 'test-user'
 
-const pages = [
-	{title:'Gatherings', link:`${baseUrl}/users/test-user/gatherings`},
-	{title:'Grub', link:`${baseUrl}/recipes`},
-	{title:'Plan', link:`${baseUrl}/gatherings/create`},
-	{title:'', link:`${baseUrl}/recipes`}
-];
-const settings = ['Dashboard', 'Public Profile', 'Account', 'Log Out'];
 
-function ResponsiveAppBar() {
+function NavBar() {
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    setUser({})
+    localStorage.removeItem('currUser')
+    navigate('/')
+  }
+
+  const pages = user.username  ? [
+                          {title:'Connections', route: `/users/${user}/connections`},
+                          {title:'Grub', route:'/recipes'},
+                          {title:'Plan', route: '/gatherings/create'},
+                          {title:'About', route: '/about'}
+                      ]
+                      : [
+                          {title:'About', route: '/about'},
+                          {title: 'Login', route: '/login'}
+                      ]
+  
+  const settings = user.username ? [
+                            {title: 'Dashboard', route: `/users/${user.username}/dashboard`}, 
+                            {title: 'View Profile', route: `/users/${user.username}/profile`}, 
+                            {title: 'Log Out', route: `/logout`, handler : handleLogout}
+                        ]
+                        : []
+  
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -45,15 +64,15 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar 
+		position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={RouterLink}
+			to='/'
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -103,12 +122,11 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={RouterLink}
+			      to='/'
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -124,48 +142,58 @@ function ResponsiveAppBar() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
-				<Button
-					key={page.title}
-					href={page.link}
-					onClick={handleCloseNavMenu}
-					sx={{ my: 2, color: 'white', display: 'block' }}>
-					{page.title}
-             	 </Button>
+            <Button
+              key={page.title}
+              to={page.route}
+              component={RouterLink}
+              onClick={handleCloseNavMenu}
+              sx={{ my: 2, color: 'white', display: 'block' }}>
+              {page.title}
+            </Button>
             ))}
           </Box>
-
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="John Wood">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="John Wood" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          <Tooltip title={user.username}>
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <Avatar alt={user.username} src="/static/images/avatar/2.jpg" />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            sx={{ mt: '45px' }}
+            id="menu-appbar"
+            anchorEl={anchorElUser}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {settings.map((setting) => (
+              <MenuItem key={setting.title} onClick={setting.handler || handleCloseUserMenu}>
+                <Typography 
+                  textAlign="center"
+                  to={setting.route}
+                  component={RouterLink}
+                  sx={{
+                    textDecoration:'none'
+                  }}
+                >
+                  {setting.title}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+          
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
+export default NavBar;

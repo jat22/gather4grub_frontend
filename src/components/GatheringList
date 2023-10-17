@@ -1,0 +1,32 @@
+import React from "react"
+import { Table, TableRow, TableCell, Avatar } from "@mui/material"
+import { Link as RouterLink} from 'react-router-dom'
+	
+	
+const GatheringsList = ({ gatherings }) => {
+
+	const Rows = (row) => {
+		return (
+			<TableRow
+				component={RouterLink}
+				to={`/gatherings/${row.gatheringId}`}
+				sx={{ textDecoration:'none'}}
+			>
+				<TableCell>{row.date}</TableCell>
+				<TableCell>{row.time}</TableCell>
+				<TableCell>{row.title}</TableCell>
+			</TableRow>
+		)
+	}
+
+	return (
+		<Table tableLayout='fixed'>
+			<TableBody>
+				{gatherings.map(r => <Rows row={r}/>)}
+			</TableBody>
+		</Table>
+	)
+};
+
+export default GatheringsList
+	

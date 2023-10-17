@@ -1,47 +1,42 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
+import React, {useContext} from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import G4GApi from '../../api/G4GApi';
+import UserContext from '../../context/UserContext';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 const UserSignUp = () => {
-  const handleSubmit = (event) => {
+  const { user, setUser } = useContext(UserContext)
+  const navigate = useNavigate()
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const formInput = new FormData(event.currentTarget);
+    const data = {
+      firstName : formInput.get('firstName'),
+      lastName : formInput.get('lastName'),
+      email: formInput.get('email'),
+      username: formInput.get('username'),
+      password: formInput.get('password'),
+    };
+    const token = await G4GApi.register(data)
+    setUser({username:data.username, token:token})
+    navigate('/')
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -52,11 +47,8 @@ const UserSignUp = () => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
+          <Typography component="h1" variant="h3">
+            Sign Up
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -95,6 +87,16 @@ const UserSignUp = () => {
                 <TextField
                   required
                   fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete='username'
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
                   name="password"
                   label="Password"
                   type="password"
@@ -102,12 +104,7 @@ const UserSignUp = () => {
                   autoComplete="new-password"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
+
             </Grid>
             <Button
               type="submit"
@@ -119,16 +116,19 @@ const UserSignUp = () => {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link 
+                  href="#"
+                  component={RouterLink}
+                  to='/login' 
+                  variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
-    </ThemeProvider>
+
   );
 }
 
