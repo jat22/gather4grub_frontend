@@ -47,7 +47,7 @@ function App() {
             <Route exact path='/users/:username/dashboard' element={<UserDashboard />} />
             <Route exact path='/users/profile/:username' element={<UserPublicProfile />} />
             <Route exact path='/users' element={<UsersAll />} />
-            <Route exact path='/gatherings/create' lement={<GatheringCreate />} />
+            <Route exact path='/gatherings/create' element={<GatheringCreate />} />
             <Route exact path='/gatherings/:gatheringId' element={<GatheringDetails />} />
             <Route exact path='/gatherings/:gatheringId/edit' element={<GatheringEdit />} />
             <Route exact path='/recipes' element={<RecipiesAll />} />

@@ -21,24 +21,24 @@ const UserDashboard = () => {
 
 	const navigate = useNavigate();
 
+	const getInvitations = async()=> {
+		const invites = await InvitationServices.getInvites(username)
+		setInvitations(i => invites)
+	}
+
+	const getUpcomingEvents = async() => {
+		const events = await EventServices.getUpcoming(username)
+		setUpcomingEvents(e => events)
+	}
 
 	useEffect(() => {
 		if(!user.token) navigate('/unauthorized')
-		const getInvitations = async()=> {
-			const invites = await InvitationServices.getInvites(username)
-			setInvitations(i => invites)
-		}
 		getInvitations();
 	}, [])
 
 	useEffect(() => {
 		if(!user.token) navigate('/unauthorized')
-		const getUpcomingEvents = async() => {
-			const events = await EventServices.getUpcoming(username)
-			setUpcomingEvents(e => events)
-		}
 		getUpcomingEvents();
-
 	}, [])
 
 	useEffect(() => {
@@ -52,12 +52,15 @@ const UserDashboard = () => {
 
 
 	const handleAccept = (id)=>{
-		G4GApi.acceptInvite(id);
-		
+		G4GApi.acceptInvite(username, id);
+		getInvitations();
+		getUpcomingEvents();
 	}
 	
 	const handleDecline = (id)=>{
-		console.log(id)
+		G4GApi.declineInvite(username, id)
+		getInvitations();
+		getUpcomingEvents();
 	}
 
 	return(

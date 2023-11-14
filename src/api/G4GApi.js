@@ -49,5 +49,18 @@ class G4GApi {
 	static async getUserConnections(){
 
 	}
+
+	static async acceptInvite(username, inviteId){
+		let res = await this.request(`gatherings/invitations/${username}/${inviteId}`, {rsvp:'accept'}, 'put')
+		return res
+	}
+
+	static async declineInvite(username, inviteId){
+		let res = await this.request(`gatherings/invitations/${username}/${inviteId}`, {rsvp:'decline'}, 'put')
+	}
+
+	static async createEvent(data){
+		let res = await this.request('gatherings', data, 'post')
+	}
 }
 export default G4GApi

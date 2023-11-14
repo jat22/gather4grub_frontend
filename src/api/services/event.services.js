@@ -37,6 +37,13 @@ class EventServices {
 
 		return events
 	}
+
+	static async createEvent(data, username) {
+		for(let key in data){
+			if(data[key] === '') delete data[key]
+		}
+		const res = await G4GApi.createEvent(data, username)
+	}
 }
 
 export default EventServices
