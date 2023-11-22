@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 
@@ -61,6 +62,7 @@ class G4GApi {
 
 	static async createEvent(data){
 		let res = await this.request('gatherings', data, 'post')
+		return res
 	}
 }
 export default G4GApi

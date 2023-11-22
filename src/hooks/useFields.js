@@ -17,7 +17,14 @@ const useFields = (initialState) => {
 	const updateFormData = (newData) => {
 		setFormData(newData)
 	}
-	return [formData, handleChange, resetFormData, updateFormData]
+
+	const handlePickerData = (val, name) => {
+		setFormData(data => ({
+			...data,
+			[name] : val
+		}))
+	}
+	return [formData, handleChange, resetFormData, updateFormData, handlePickerData]
 }
 
 export default useFields

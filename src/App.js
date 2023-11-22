@@ -8,7 +8,7 @@ import UserDashboard from './pages/user/UserDashboard';
 import UserPublicProfile from './pages/user/UserPublicProfile';
 import UsersAll from './pages/user/UsersAll';
 import GatheringCreate from './pages/gathering/GatheringCreate';
-import GatheringDetails from './pages/gathering/GatheringDetails';
+import GatheringDetails from './pages/gathering/GatheringDashboard';
 import GatheringEdit from './pages/gathering/GatheringEdit';
 import RecipiesAll from './pages/recipe/RecipiesAll';
 import RecipeDetails from './pages/recipe/RecipeDetails';
