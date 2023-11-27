@@ -28,7 +28,7 @@ const PartyCreate = () => {
 		evt.preventDefault();
 		const res = await EventServices.createEvent(formData, user.username)
 		
-		navigate(`/gatherings/${res.data.gathering.id}`)
+		navigate(`/gatherings/${res.data.event.id}`)
 	}
 
 	return(

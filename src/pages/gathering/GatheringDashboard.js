@@ -4,9 +4,11 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import UserContext from '../../context/UserContext';
 import EventServices from '../../api/services/event.services';
-
-
-
+import GuestList from '../../components/eventDashboard/GuestList';
+import EventMenu from '../../components/eventDashboard/EventMenu';
+import EventComments from '../../components/eventDashboard/EventComments';
+import EditDetailsDialog from '../../components/eventDashboard/EditDetailsDialog';
+import InviteDialog from '../../components/eventDashboard/InviteDialog';
 /**	
  * To Do
  * - Check if host and add conditional for host view
@@ -16,6 +18,7 @@ import EventServices from '../../api/services/event.services';
 
 const PartyDetails = () => {
 	const { user } = useContext(UserContext);
+
 	const [eventInfo, setEventInfo] = useState({
 		id: '',
 		title: '',
@@ -25,140 +28,57 @@ const PartyDetails = () => {
 		description: '',
 		menu: [],
 		guests: [],
-		comments: []
+		comments: [],
+		currUserHost : false
 	});
-	const accordianExpandInitialState = () => {
-		const result = {}
-		let i = 1; 
-		while(i <= eventInfo.menu.length){
-			result[`panel${i}`] = true
-		}
-		return result
-	}
 
-	const [menuAccordianExpanded, setMenuAccordianExpanded] = useState(accordianExpandInitialState);
-
-	let currUserHost = false;
 	const { eventId } = useParams();
+
+	const basicDetails = eventInfo ? {
+		id : eventInfo.id,
+		title : eventInfo.title,
+		date : eventInfo.date,
+		startTime : eventInfo.startTime,
+		endTime : eventInfo.endTime,
+		location : eventInfo.location ? eventInfo.location : '',
+		description : eventInfo.description ? eventInfo.description : ''
+	} : null
 
 	useEffect(() => {
 		const getEventInfo = async() => {
 			const info = await EventServices.getEventInfo(eventId)
+			if(info !== undefined){
+				info.currUserHost = user.username === info.host
+			}
 			setEventInfo(i => info)
 		}
 		getEventInfo();
-		currUserHost = eventInfo.host === user.username
 	}, [])
 
-	const toggleMenuAccordians = (panel) => (event) => {
-		const newMenuAccordianExpanded = {...menuAccordianExpanded, [panel] : !menuAccordianExpanded[panel]}
-		setMenuAccordianExpanded( cur => newMenuAccordianExpanded);
-	};
-
-	const generateDish = (dish) => {
-		return (
-			<ListItem alignItems='flex-start'>
-				<ListItemText
-					primary={dish.name}
-					secondary={
-						<>
-							<Typography
-								sx={ {display: 'inline'}}
-								componenet='span'
-								variant='body2'
-							>
-								{dish.description}
-							</Typography>
-							<Typography variant='caption' display='block'>
-								<Link
-									sx={{ fontSize: 1, }}
-								>
-									{dish.user}
-								</Link>
-							</Typography>
-						</>
-					}
-				/>
-			</ListItem>
-		)
+	const updateDisplayDetails = (basicDetails) => {
+		setEventInfo(i => ({...i, ...basicDetails}))
 	}
 
-	const generateMenu = () => {
-		return (
-			<>
-				{eventInfo.menu.map((c, i)=>{
-					let panel = `panel${i}`
-					return (
-						<Accordion expanded={menuAccordianExpanded[panel]} onChange={toggleMenuAccordians(panel)}>
-							<AccordionSummary
-								expandIcon={<ExpandMoreIcon />}
-								aria-controls={`${panel}bh-content`}
-								id={`${panel}bh-header`}
-							>
-								<Typography sx={{fontWeight:'bold', width: '33%', textAlign:'start'}}>
-									{c.courseName}
-								</Typography>
-
-							</AccordionSummary>
-							<AccordionDetails>
-								<List>
-									{c.items.map(d => generateDish(d))}
-								</List>
-							</AccordionDetails>
-						</Accordion>
-					)
-					
-				})}
-			</>
-		)
-	};
-
-	const generateGuests = () => {
-		return (
-			<List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-				{eventInfo.guests.map( g => {
-					return (
-						<ListItem>
-							<ListItemAvatar>
-								<Avatar/>
-							</ListItemAvatar>
-							<ListItemText primary={g.username} secondary={g.rsvp} />
-						</ListItem>
-					)
-				})}
-			</List>
-		)
-	};
-
-	const generateComments = () => {
-		return (
-			<List sx={{ width:'100%'}}>
-				{eventInfo.comments.map((c,i) => {
-					return (
-						<>
-							<ListItem alignItems='flex-start'>
-								<ListItemAvatar>
-									<Avatar/>
-								</ListItemAvatar>
-								<ListItemText
-									primary={c.username}
-									secondary={
-										<>
-											<Typography >
-												{c.content}
-											</Typography>
-										</>}
-								>
-								</ListItemText>
-							</ListItem>
-							{i !== eventInfo.comments.length - 1 ? <Divider component='li'/> : null}
-						</>
-						
-					)
-				})}
-			</List>
-		)
+	const updateDisplayGuestList = (guestList) => {
+		setEventInfo(i => ({...i, guests:guestList}))
 	}
+	
+	const updateBasicDetails = async (data) => {
+		const res = await EventServices.updateBasicDetails(eventId, data)
+		updateDisplayDetails(res)
+	};
+
+	const inviteGuests = async (usernames) => {
+		const res = await EventServices.inviteGuests(usernames, eventId);
+		updateDisplayGuestList(res)
+	} 
+
+	const uninviteGuest = async(username) => {
+		const res = await EventServices.uninviteGuest(username, eventId)
+		updateDisplayGuestList(res)
+	}
+
+	if(!eventInfo) return null
 
 	return(
 		<Container maxWidth='lg' sx={{ mt:4, mb:4 }}>
@@ -177,6 +97,14 @@ const PartyDetails = () => {
 								<Typography variant='h3' components='h2'>
 									{eventInfo.title}
 								</Typography>
+
+								{eventInfo.currUserHost ? 
+									<EditDetailsDialog 
+										basicDetails={basicDetails} 
+										updateBasicDetails={updateBasicDetails} 
+									/>
+									: null}
+
 								<Typography variant='h5' components='h3'>
 									Hosted By: {eventInfo.host}
 								</Typography>
@@ -205,21 +133,13 @@ const PartyDetails = () => {
 								</Grid>
 							</Grid>
 						</Grid>
-						{currUserHost ? <Button >Edit</Button> : null}
 					</Paper>
 				</Grid>
-				<Grid item xs={12} md={8}>
-						<Typography variant='h4' components='h4'>
-							Menu
-						</Typography>
-						{currUserHost ? <Button >Edit</Button> : null}
-						{generateMenu()}
-				</Grid>
-				<Grid item xs={12} md={4}>
-					<Typography variant='h4' components='h4'>
+				<Grid item xs={12} md={3}>
+					<Typography variant='h4' components='h4' sx={{margin:1,}}>
 						Guests
 					</Typography>
-					{currUserHost ? <Button >Invite</Button> : null}
+					{eventInfo.currUserHost ? <InviteDialog inviteGuests={inviteGuests} currentGuestList={eventInfo.guests} /> : null}
 					<Paper
 						sx={{
 							p: 2,
@@ -227,18 +147,43 @@ const PartyDetails = () => {
 							flexDirection: 'column',
 						}}
 					>
-						{generateGuests()}
+						<GuestList guests={eventInfo.guests} isHost={eventInfo.currUserHost} uninviteGuest={uninviteGuest} />
 					</Paper>
 				</Grid>
-			</Grid>
-			<Grid item xs={12} sx={{p:2}}>
-				<Typography variant='h4' components='h4'>
-					Comments
-				</Typography>
-				{currUserHost ? <Button >Moderate</Button> : null}
-				<Paper >
-					{generateComments()}
-				</Paper>
+				<Grid item xs={12} md={9}>
+					<Grid item lg={12} sx={{marginBottom:2}}>
+						<Typography variant='h4' components='h4' sx={{margin:1,}}>
+							Menu
+						</Typography>
+						<Button variant="outlined" size='small'>Add Item</Button>
+						{eventInfo.currUserHost ? 	<Button  
+														variant="outlined" 
+														size="small"
+													>
+														Edit
+													</Button> 
+													: null
+						}
+						<EventMenu menu={eventInfo.menu} />
+					</Grid>
+					<Grid item lg={12} sx={{margin:'0 0 0 0'}}>
+						<Typography variant='h4' components='h4'sx={{margin:1,}}>
+							Comments
+						</Typography>
+						<Button variant="outlined" size='small'>Add Comment</Button>
+						{eventInfo.currUserHost ? 	<Button  
+														variant="outlined" 
+														size="small"
+													>
+														Moderate
+													</Button> 
+													: null
+						}
+						<Paper >
+							<EventComments comments={eventInfo.comments} />
+						</Paper>
+					</Grid>
+				</Grid>
 			</Grid>
 		</Container>
 	)
