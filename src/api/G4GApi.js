@@ -90,5 +90,10 @@ class G4GApi {
 		let res = await this.request(`events/${eventId}/guests`)
 		return res
 	}
+
+	static async addMenuCategory(eventId, newCategory){
+		let res = await this.request(`events/${eventId}/menu/categories`, {newCategory}, 'post')
+		return
+	}
 }
 export default G4GApi

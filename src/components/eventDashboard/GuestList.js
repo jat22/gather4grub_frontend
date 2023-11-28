@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Button } from "@mui/material";
+import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Chip } from "@mui/material";
 
 const GuestList = ({ guests, isHost, uninviteGuest }) => {
 	if(guests === undefined) return
@@ -17,14 +17,12 @@ const GuestList = ({ guests, isHost, uninviteGuest }) => {
 							key={g.username}
 							secondaryAction={
 								isHost ? 
-								<Button 
+								<Chip
+									label="Remove"
 									size='small' 
-									variant='outlined' 
 									edge='end'
 									onClick={() => handleUninvite(g.username)}
-								>
-									Uninvite
-								</Button>
+								/>
 								: null
 							}>
 							<ListItemAvatar>

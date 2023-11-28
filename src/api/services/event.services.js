@@ -67,16 +67,16 @@ class EventServices {
 
 	static async getEventInfo(eventId) {
 		const res = await G4GApi.getAllEventInfo(eventId)
-
 		return res.data.event
 	};
+	
 	static async getPotentialInvites (currentGuestList, username) {
 		const connectionsRes = await G4GApi.getUserConnections(username)
 		const connections = connectionsRes.data.connections
 		if(!connections) return null
 		const seenGuestSet = new Set();
 		currentGuestList.map(g => seenGuestSet.add(g.username))
-		
+
 		const potentialInvites = connections.filter( c => {
 			if(!seenGuestSet.has(c.username)){
 				seenGuestSet.add(c.username)
@@ -111,6 +111,11 @@ class EventServices {
 		const uninviteRes = await G4GApi.uninviteGuest(username, eventId)
 		const guestListRes = await G4GApi.getGuestList(eventId)
 		return guestListRes.data.guests
+	}
+
+	static async addMenuCategory(eventId, newCategory){
+		const res = await G4GApi.addMenuCategory(eventId, newCategory)
+		return res.data.menu
 	}
 };
 

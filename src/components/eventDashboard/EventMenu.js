@@ -4,12 +4,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from "react-router-dom";
 
 const EventMenu = ({menu}) => {
-
+	console.log(menu[0])
 	const accordianExpandInitialState = () => {
 		const result = {}
-		let i = 1; 
+		let i = 0; 
 		while(i <= menu.length){
-			result[`panel${i}`] = true
+			result[`panel${i}`] = false;
+			i++;
 		}
 		return result
 	}
@@ -27,7 +28,7 @@ const EventMenu = ({menu}) => {
 				{menu !== undefined ? menu.map((c, i)=>{
 					let panel = `panel${i}`
 					return (
-						<Accordion expanded={menuAccordianExpanded[panel]} onChange={toggleMenuAccordians(panel)}>
+						<Accordion key={c.courseId} expanded={menuAccordianExpanded[panel]} onChange={toggleMenuAccordians(panel)}>
 							<AccordionSummary
 								expandIcon={<ExpandMoreIcon />}
 								aria-controls={`${panel}bh-content`}
@@ -39,7 +40,7 @@ const EventMenu = ({menu}) => {
 							</AccordionSummary>
 							<AccordionDetails>
 								<List>
-									{c.items.map(d => generateDish(d))}
+									{c.dishes.map(d => generateDish(d))}
 								</List>
 							</AccordionDetails>
 						</Accordion>

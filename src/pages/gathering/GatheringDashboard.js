@@ -9,6 +9,9 @@ import EventMenu from '../../components/eventDashboard/EventMenu';
 import EventComments from '../../components/eventDashboard/EventComments';
 import EditDetailsDialog from '../../components/eventDashboard/EditDetailsDialog';
 import InviteDialog from '../../components/eventDashboard/InviteDialog';
+import EditMenuDialog from '../../components/eventDashboard/EditMenuDialog';
+import AddMenuItemDialog from '../../components/eventDashboard/AddMenuItemDialog';
+
 /**	
  * To Do
  * - Check if host and add conditional for host view
@@ -62,6 +65,10 @@ const PartyDetails = () => {
 	const updateDisplayGuestList = (guestList) => {
 		setEventInfo(i => ({...i, guests:guestList}))
 	}
+
+	const updateDisplayMenu = (menu) => {
+		setEventInfo(i => ({...i, menu:menu}))
+	}
 	
 	const updateBasicDetails = async (data) => {
 		const res = await EventServices.updateBasicDetails(eventId, data)
@@ -76,6 +83,16 @@ const PartyDetails = () => {
 	const uninviteGuest = async(username) => {
 		const res = await EventServices.uninviteGuest(username, eventId)
 		updateDisplayGuestList(res)
+	}
+
+	const addNewCategory = async(newCategory) => {
+		const res = await EventServices.addMenuCategory(eventId, newCategory)
+		updateDisplayMenu(res)
+	}
+
+	const addMenuItem = async(newItem) => {
+		const res = await EventServices.addMenuItem(eventId, newItem)
+		updateDisplayMenu(res)
 	}
 
 	if(!eventInfo) return null
@@ -150,20 +167,19 @@ const PartyDetails = () => {
 						<GuestList guests={eventInfo.guests} isHost={eventInfo.currUserHost} uninviteGuest={uninviteGuest} />
 					</Paper>
 				</Grid>
+				
 				<Grid item xs={12} md={9}>
 					<Grid item lg={12} sx={{marginBottom:2}}>
 						<Typography variant='h4' components='h4' sx={{margin:1,}}>
 							Menu
 						</Typography>
-						<Button variant="outlined" size='small'>Add Item</Button>
-						{eventInfo.currUserHost ? 	<Button  
-														variant="outlined" 
-														size="small"
-													>
-														Edit
-													</Button> 
+						<AddMenuItemDialog menu={eventInfo.menu} addMenuItem={addMenuItem} />
+					 	{eventInfo.currUserHost ? 	<EditMenuDialog 
+														menu={eventInfo.menu}
+														addNewCategory={addNewCategory}
+													/>
 													: null
-						}
+						}						
 						<EventMenu menu={eventInfo.menu} />
 					</Grid>
 					<Grid item lg={12} sx={{margin:'0 0 0 0'}}>
@@ -182,7 +198,7 @@ const PartyDetails = () => {
 						<Paper >
 							<EventComments comments={eventInfo.comments} />
 						</Paper>
-					</Grid>
+					</Grid> 
 				</Grid>
 			</Grid>
 		</Container>
@@ -190,3 +206,24 @@ const PartyDetails = () => {
 };
 
 export default PartyDetails
+
+
+// {
+// 	id: 1,
+// 	host: 'testuser1',
+// 	title: 'Test Event One',
+// 	date: 2023-12-01T05:00:00.000Z,
+// 	startTime: null,
+// 	endTime: null,
+// 	location: null,
+// 	description: null,
+// 	guests: [
+// 	  { id: 7, username: 'testuser4', rsvp: 'pending' },
+// 	  { id: 8, username: 'testuser5', rsvp: 'pending' }
+// 	],
+// 	menu: [
+// 	  { courseName: 'dessert', courseId: 1, dishes: [] },
+// 	  { courseName: 'Appetizers', courseId: 2, dishes: [] }
+// 	],
+// 	comments: []
+//   }
