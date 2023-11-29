@@ -1,11 +1,13 @@
 import G4GApi from "../G4GApi"
 import { parse,format } from 'date-fns'
 import dayjs from "dayjs"
+import Format from "../../utilities/format"
 
 class EventServices {
 	static async getUpcoming(username) {
 		const res = await G4GApi.getUpcomingEvents(username)
 		const events = res.data.events
+		console.log(events)
 
 		if(events){
 			events.forEach(e => {
@@ -62,14 +64,21 @@ class EventServices {
 	};
 
 	static async getEventMenu(eventId){
-
+		const res = await G4GApi.getEventMenu(eventId)
+		return res.data.menu
 	};
 
 	static async getEventInfo(eventId) {
 		const res = await G4GApi.getAllEventInfo(eventId)
-		return res.data.event
+		console.log(res.data.event)
+		const eventInfo = res.data.event;
+		if(!eventInfo) return
+		eventInfo.date = Format.displayDate(eventInfo.date);
+		eventInfo['displayTime'] = Format.displayTime(eventInfo.startTime, eventInfo.endTime)
+
+		return eventInfo
 	};
-	
+
 	static async getPotentialInvites (currentGuestList, username) {
 		const connectionsRes = await G4GApi.getUserConnections(username)
 		const connections = connectionsRes.data.connections
@@ -116,6 +125,28 @@ class EventServices {
 	static async addMenuCategory(eventId, newCategory){
 		const res = await G4GApi.addMenuCategory(eventId, newCategory)
 		return res.data.menu
+	};
+
+	static async addMenuItem(eventId, newItem){
+		const res = await G4GApi.addMenuItem(eventId, newItem);
+		return res.data.menu
+	}
+
+	static async removeDish(dishId, eventId) {
+		await G4GApi.removeDish(dishId, eventId)
+		const updatedMenu = await this.getEventMenu(eventId)
+		return updatedMenu
+	}
+
+	static async addComment(comment, username, eventId){
+		const res = await G4GApi.addComment(comment, username, eventId)
+		return res.data.comments
+	}
+
+	static async removeComment(commentId, eventId){
+		await G4GApi.removeComment(commentId, eventId);
+		const updatedComments = await G4GApi.getEventComments(eventId)
+		return updatedComments.data.comments
 	}
 };
 

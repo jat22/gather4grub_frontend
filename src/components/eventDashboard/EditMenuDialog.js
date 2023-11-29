@@ -27,10 +27,10 @@ const EditMenuDialog = ({ menu, addNewCategory }) => {
 	return (
 		<>
 			<Button variant="outlined" size='small' onClick={handleClickOpen}>
-				Edit
+				Add Course
 			</Button>
 			<Dialog open={open} >
-				<DialogTitle>Edit Menu</DialogTitle>
+				<DialogTitle>Add A Course</DialogTitle>
 				<DialogContent>
 					<TextField
 						label='New Category'
@@ -46,11 +46,9 @@ const EditMenuDialog = ({ menu, addNewCategory }) => {
 					>
 						Add 
 					</Button>
-					<EventMenu menu={menu} />
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Cancel</Button>
-					<Button onClick={handleUpdate}>Update</Button>
 				</DialogActions>
 			</Dialog>
 		</>

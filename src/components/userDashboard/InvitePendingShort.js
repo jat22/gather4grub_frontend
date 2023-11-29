@@ -3,7 +3,7 @@ import { List, Paper, Typography, Link } from "@mui/material";
 import InviteListItem from "./InviteItem";
 
 
-const InvitePendingShort = ({ invites, handleAccept, handleDecline }) => {
+const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 
 	const InviteList = () => {
 		if(invites && invites.length > 0){
@@ -15,8 +15,8 @@ const InvitePendingShort = ({ invites, handleAccept, handleDecline }) => {
 							key={i.id}
 							id={i.id}
 							item={i} 
-							handleAccept={handleAccept} 
-							handleDecline={handleDecline} 
+							acceptInvite={acceptInvite} 
+							declineInvite={declineInvite} 
 						/>
 					))}
 					</List>

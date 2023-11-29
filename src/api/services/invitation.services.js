@@ -15,6 +15,14 @@ class InvitationServices{
 		}
 		
 	}
+
+	static async accept(id){
+
+	}
+
+	static async decline(id){
+
+	}
 }
 
 export default InvitationServices

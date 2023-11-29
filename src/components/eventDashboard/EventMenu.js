@@ -1,10 +1,9 @@
 import React, { useState} from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, Chip } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from "react-router-dom";
 
-const EventMenu = ({menu}) => {
-	console.log(menu[0])
+const EventMenu = ({ menu, isHost, username, removeDish }) => {
 	const accordianExpandInitialState = () => {
 		const result = {}
 		let i = 0; 
@@ -21,6 +20,10 @@ const EventMenu = ({menu}) => {
 		const newMenuAccordianExpanded = {...menuAccordianExpanded, [panel] : !menuAccordianExpanded[panel]}
 		setMenuAccordianExpanded( cur => newMenuAccordianExpanded);
 	};
+
+	const handleRemoveDish = (dishId) => {
+		removeDish(dishId)
+	}
 
 	const generateMenu = () => {
 		return (
@@ -52,7 +55,20 @@ const EventMenu = ({menu}) => {
 
 	const generateDish = (dish) => {
 		return (
-			<ListItem alignItems='flex-start'>
+			<ListItem 
+				key={dish.id}
+				alignItems='flex-start'
+				secondaryAction={
+					isHost || dish.username === username ?
+					<Chip
+						label="Remove"
+						size='small' 
+						edge='end'
+						onClick={() => handleRemoveDish(dish.id)}
+					/>
+					: null
+				}
+			>
 				<ListItemText
 					primary={dish.name}
 					secondary={
@@ -68,7 +84,7 @@ const EventMenu = ({menu}) => {
 								<Link
 									sx={{ fontSize: 1, }}
 								>
-									{dish.user}
+									{dish.username}
 								</Link>
 							</Typography>
 						</>

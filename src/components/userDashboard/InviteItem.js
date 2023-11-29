@@ -1,36 +1,33 @@
 import React from "react";
 import { ListItem, IconButton, ListItemAvatar, Avatar, ListItemText } from "@mui/material"
-import FolderIcon from '@mui/icons-material/Folder';
+
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from '@mui/icons-material/Check';
+import FullInvitationDialog from "./FullInvitationDialog";
 
-const InviteListItem = ({ item, handleAccept, handleDecline }) => {
+const InviteListItem = ({ item, acceptInvite, declineInvite }) => {
 	return (
 		<ListItem
 			secondaryAction={
 				<>
+					<FullInvitationDialog invitation={item} acceptInvite={acceptInvite} declineInvite={declineInvite} />
 					<IconButton 
 						edge="end" 
 						aria-label="accept"
-						onClick={()=>handleAccept(item.id)} 
+						onClick={()=>acceptInvite(item.id)} 
 					>
 						<CheckIcon />
 					</IconButton>
 					<IconButton
 						edge='end'
 						aria-label="decline"
-						onClick={()=>handleDecline(item.id)}
+						onClick={()=>declineInvite(item.id)}
 					>
 						<ClearIcon />
 					</IconButton>
 				</>
 			}
 		>
-			<ListItemAvatar>
-				<Avatar>
-					<FolderIcon />
-				</Avatar>
-			</ListItemAvatar>
 			<ListItemText
 				primary={item.title}
 				secondary={item.date}

@@ -2,10 +2,18 @@ import React from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import { TableCell, Avatar, TableRow } from "@mui/material";
 
-const UpcomingTableRow = ({ event })=>{
-
+const UpcomingTableRow = ({ event, type })=>{
+	const rsvpMap = {
+		accept : 'Attending',
+		decline : 'Declined',
+		pending : 'Undecided'
+	}
 	return(
-		<TableRow key={event.id}>
+		<TableRow 
+			key={event.id} 
+			component={RouterLink} 
+			to={`/gatherings/${event.id}`}
+		>
 				<TableCell>
 					<Avatar />
 				</TableCell>
@@ -18,6 +26,18 @@ const UpcomingTableRow = ({ event })=>{
 				<TableCell>
 					{event.title}
 				</TableCell>
+				{type === 'host' ? null 
+					:
+					event.isHost ? 
+					<TableCell>
+						Host
+					</TableCell>
+					:
+					<TableCell>
+						{rsvpMap[event.rsvp]}	
+					</TableCell>
+				}
+				
 		</TableRow>
 	)
 };

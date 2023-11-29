@@ -11,6 +11,7 @@ import EditDetailsDialog from '../../components/eventDashboard/EditDetailsDialog
 import InviteDialog from '../../components/eventDashboard/InviteDialog';
 import EditMenuDialog from '../../components/eventDashboard/EditMenuDialog';
 import AddMenuItemDialog from '../../components/eventDashboard/AddMenuItemDialog';
+import AddCommentDialog from '../../components/eventDashboard/AddCommentDialog';
 
 /**	
  * To Do
@@ -27,6 +28,9 @@ const PartyDetails = () => {
 		title: '',
 		host: '',
 		date: '',
+		startTime:'',
+		endTime: '',
+		displayTime: '',
 		location: '',
 		description: '',
 		menu: [],
@@ -43,6 +47,7 @@ const PartyDetails = () => {
 		date : eventInfo.date,
 		startTime : eventInfo.startTime,
 		endTime : eventInfo.endTime,
+		displayTime : eventInfo.displayTime,
 		location : eventInfo.location ? eventInfo.location : '',
 		description : eventInfo.description ? eventInfo.description : ''
 	} : null
@@ -91,8 +96,29 @@ const PartyDetails = () => {
 	}
 
 	const addMenuItem = async(newItem) => {
-		const res = await EventServices.addMenuItem(eventId, newItem)
+		newItem['courseId'] = 
+			eventInfo.menu.find( c => c.courseName === newItem.course).courseId
+		const res = await EventServices.addMenuItem(eventId, {...newItem, username:user.username})
 		updateDisplayMenu(res)
+	}
+
+	const removeDish = async(dishId) => {
+		const res = await EventServices.removeDish(dishId, eventInfo.id)
+		updateDisplayMenu(res)
+	}
+
+	const addComment = async(comment) => {
+		const res = await EventServices.addComment(comment, user.username, eventInfo.id)
+		updateDisplayComments(res)
+	}
+
+	const updateDisplayComments = async(comments) => {
+		setEventInfo(i => ({...i, comments: comments}))
+	}
+
+	const removeComment = async(commentId) => {
+		const res = await EventServices.removeComment(commentId, eventInfo.id)
+		updateDisplayComments(res)
 	}
 
 	if(!eventInfo) return null
@@ -127,6 +153,9 @@ const PartyDetails = () => {
 								</Typography>
 								<Typography variant='h5' components='h3'>
 									{eventInfo.date}
+								</Typography>
+								<Typography variant='h5' components='h3'>
+									{eventInfo.displayTime}
 								</Typography>
 							</Grid>
 							<Grid item xs={12} md={5}>
@@ -180,23 +209,20 @@ const PartyDetails = () => {
 													/>
 													: null
 						}						
-						<EventMenu menu={eventInfo.menu} />
+						<EventMenu 
+							menu={eventInfo.menu} 
+							isHost={eventInfo.currUserHost} 
+							username={user.username}
+							removeDish={removeDish}
+						/>
 					</Grid>
 					<Grid item lg={12} sx={{margin:'0 0 0 0'}}>
 						<Typography variant='h4' components='h4'sx={{margin:1,}}>
 							Comments
 						</Typography>
-						<Button variant="outlined" size='small'>Add Comment</Button>
-						{eventInfo.currUserHost ? 	<Button  
-														variant="outlined" 
-														size="small"
-													>
-														Moderate
-													</Button> 
-													: null
-						}
+						<AddCommentDialog addComment={addComment} />
 						<Paper >
-							<EventComments comments={eventInfo.comments} />
+							<EventComments comments={eventInfo.comments} removeComment={removeComment} />
 						</Paper>
 					</Grid> 
 				</Grid>

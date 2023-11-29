@@ -8,30 +8,27 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 		resetFormData()
 		setOpen(true);
 	};
-
-	const [courseSelect, setCourseSelect] = useState('')
-
-	const [formData, handleChange, resetFormData] = useFields({
-		dishName : '',
-		description: ''
-	})
-
 	const handleClose = () => {
 		setOpen(false);
 	};
 
+	const initialFormData = {
+		course: '',
+		dishName : '',
+		description: ''
+	}
+
+	const [formData, handleChange, resetFormData] = useFields(initialFormData)
+	const [course, setCourse] = useState({courseName:'', courseId:''})
+
 	const handleAdd = () => {
 		handleClose();
-		addMenuItem(courseSelect, formData);
+		addMenuItem(formData);
 	};
-
-	const handleCourseSelect = (event) => {
-		setCourseSelect(event.target.value)
-	}
 
 	return (
 		<>
-			<Button varient='outlined' size='small' onClick={handleClickOpen}>
+			<Button variant='outlined' size='small' onClick={handleClickOpen}>
 				Add Item
 			</Button>
 			<Dialog open={open}>
@@ -43,12 +40,13 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 							<Select
 								labelId='course-select-label'
 								id='course-select'
-								value={courseSelect}
+								value={formData.course}
 								label='Course'
-								onChange={handleCourseSelect}
+								onChange={handleChange}
 								sx={{ minWidth:120 }}
+								name='course'
 							>
-								{menu.map(c => <MenuItem key={c.courseId} value={c.courseName}>{c.courseName}</MenuItem>)}
+								{menu.map(c => <MenuItem key={c.courseId} value={c.courseName} data-courseid={c.courseId}>{c.courseName}</MenuItem>)}
 							</Select>
 						</FormControl>
 						<TextField 
@@ -56,12 +54,14 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 							value={formData.dishName}
 							id='dishName'
 							onChange={handleChange}
+							name='dishName'
 						/>
 						<TextField 
 							label='Description'
 							value={formData.description}
 							id='description'
 							onChange={handleChange}
+							name='description'
 						/>
 					</Box>
 				</DialogContent>

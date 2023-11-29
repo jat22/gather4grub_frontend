@@ -14,7 +14,7 @@ const HostingEventsList = ({ events }) => {
 					<Table >
 						<TableBody >
 							{events.slice(0,3).map((e) => (
-								<UpcomingTableRow event={e} />
+								<UpcomingTableRow key={e.id} event={e} hostList={true} />
 							))}
 						</TableBody>
 					</Table>

@@ -39,6 +39,7 @@ class G4GApi {
 
 	static async getUpcomingEvents(username){
 		let res = await this.request(`users/${username}/events/upcoming`)
+		
 		return res
 	}
 
@@ -72,6 +73,7 @@ class G4GApi {
 	}
 
 	static async updateBasicDetails(eventId, data){
+		console.log(data)
 		let res = await this.request(`events/${eventId}/basic`, {data}, 'put')
 		return res
 	}
@@ -93,7 +95,37 @@ class G4GApi {
 
 	static async addMenuCategory(eventId, newCategory){
 		let res = await this.request(`events/${eventId}/menu/categories`, {newCategory}, 'post')
+		return res
+	};
+
+	static async addMenuItem(eventId, newItem){
+		let res = await this.request(`events/${eventId}/menu`, {newItem}, 'post')
+		return res
+	}
+
+	static async removeDish(dishId, eventId){
+		let res = await this.request(`dishes/${dishId}`, {}, 'delete')
 		return
+	}
+
+	static async getEventMenu(eventId){
+		let res = await this.request(`events/${eventId}/menu`)
+		return res
+	}
+
+	static async addComment(comment, username, eventId){
+		let res = await this.request(`events/${eventId}/comments`, {comment: comment, author:username}, 'post')
+		return res
+	}
+
+	static async removeComment(commentId, eventId){
+		let res = await this.request(`events/${eventId}/comments/${commentId}`, {}, 'delete')
+		return
+	}
+
+	static async getEventComments(eventId) {
+		let res = await this.request(`events/${eventId}/comments`)
+		return res
 	}
 }
 export default G4GApi
