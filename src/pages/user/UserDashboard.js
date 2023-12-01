@@ -8,7 +8,9 @@ import InvitePendingShort from '../../components/userDashboard/InvitePendingShor
 import EventsList from '../../components/userDashboard/EventsList';
 import G4GApi from '../../api/G4GApi';
 import AllEventsModal from '../../components/userDashboard/AllEventsModal'
-
+import FindConnectionsDialog from '../../components/userDashboard/FindConnectionsDialog';
+import ViewConnectionsDialog from '../../components/userDashboard/ViewConnectionsDialog';
+import ConnectionRequestDialog from '../../components/userDashboard/ConnectionRequestDialog';
 
 const UserDashboard = () => {
 	const { user } = useContext(UserContext);
@@ -51,8 +53,8 @@ const UserDashboard = () => {
 		getHostingEvents();
 	}, [])
 
-	const acceptInvite = (id) => {
-		G4GApi.acceptInvite(username, id);
+	const acceptInvite = async (id) => {
+		await G4GApi.acceptInvite(username, id);
 		getInvitations();
 		getUpcomingEvents();
 	}
@@ -90,7 +92,7 @@ const UserDashboard = () => {
 
               	{/* Upcoming Events */}
               	<Grid item xs={12} md={8} lg={8}>
-					{upcomingEvents ? 
+
 						<Paper 
 							sx={{
 								p: 2,
@@ -104,15 +106,11 @@ const UserDashboard = () => {
 								short={true}
 								type="upcoming"
 							/>
-							{upcomingEvents.length > 3 ?
+							{upcomingEvents && upcomingEvents.length > 3 ?
 								<AllEventsModal events={upcomingEvents} type='upcoming' />
 								: null
 							}
 						</Paper>
-						:
-						null
-					}
-					
             	</Grid>
 
               	{/* Hosting*/}
@@ -140,8 +138,15 @@ const UserDashboard = () => {
 								<Typography variant="h5">
 									Connections
 								</Typography>
-								<ViewConnectionsDialog />
-								<FindConnectionsDialog />
+								<Box sx={{margin: 2}} >
+									<ViewConnectionsDialog />
+								</Box>
+								<Box>
+									<FindConnectionsDialog />
+								</Box>
+								<Box sx={{margin: 2}} >
+									<ConnectionRequestDialog />
+								</Box>
 							</Paper>
 						</Grid>
 					</Grid>

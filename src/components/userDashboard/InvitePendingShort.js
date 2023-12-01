@@ -6,6 +6,7 @@ import InviteListItem from "./InviteItem";
 const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 
 	const InviteList = () => {
+
 		if(invites && invites.length > 0){
 			return (
 				<>

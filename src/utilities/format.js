@@ -39,6 +39,7 @@ class Format {
 
 		return formatted.toLowerCase();
 	}
+
 }
 
 export default Format

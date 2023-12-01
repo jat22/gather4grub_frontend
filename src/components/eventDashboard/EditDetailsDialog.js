@@ -11,6 +11,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import useFields from '../../hooks/useFields';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
 
 const EditDetailsDialog = ({ basicDetails, updateBasicDetails }) => {
 	const [open, setOpen] = useState(false);
@@ -19,12 +21,14 @@ const EditDetailsDialog = ({ basicDetails, updateBasicDetails }) => {
 			id: basicDetails.id,
 			title: basicDetails.title,
 			date: dayjs(basicDetails.date),
-			startTime: dayjs(basicDetails.startTime),
-			endTime: dayjs(basicDetails.endTime),
+			startTime: dayjs(basicDetails.startTime, "HH:MM:SS"),
+			endTime: dayjs(basicDetails.endTime, "HH:MM:SS"),
 			location: basicDetails.location,
-			description: basicDetails.description,
+			description: basicDetails.description
 		}
 	)
+	
+	console.log(formData)
 
 	const handleClickOpen = () => {
 		setOpen(true);

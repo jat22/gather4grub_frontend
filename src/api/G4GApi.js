@@ -39,7 +39,7 @@ class G4GApi {
 
 	static async getUpcomingEvents(username){
 		let res = await this.request(`users/${username}/events/upcoming`)
-		
+
 		return res
 	}
 
@@ -126,6 +126,36 @@ class G4GApi {
 	static async getEventComments(eventId) {
 		let res = await this.request(`events/${eventId}/comments`)
 		return res
+	}
+
+	static async getConnections(username){
+		let res = await this.request(`users/${username}/connections`)
+		return res
+	}
+
+	static async createConnectionRequest(fromUsername, toUsername){
+		let res = await this.request(`users/${fromUsername}/connections/requests`, { 'toUsername' : toUsername}, 'post')
+		return
+	}
+
+	static async getPotentialConnections(input){
+		let res = await this.request(`users/find/${input}`)
+		return res
+	}
+
+	static async getConnectionRequests(username){
+		let res = await this.request(`users/${username}/connections/requests`);
+		return res
+	}
+
+	static async acceptConnectionRequest(id, curUsername){
+		let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put')
+		return
+	}
+
+	static async deleteConnectionRequest(id, curUsername){
+		let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete')
+		return
 	}
 }
 export default G4GApi
