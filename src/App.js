@@ -5,7 +5,6 @@ import Landing from './pages/Landing';
 import UserSignUp from './pages/user/UserSignUp';
 import UserLogin from './pages/user/UserLogin';
 import UserDashboard from './pages/user/UserDashboard';
-import UserPublicProfile from './pages/user/UserPublicProfile';
 import UsersAll from './pages/user/UsersAll';
 import GatheringCreate from './pages/gathering/GatheringCreate';
 import GatheringDetails from './pages/gathering/GatheringDashboard';
@@ -20,6 +19,7 @@ import NavBar from './components/NavBar'
 import Footer from './components/Footer';
 import G4GApi from './api/G4GApi';
 import UserContext from './context/UserContext';
+import EditUser from './pages/user/EditUser';
 
 
 
@@ -45,7 +45,7 @@ function App() {
             <Route exact path='/login' element={<UserLogin />} />
             <Route exact path='/signup' element={<UserSignUp />} />
             <Route exact path='/users/:username/dashboard' element={<UserDashboard />} />
-            <Route exact path='/users/profile/:username' element={<UserPublicProfile />} />
+            <Route exact path='/users/:username/edit' element={<EditUser />} />
             <Route exact path='/users' element={<UsersAll />} />
             <Route exact path='/gatherings/create' element={<GatheringCreate />} />
             <Route exact path='/gatherings/:eventId' element={<GatheringDetails />} />

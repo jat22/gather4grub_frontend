@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react"
 import UserContext from "../../context/UserContext"
 import { Link as RouterLink } from 'react-router-dom'
 import ConnectionServices from "../../api/services/connections.services"
+import UserDetailsPopover from "../UserDetailsPopover"
 
 
 const ViewConnectionsDialog = () => {
@@ -10,7 +11,7 @@ const ViewConnectionsDialog = () => {
 	const [connections, setConnections] = useState([])
 
 	const { user } = useContext(UserContext)
-	console.log(user)
+
 	const handleOpen = () => {
 		setOpen(true)
 	};
@@ -45,14 +46,15 @@ const ViewConnectionsDialog = () => {
 							<List>
 								{connections.map( c => {
 									return(
-										<ListItem key={c.id} component={RouterLink} to={`/users/${c.username}`}>
-											<ListItemAvatar>
-												<Avatar />
-											</ListItemAvatar>
-											<ListItemText 
-												primary={c.username}
-												secondary={`${c.firstName} ${c.lastName}`} />
-										</ListItem>
+											<UserDetailsPopover user={c} />
+										// <ListItem key={c.id} component={RouterLink} to={`/users/${c.username}`}>
+										// 	<ListItemAvatar>
+										// 		<Avatar />
+										// 	</ListItemAvatar>
+										// 	<ListItemText 
+										// 		primary={c.username}
+										// 		secondary={`${c.firstName} ${c.lastName}`} />
+										// </ListItem>
 									)
 									})
 								}

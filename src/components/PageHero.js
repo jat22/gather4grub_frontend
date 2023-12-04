@@ -45,7 +45,7 @@ const Hero = ({ coverImage, header, subHeader, buttons }) => {
 					top: 150
 				}}
 			>
-					{buttons.map(b => {
+					{buttons ? buttons.map(b => {
 						return(
 							<Button
 								sx={{ m: 1}}
@@ -54,7 +54,7 @@ const Hero = ({ coverImage, header, subHeader, buttons }) => {
 								to={b.route}
 							>{b.text}</Button>
 						)
-					})}
+					}): null}
 			</Box>
 		</Box>
 	)

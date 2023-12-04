@@ -157,5 +157,19 @@ class G4GApi {
 		let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete')
 		return
 	}
+
+	static async getUserProfile(username){
+		const res = await this.request(`users/${username}/profile`)
+		return res
+	}
+
+	static async getUserInfo(username) {
+		const res = await this.request(`users/${username}`)
+		return res
+	}
+
+	static async editUser(username, data) {
+		const res = await this.request(`users/${username}`, data, 'patch')
+	}
 }
 export default G4GApi
