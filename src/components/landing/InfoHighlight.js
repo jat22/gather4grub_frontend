@@ -1,6 +1,6 @@
 import React from 'react';
-import { Container, Grid } from '@mui/material';
-import InfoCard from '../components/InfoCard'
+import { Grid } from '@mui/material';
+import InfoCard from './InfoCard'
 
 const InfoHighlight = ({ infoPoints }) => {
 
@@ -20,14 +20,6 @@ const InfoHighlight = ({ infoPoints }) => {
 				</Grid>
 			</Grid>
 		</>
-		
-		// <Grid container spacing={2}>
-		// 	{infoPoints.map( p => {
-		// 		<Grid item>
-		// 			<InfoCard info={p} />
-		// 		</Grid>
-		// 	})}
-		// </Grid>
 	)
 }
 
