@@ -4,6 +4,7 @@ import UserContext from "../../context/UserContext";
 import { Container, Box, Grid, Typography, TextField, Button, Link } from "@mui/material";
 import UserServices from "../../api/services/user.services";
 import { useNavigate } from "react-router-dom";
+import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
 
 const EditUser = () => {
 	const [formData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
@@ -90,7 +91,7 @@ const EditUser = () => {
 					/>
 				</Grid>
 				<Grid item xs={12} md={6}>
-					<Button size='large' variant='outlined'>Update Password</Button>
+					<ChangePasswordDialog />
 				</Grid>
 				<Grid item xs={12} md={12}>
 					<TextField

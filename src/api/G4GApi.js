@@ -171,5 +171,10 @@ class G4GApi {
 	static async editUser(username, data) {
 		const res = await this.request(`users/${username}`, data, 'patch')
 	}
+
+	static async updatePassword(data) {
+		const res = await this.request(`users/${data.username}/password`, data, 'patch')
+		return res
+	}
 }
 export default G4GApi
