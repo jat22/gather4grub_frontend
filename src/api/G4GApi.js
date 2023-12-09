@@ -176,5 +176,15 @@ class G4GApi {
 		const res = await this.request(`users/${data.username}/password`, data, 'patch')
 		return res
 	}
+
+	static async checkUsernameExists(username){
+		const res = await this.request(`auth/check/username`, {username:username}, 'get')
+		return res
+	};
+	
+	static async checkEmailExists(email){
+		const res = await this.request(`auth/check/email`, {email:email}, 'get')
+		return res
+	}
 }
 export default G4GApi

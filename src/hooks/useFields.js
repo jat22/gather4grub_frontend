@@ -24,7 +24,7 @@ const useFields = (initialState) => {
 			[name] : val
 		}))
 	}
-	return [formData, handleChange, resetFormData, updateFormData, handlePickerData]
+	return [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData]
 }
 
 export default useFields

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import InfoCard from './InfoCard'
+import InfoCard from '../../components/landing/InfoCard'
 
 const InfoHighlight = ({ infoPoints }) => {
 

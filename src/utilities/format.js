@@ -40,6 +40,20 @@ class Format {
 		return formatted.toLowerCase();
 	}
 
+	static varNameToDisplay (name) {
+		let formatted = ''
+		for(let i = 0; i < name.length; i++){
+			if(i === 0){
+				formatted += name[i].toUpperCase()
+			} else if(name[i] === name[i].toUpperCase()){
+				formatted += ` ${name[i]}`
+			} else {
+				formatted += name[i]
+			}
+		}
+		return formatted
+	}
+
 }
 
 export default Format

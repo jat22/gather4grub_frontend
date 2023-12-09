@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import PageHero from '../components/landing/PageHero';
+import PageHero from '../components/landing/PageHero'
 import InfoHighlight from '../components/landing/InfoHighlight';
 import UserContext from '../context/UserContext';
 
@@ -19,10 +19,11 @@ const infoPoints = [
 		description: `"Alone, we can do so little; together, we can do so much." - Helen Keller`
 	}
 ]
-
+ 
 const coverImage = 'https://cdn.pixabay.com/photo/2016/11/23/13/45/celebration-1852926_1280.jpg'
 
-const Landing = () => {
+const Landing = ()=>{
+
 	const { user } = useContext(UserContext)
 
 	return(

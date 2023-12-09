@@ -1,49 +1,76 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { Button, } from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import G4GApi from '../../api/G4GApi';
 import UserContext from '../../context/UserContext';
-import useFormRequired from '../../hooks/useFormRequired';
+import useFormValidate from '../../hooks/useFormValidate';
 import useFields from '../../hooks/useFields';
+import UserServices from '../../api/services/user.services';
+import useApiValidation from '../../hooks/useApiValidation';
 
 
 
 const UserSignUp = () => {
-	const { user, setUser } = useContext(UserContext)
-	const [validationErrors, setValidationErrors] = useState({})
+	const { setUser } = useContext(UserContext)
+
 	const navigate = useNavigate()
-	const [formData, handleChange, resetFormData] = useFields({
+	const [formData, setFormData, handleChange, resetFormData] = useFields({
 			firstName : '',
 			lastName : '',
 			email : '',
 			username : '',
 			password : ''
 		})
-	
-	const [errors, validateRequired] = useFormRequired({})
+	const [generalError, setGeneralError] = useState(false)
 
-	const handleSubmit = async () => {
-		validateRequired(formData, Object.keys(formData))
-		if(Object.keys(errors) === 0){
-			const token = await G4GApi.register(formData)
-			setUser({username: formData.username, token:token})
-			navigate('/')
+	const {	validationErrors, validateRegisterForm} = useFormValidate({})
+	const { apiErrors, validateUniqueFields } = useApiValidation({});
+	const [submitted, setSubmitted] = useState(false)
+
+	const requiredFields = Object.keys(formData)
+
+	const handleSubmit = (event) => {
+		event.preventDefault()
+		setGeneralError(false)
+		setSubmitted(true)
+		validateRegisterForm(formData, requiredFields)
+	};
+
+	const register = async () => {
+		const registerRes = await UserServices.registerUser(formData);
+		if(registerRes?.status == 201) {
+			setUser({username:formData.username, token: registerRes.data.token})
+			navigate(`/users/${formData.username}/dashboard`);
+			resetFormData()
+			setSubmitted(false)
+			return
+		} else{
+			setGeneralError(true)
+			setSubmitted(false)
 			return
 		}
-		setValidationErrors(e => errors)
-		console.log(validationErrors)
-	};
-	useEffect(()=>{
-		
-	}, [formData])
+	}
+
+	const checkApiValidations = async() => {
+		await validateUniqueFields({username: formData.username, email: formData.email})
+	}
+
+	useEffect(() => {
+		if(submitted && validationErrors && Object.keys(validationErrors).length === 0) {
+			checkApiValidations()
+		} else setSubmitted(false)
+	}, [validationErrors]);
+
+	useEffect(() => {
+		if(submitted && apiErrors && Object.keys(apiErrors).length === 0){
+			register()
+		} else setSubmitted(false)
+	}, [apiErrors])
 
 	return (
 		<Container component="main" maxWidth="xs">
@@ -60,6 +87,14 @@ const UserSignUp = () => {
 			</Typography>
 				<Box component="form" noValidate sx={{ mt: 3 }}>
 					<Grid container spacing={2}>
+						{generalError ? 
+							<Grid item xs={12} lg={12}>
+								<Typography component={'span'} sx={{color:'red'}}>
+									Oops! Something went wrong, please try again.
+								</Typography>
+							</Grid>
+							: null
+						}
 						<Grid item xs={12} sm={6}>
 							<TextField
 								autoComplete="given-name"
@@ -71,22 +106,22 @@ const UserSignUp = () => {
 								autoFocus
 								value={formData.firstName}
 								onChange={handleChange}
-								error={!!validationErrors.firstName}
-								helperText={!!validationErrors.firstName ? 'Required' : null}
+								error={!!validationErrors?.firstName}
+								helperText={validationErrors?.firstName}
 							/>
 						</Grid>
-						{/* <Grid item xs={12} sm={6}>
+						<Grid item xs={12} sm={6}>
 							<TextField
 								required
 								fullWidth
-								id="lastName"
+								id="last-name"
 								label="Last Name"
-								name="last-name"
+								name="lastName"
 								autoComplete="family-name"
-								value={formData.lasttName}
+								value={formData.lastName}
 								onChange={handleChange}
-								error={errorsRequired.lasttName}
-								helperText={errorsRequired.lastName ? 'Required' : null} 
+								error={!!validationErrors?.lastName}
+								helperText={validationErrors?.lastName} 
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -99,8 +134,8 @@ const UserSignUp = () => {
 								autoComplete="email"
 								onChange={handleChange}
 								value={formData.email}
-								error={errorsRequired.email}
-								helperText={errorsRequired.email ? 'Required' : null}
+								error={!!validationErrors?.email || !!apiErrors?.email}
+								helperText={validationErrors?.email || apiErrors?.email}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -113,8 +148,8 @@ const UserSignUp = () => {
 								autoComplete='username'
 								onChange={handleChange}
 								value={formData.username}
-								error={errorsRequired.username}
-								helperText={errorsRequired.username ? 'Required' : null}
+								error={!!validationErrors?.username || !!apiErrors?.username}
+								helperText={validationErrors?.username || apiErrors?.username}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -128,10 +163,10 @@ const UserSignUp = () => {
 								autoComplete="new-password"
 								onChange={handleChange}
 								value={formData.password}
-								error={errorsRequired.password}
-								helperText={errorsRequired.password ? 'Required' : null}
+								error={!!validationErrors?.password}
+								helperText={validationErrors?.password}
 							/>
-						</Grid>*/}
+						</Grid>
 					</Grid> 
 					<Button
 						onClick={handleSubmit}
