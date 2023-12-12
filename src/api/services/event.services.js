@@ -7,7 +7,6 @@ class EventServices {
 	static async getUpcoming(username) {
 		const res = await G4GApi.getUpcomingEvents(username)
 		const events = res.data.events
-		console.log(events)
 
 		if(events){
 			events.forEach(e => {

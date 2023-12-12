@@ -10,7 +10,7 @@ const AddCommentDialog = ({ addComment }) => {
 		setOpen(true);
 	};
 
-	const [formData, handleChange, resetFormData]= useFields({newCategory:''})
+	const [formData, setFormData, handleChange, resetFormData]= useFields({newCategory:''})
 
 	const handleClose = () => {
 		setOpen(false);

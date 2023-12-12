@@ -1,8 +1,7 @@
 import axios from 'axios';
-
+import { ApiError } from '../utilities/error';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
-
 
 class G4GApi {
 	static token;
@@ -11,11 +10,22 @@ class G4GApi {
 		const url = `${BASE_URL}/${endpoint}`;
 		const headers = { Authorization : G4GApi.token}
 		const params = method ==='get' ? data : {};
+
 		try{
-			return(await axios({url, method, data, params, headers}));
+			const response = await axios({url, method, data, params, headers})
+			return response
 		} catch(err){
-			console.log('API Error', err.response);
-			return err.response
+			if(err.response){
+				console.log('API Error', err.response);
+				throw new ApiError(err.response.status, err.response.data)
+			} else if(err.request){
+				console.log('Network Error', err)
+				throw new ApiError(500, {error:{message:'Network Error'}})
+			} else {
+				console.log('Error', err);
+				return {status: 'unknown', data : {error: {message: 'Unknown Error Occured'}}}
+			}
+
 		}
 	}
 

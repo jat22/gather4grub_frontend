@@ -14,9 +14,8 @@ import UserServices from '../../api/services/user.services';
 import useApiValidation from '../../hooks/useApiValidation';
 
 
-
 const UserSignUp = () => {
-	const { setUser } = useContext(UserContext)
+	const { user, setUser } = useContext(UserContext)
 
 	const navigate = useNavigate()
 	const [formData, setFormData, handleChange, resetFormData] = useFields({
@@ -44,8 +43,7 @@ const UserSignUp = () => {
 	const register = async () => {
 		const registerRes = await UserServices.registerUser(formData);
 		if(registerRes?.status == 201) {
-			setUser({username:formData.username, token: registerRes.data.token})
-			navigate(`/users/${formData.username}/dashboard`);
+			setUser({username: registerRes.data.user.username, token: registerRes.data.token})
 			resetFormData()
 			setSubmitted(false)
 			return
@@ -71,6 +69,12 @@ const UserSignUp = () => {
 			register()
 		} else setSubmitted(false)
 	}, [apiErrors])
+
+	useEffect(() => {
+		if(user.username){
+			navigate(`/users/${user.username}/dashboard`)
+		}
+	},[user])
 
 	return (
 		<Container component="main" maxWidth="xs">

@@ -4,7 +4,7 @@ import { Link as LinkRouter } from "react-router-dom";
 
 
 
-const Hero = ({ coverImage, header, subHeader, buttons }) => {
+const LandingHero = ({ coverImage, buttons }) => {
 	return (
 		<Box 
 			sx={{
@@ -26,7 +26,7 @@ const Hero = ({ coverImage, header, subHeader, buttons }) => {
 				}}
 			>
 				<Typography component="h1" variant="h3" color="white">
-					{header}
+					For Whenever There's Grub at your Gathering
 				</Typography>
 			</Box>
 			<Box
@@ -36,7 +36,7 @@ const Hero = ({ coverImage, header, subHeader, buttons }) => {
 				}}
 			>
 				<Typography component="h5" color="white">
-				{subHeader}
+					Plan your next gathering now!
 				</Typography>
 			</Box>
 			<Box
@@ -45,19 +45,24 @@ const Hero = ({ coverImage, header, subHeader, buttons }) => {
 					top: 150
 				}}
 			>
-					{buttons ? buttons.map(b => {
-						return(
-							<Button
-								sx={{ m: 1}}
-								variant='contained'
-								component={LinkRouter}
-								to={b.route}
-							>{b.text}</Button>
-						)
-					}): null}
+					{
+						buttons ? 
+							buttons.map(b => {
+								return(
+									<Button
+										sx={{ m: 1}}
+										variant='contained'
+										component={LinkRouter}
+										to={b.route}
+										key={b.text}
+									>{b.text}</Button>
+								)})
+							:
+							null
+					}
 			</Box>
 		</Box>
 	)
 }
 
-export default Hero
+export default LandingHero

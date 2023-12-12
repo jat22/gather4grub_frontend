@@ -10,7 +10,7 @@ const FindConnectionsDialog = () => {
 	const [potentialConnections, setPotenialConnections] = useState([])
 	const {user} = useContext(UserContext)
 	
-	const [formData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({input:''})
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({input:''})
 
 	const handleOpen = () => {
 		setPotenialConnections([])

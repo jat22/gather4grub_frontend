@@ -1,5 +1,5 @@
 import { Dialog, Button, DialogTitle, DialogContent, DialogActions, Chip, List, Typography, ListItem, ListItemAvatar, Avatar, ListItemText, Box } from "@mui/material"
-import React, { useState, useContext, useEffect } from "react"
+import React, { useState, useContext, useEffect, useRef } from "react"
 import { Link as RouterLink } from 'react-router-dom'
 import UserContext from "../../context/UserContext";
 import ConnectionServices from "../../api/services/connections.services";
@@ -11,17 +11,26 @@ const ConnectionRequestDialog = () => {
 		setOpen(true);
 	};
 
+	const isFirstRender = useRef(true)
+
 	const {user} = useContext(UserContext);
 
 	const [requests, setRequests] = useState([]);
 
 	useEffect(() => {
-		const getRequests = async() => {
-			const requests = await ConnectionServices.getRequests(user.username)
-			setRequests(r=>requests)
+		if(isFirstRender.current) {
+			isFirstRender.current = false
+			return
 		}
-		getRequests()
+		if(open){
+			getRequests()
+		} else return
 	}, [open]);
+
+	const getRequests = async() => {
+		const requests = await ConnectionServices.getRequests(user.username)
+		setRequests(r=>requests)
+	}
 
 	const handleClose = () => {
 		setOpen(false);

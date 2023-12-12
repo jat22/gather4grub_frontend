@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import PageHero from '../components/landing/PageHero'
+import LandingHero from '../components/landing/LandingHero'
 import InfoHighlight from '../components/landing/InfoHighlight';
 import UserContext from '../context/UserContext';
 
@@ -23,23 +23,17 @@ const infoPoints = [
 const coverImage = 'https://cdn.pixabay.com/photo/2016/11/23/13/45/celebration-1852926_1280.jpg'
 
 const Landing = ()=>{
-
-	const { user } = useContext(UserContext)
+	const { user } = useContext(UserContext);
 
 	return(
 		<>
-			<PageHero 
+			<LandingHero 
 				coverImage={coverImage}
-				header="For Whenever There's Grub at your Gathering"
-				subHeader="Plan your next gathering now!"
 				buttons={!user.username ? buttons : null}
 			/>
 			<InfoHighlight infoPoints={infoPoints} />
 		</>
-	)
-	
-  
-
+	);
 }
 
 export default Landing;

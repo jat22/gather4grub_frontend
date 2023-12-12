@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import useFields from "../../hooks/useFields";
 import UserContext from "../../context/UserContext";
 import { Container, Box, Grid, Typography, TextField, Button, Link } from "@mui/material";
@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
 
 const EditUser = () => {
-	const [formData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
 		username: '',
 		firstName: '',
 		lastName: '',
@@ -22,6 +22,8 @@ const EditUser = () => {
 		avatarUrl: ''
 	})
 	
+	const isFirstRender = useRef(true)
+
 	const { user } = useContext(UserContext);
 	const navigate = useNavigate();
 	const handleSubmit = async (e) => {
@@ -32,15 +34,25 @@ const EditUser = () => {
 		resetFormData();
 	}
 
+	const getCurUserInfo = async () => {
+		const info = await UserServices.getUserInfo(user.username);
+		const fields = Object.keys(info)
+		fields.forEach(f => {
+			info[f] = info[f] || '' 
+		})
+		updateFormData(info)
+	};
+
 	useEffect(() => {
-		const getCurUserInfo = async () => {
-			const info = await UserServices.getUserInfo(user.username);
-			updateFormData(info)
-		};
+		if(isFirstRender.current){
+			isFirstRender.current = false;
+			return
+		}
+
 		getCurUserInfo()
 	}, [])
 
-	if(!formData) return null
+	// if(!formData) return null
 
 	return (
 		<Container >

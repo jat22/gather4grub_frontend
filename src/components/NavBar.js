@@ -8,41 +8,28 @@ import UserContext from '../context/UserContext';
 
 
 function NavBar() {
+	// context
 	const { user, setUser } = useContext(UserContext);
-	const navigate = useNavigate();
 
+	// state
+	const [anchorElNav, setAnchorElNav] = useState(null);
+	const [anchorElUser, setAnchorElUser] = useState(null);
+
+	// hooks
+	const navigate = useNavigate();
+	
+	// functions
 	const handleLogout = () => {
 		setUser({})
 		localStorage.removeItem('currUser')
 		handleCloseUserMenu()
 		navigate('/')
-	}
-
-	const pages = user.username  ? 
-							[
-								{title: 'Dashboard', route: `/users/${user.username}/dashboard`},
-								{title: 'New Event', route: '/gatherings/create'}
-							]
-						:
-							[
-								{title:'Sign Up', route: '/signup'},
-								{title: 'Login', route: '/login'}
-							]
-	
-	const settings = user.username ? 
-							[
-								{title: 'Edit Account', route: `/users/${user.username}/edit`}, 
-								{title: 'Log Out', route: `/logout`, handler : handleLogout}
-							]
-						: 
-							[]
-	
-	const [anchorElNav, setAnchorElNav] = useState(null);
-	const [anchorElUser, setAnchorElUser] = useState(null);
+	};
 
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
 	};
+
 	const handleOpenUserMenu = (event) => {
 		setAnchorElUser(event.currentTarget);
 	};
@@ -55,9 +42,31 @@ function NavBar() {
 		setAnchorElUser(null);
 	};
 
+	// other variables
+	const pages = user.username  ? 
+				[
+					{title: 'Dashboard', route: `/users/${user.username}/dashboard`},
+					{title: 'New Event', route: '/gatherings/create'}
+				]
+			:
+				[
+					{title:'Sign Up', route: '/signup'},
+					{title: 'Login', route: '/login'}
+				];
+	
+	const settings = user.username ? 
+				[
+					{title: 'Edit Account', route: `/users/${user.username}/edit`}, 
+					{title: 'Log Out', route: `/logout`, handler : handleLogout}
+				]
+			: 
+				[];
+
+
 	return (
 		<AppBar 
-			position="static">
+			position="static"
+		>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					<Typography
@@ -77,7 +86,6 @@ function NavBar() {
 					>
 						Gather4Grub
 					</Typography>
-
 				<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 					<IconButton
 						size="large"
@@ -109,7 +117,13 @@ function NavBar() {
 					>
 					{pages.map((page) => (
 						<MenuItem key={page.title} onClick={handleCloseNavMenu}>
-						<Typography textAlign="center">{page.title}</Typography>
+							<Typography 
+								textAlign="center"
+								to={page.route}
+								component={RouterLink}
+							>
+								{page.title}
+							</Typography>
 						</MenuItem>
 					))}
 					</Menu>
@@ -134,19 +148,18 @@ function NavBar() {
 				</Typography>
 				<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 					{pages.map((page) => (
-					<Button
-					key={page.title}
-					to={page.route}
-					component={RouterLink}
-					onClick={handleCloseNavMenu}
-					sx={{ my: 2, color: 'white', display: 'block' }}>
-					{page.title}
-					</Button>
+						<Button
+							key={page.title}
+							to={page.route}
+							component={RouterLink}
+							onClick={handleCloseNavMenu}
+							sx={{ my: 2, color: 'white', display: 'block' }}
+						>
+							{page.title}
+						</Button>
 					))}
 				</Box>
-
-				{user.username 
-					? 
+				{user.username ? 
 					<Box sx={{ flexGrow: 0, }}>
 						<Tooltip title={user.username}>
 							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -182,14 +195,11 @@ function NavBar() {
 									{setting.title}
 								</Typography>
 							</MenuItem>
-							))}
+						))}
 						</Menu>
 					</Box>
-
 					: null
-					
-					}
-
+				}
 				</Toolbar>
 			</Container>
 		</AppBar>

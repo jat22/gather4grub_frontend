@@ -18,7 +18,7 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 		description: ''
 	}
 
-	const [formData, handleChange, resetFormData] = useFields(initialFormData)
+	const [formData, setFormData, handleChange, resetFormData] = useFields(initialFormData)
 	const [course, setCourse] = useState({courseName:'', courseId:''})
 
 	const handleAdd = () => {

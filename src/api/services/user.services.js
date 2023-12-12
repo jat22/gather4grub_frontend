@@ -1,6 +1,16 @@
 import G4GApi from "../G4GApi";
 
 class UserServices {
+	static async login(input){
+		try{
+			const res = await G4GApi.getToken(input)
+			return res.data
+		}catch(err){
+			
+		}
+		
+	}		
+	
 	static async registerUser(data){
 		const res = await G4GApi.register(data)
 		return res

@@ -9,7 +9,7 @@ const ChangePasswordDialog = () => {
 	const curUsername = user.username
 
 	const [open, setOpen] = useState(false);
-	const [formData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
 		username: curUsername,
 		curPassword: '',
 		newPassword: '', 

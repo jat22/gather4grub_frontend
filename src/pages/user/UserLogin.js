@@ -1,100 +1,142 @@
-import React, { useContext} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import G4GApi from '../../api/G4GApi';
+import { Button, TextField, Link, Grid, Box, Typography, Container  } from '@mui/material';
 import UserContext from '../../context/UserContext';
+import useFields from '../../hooks/useFields';
+import UserServices from '../../api/services/user.services';
 
-// TODO remove, this demo shouldn't need to reset the theme.
 
-const defaultTheme = createTheme();
 
 const UserLogin = () => {
-	const navigate = useNavigate();
-	const { user, setUser } = useContext(UserContext)
+	// state variables
+	const { user, setUser } = useContext(UserContext);
+	const [loginError, setLoginError] = useState(null);
+	const [disableSubmit, setDisableSubmit] = useState(true);
 
+	// hook variables
+	const navigate = useNavigate();
+	const [formData, setFormData, handleChange, resetFormData] = 
+							useFields({username: '', password: ''});
+
+	
+	// functions
 	const handleSubmit = async (event) => {
-		event.preventDefault();
-		const formInput = new FormData(event.currentTarget);
-		const data = {
-			username: formInput.get('username'),
-			password: formInput.get('password')
+		try {
+			event.preventDefault();
+			const result = await UserServices.login(formData);
+
+			// on successful login user context is set
+			setUser({username:formData.username, token: result.token});
+
+			setLoginError(e => (null));
+		} catch(err) {
+			if(err.status === 401){
+				setLoginError( e => (
+					'Incorrect Username/Password'));
+				resetFormData();
+			} else{
+				navigate('/error/network');
+			};
 		};
-		const result = await G4GApi.getToken(data)
-    	if(result.status !== 200){
-     		navigate('/unauthorized')
-     		return
-    	}
-		setUser({username:data.username, token: result.data.token})
-		navigate(`/users/${data.username}/dashboard`)
 	};
 
-  return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item>
-                <Link 
-					component={RouterLink}
-					to='/signup'
-					href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
-  );
-}
+	// effects
+	useEffect(() => {
+		// if user context, redirects to user dashboard
+		if(user.username){
+			navigate(`/users/${user.username}/dashboard`);
+		};
+	},[user])
+
+	useEffect(() => {
+		// enables submit button once both fields complete
+		const values = Object.values(formData)
+			for(let v of values) {
+				if(!v) {
+					setDisableSubmit(true);
+					return
+				};
+			};
+		setDisableSubmit(false);
+	}, [formData]);
+
+  	return (
+		<Container component="main" maxWidth="xs">
+			<Box
+				sx={{
+					marginTop: 8,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}
+			>
+				<Typography component="h1" variant="h5">
+					Sign in
+				</Typography>
+					{
+						loginError? 
+							<Typography sx={{color:'red'}}>
+								{loginError}
+							</Typography>
+						:
+							null
+					}
+				<Box 
+					component="form" 
+					onSubmit={handleSubmit} 
+					noValidate 
+					sx={{ mt: 1 }}
+				>
+					<TextField
+						margin="normal"
+						required
+						fullWidth
+						id="username"
+						label="Username"
+						name="username"
+						value={formData.username}
+						onChange={handleChange}
+						autoComplete="username"
+						autoFocus
+						error={loginError}
+					/>
+					<TextField
+						margin="normal"
+						required
+						fullWidth
+						name="password"
+						label="Password"
+						type="password"
+						value={formData.password}
+						onChange={handleChange}
+						id="password"
+						autoComplete="current-password"
+						error={loginError}
+					/>
+					<Button
+						type="submit"
+						fullWidth
+						variant="contained"
+						sx={{ mt: 3, mb: 2 }}
+						disabled={disableSubmit}
+					>
+						Sign In
+					</Button>
+					<Grid container>
+						<Grid item>
+							<Link 
+								component={RouterLink}
+								to='/signup'
+								href="#" variant="body2"
+							>
+								{"Don't have an account? Sign Up"}
+							</Link>
+						</Grid>
+					</Grid>
+				</Box>
+			</Box>
+		</Container>
+  	);
+};
 
 export default UserLogin

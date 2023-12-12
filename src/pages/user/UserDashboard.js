@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Box, Container, Grid, Paper, List, Avatar, Typography, Link, Table, TableBody, TableRow, TableCell, TableHead} from '@mui/material'
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { Box, Container, Grid, Paper, List, Avatar, Typography, Link, Table, TableBody, TableRow, TableCell, TableHead, CircularProgress } from '@mui/material'
 import {  Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import UserContext from '../../context/UserContext';
 import InvitationServices from '../../api/services/invitation.services';
@@ -13,6 +13,8 @@ import ViewConnectionsDialog from '../../components/userDashboard/ViewConnection
 import ConnectionRequestDialog from '../../components/userDashboard/ConnectionRequestDialog';
 
 const UserDashboard = () => {
+	const isFirstRender = useRef(true)
+
 	const { user } = useContext(UserContext);
 	const { username } = useParams();
 
@@ -24,34 +26,38 @@ const UserDashboard = () => {
 	const navigate = useNavigate();
 
 	const getInvitations = async()=> {
-		const invites = await InvitationServices.getInvites(username)
-		setInvitations(i => invites)
+		try{
+			const invites = await InvitationServices.getInvites(username)
+			setInvitations(i => invites)
+		} catch(err){
+			navigate('/unauthorized')
+		}
 	}
 
 	const getUpcomingEvents = async() => {
 		const events = await EventServices.getUpcoming(username)
 		setUpcomingEvents(e => events)
-		console.log(events)
+	}
+
+	const getHostingEvents = async() => {
+		const events = await EventServices.getHosting(username)
+		setHostingEvents(e => events)
+	}
+
+	const getAllData =	() => {
+		getUpcomingEvents();
+		getInvitations();
+		getHostingEvents()
 	}
 
 	useEffect(() => {
-		if(!user.token) navigate('/unauthorized')
-		getInvitations();
-	}, [])
-
-	useEffect(() => {
-		if(!user.token) navigate('/unauthorized')
-		getUpcomingEvents();
-	}, [])
-
-	useEffect(() => {
-		if(!user.token) navigate('/unauthorized')
-		const getHostingEvents = async() => {
-			const events = await EventServices.getHosting(username)
-			setHostingEvents(e => events)
+		if (isFirstRender.current) {
+			isFirstRender.current = false;
+			return;
 		}
-		getHostingEvents();
-	}, [])
+		if(!user.token) navigate('/unauthorized')
+		getAllData()
+	}, [user])
 
 	const acceptInvite = async (id) => {
 		await G4GApi.acceptInvite(username, id);

@@ -1,8 +1,16 @@
 import React from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import { TableCell, Avatar, TableRow } from "@mui/material";
+import EventIcon from '@mui/icons-material/Event';
+import { useNavigate} from "react-router-dom";
 
 const UpcomingTableRow = ({ event, type })=>{
+	const navigate = useNavigate();
+
+	const handleRowClick = (eventId) => {
+		navigate(`/gatherings/${eventId}`)
+	}
+
 	const rsvpMap = {
 		accept : 'Attending',
 		decline : 'Declined',
@@ -11,11 +19,13 @@ const UpcomingTableRow = ({ event, type })=>{
 	return(
 		<TableRow 
 			key={event.id} 
-			component={RouterLink} 
-			to={`/gatherings/${event.id}`}
+			onClick={() => handleRowClick(event.id)}
+			sx={{
+				cursor:'pointer'
+			}}
 		>
 				<TableCell>
-					<Avatar />
+					<EventIcon />
 				</TableCell>
 				<TableCell>
 					{event.date}
