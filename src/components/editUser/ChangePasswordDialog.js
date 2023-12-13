@@ -1,67 +1,88 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Dialog, Button, DialogTitle, DialogContent, DialogActions, FormControl, TextField, Grid, Box } from "@mui/material";
+import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, Grid, Box, Typography } from "@mui/material";
+
 import useFields from "../../hooks/useFields";
 import UserServices from "../../api/services/user.services";
 import UserContext from "../../context/UserContext";
 
-const ChangePasswordDialog = () => {
-	const { user } = useContext(UserContext)
-	const curUsername = user.username
 
+
+const ChangePasswordDialog = () => {
+	// context
+	const { user } = useContext(UserContext)
+
+	// state
 	const [open, setOpen] = useState(false);
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({
+	const [passwordMatchError, setPasswordMatchError] = useState(false)
+	const [incorrectPasswordError, setIncorrectPasswordError] = useState(false)
+	const [disableSubmit, setDisableSubmit] = useState(true)
+	const [otherError, setOtherError] = useState(false)
+
+
+	// hooks
+	const curUsername = user.username
+	const initialFormState = {
 		username: curUsername,
 		curPassword: '',
 		newPassword: '', 
 		confirmNew: ''
-	});
-	const [passwordMatchError, setPasswordMatchError] = useState({error: false, msg:''})
-	const [incorrectPasswordError, setIncorrectPasswordError] = useState({error:false, msg:''})
-	const [disableSubmit, setDisableSubmit] = useState(true)
+	}
+	// const { formData, handleChange, resetFormData } = useFields(initialFormState)
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(initialFormState);
+	
 
+	// event handlers
 	const handleOpen = () => {
-		setOpen(true)
+		setOpen(true);
 	};
 
 	const handleClose = () => {
 		setOpen(false);
 		resetFormData();
+		setPasswordMatchError(false);
+		setIncorrectPasswordError(false);
+		setOtherError(false);
 	}
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		const result = await UserServices.updatePassword(formData)
-		console.log(result)
-		if(result.success){
+		try{
+			await UserServices.updatePassword(formData);
 			handleClose();
-		} else {
-			setIncorrectPasswordError(e => ({error:true, msg: result.msg}))
-		}
+		}catch(err){
+			if(err.status === 401){
+				setIncorrectPasswordError(true);
+				setDisableSubmit(true);
+			} else{
+				setOtherError(true);
+			};
+		};
 	};
 
+	// effects
 	useEffect(() => {
-		if(incorrectPasswordError.error && formData.curPassword === ''){
-			setIncorrectPasswordError(e => ({...e, error:false}))
-		}
-
-		const values = Object.values(formData)
-		for(let v of values) {
-			if(!v) {
-				setDisableSubmit(true)
-				return
-			}
-		}
-
-		if(formData.newPassword !== formData.confirmNew){
-			setPasswordMatchError(e => ({error:true, msg: 'Passwords do not match.'}))
-			setDisableSubmit(true)
-			return
-		} else {
-			setPasswordMatchError(e => ({error:false, msg:''}))
+		if(incorrectPasswordError && formData.curPassword === ''){
+			setIncorrectPasswordError(false);
 		};
 
-		setDisableSubmit(false)
-	}, [formData])
+		const values = Object.values(formData);
+		for(let v of values) {
+			if(!v) {
+				setDisableSubmit(true);
+				return;
+			};
+		};
+
+		if(formData.newPassword !== formData.confirmNew){
+			setPasswordMatchError(true);
+			setDisableSubmit(true);
+			return;
+		} else {
+			setPasswordMatchError(false);
+		};
+
+		setDisableSubmit(false);
+	}, [formData]);
 
 	return (
 		<>
@@ -70,8 +91,18 @@ const ChangePasswordDialog = () => {
 			</Button>
 			<Dialog open={open} onClose={e=>handleClose(e)}>
 				<DialogTitle>
-					Update Password
+					<Typography component="p" variant='h6'>
+						Update Password
+					</Typography>
+					
+					{otherError ?
+						<Typography>
+							Something went wrong, password not updated.
+						</Typography>
+						:null
+					}
 				</DialogTitle>
+				
 				<DialogContent>
 					<Box 
 						component='form'
@@ -86,8 +117,6 @@ const ChangePasswordDialog = () => {
 								autoComplete="username"	
 							/>
 							<Grid item xs={12}>
-								{!incorrectPasswordError.error 
-									?
 									<TextField
 										required
 										fullWidth
@@ -98,66 +127,41 @@ const ChangePasswordDialog = () => {
 										autoComplete="password"
 										onChange={handleChange}
 										value={formData.curPassword}
-									/>
-									:
-									<TextField
-										required
-										error
-										fullWidth
-										name="curPassword"
-										label="Current Password"
-										type="password"
-										id="current-password-incorrect"
-										autoComplete="password"
-										onChange={handleChange}
-										value={formData.curPassword}
-										helperText={incorrectPasswordError.msg}
-									/>
-								}
-							</Grid>
-							<Grid item xs={12}>
-									<TextField
-										required
-										fullWidth
-										name="newPassword"
-										label="New Password"
-										type="password"
-										id="newPassword"
-										autoComplete="new-password"
-										onChange={handleChange}
-										value={formData.newPassword}
+										error={incorrectPasswordError}
+										helperText={
+											incorrectPasswordError ? 'Incorrect Password' : null
+										}
 									/>
 							</Grid>
 							<Grid item xs={12}>
-								{!passwordMatchError.error 
-									?
-									<TextField
-										required
-										fullWidth
-										name="confirmNew"
-										label="Confirm New Password"
-										type="password"
-										id="confirm-new"
-										autoComplete="new-password"
-										onChange={handleChange}
-										value={formData.confirmNew}
-									/>
-									:
-									<TextField
-										required
-										error
-										fullWidth
-										name="confirmNew"
-										id='confirm-new-match-error'
-										label="Confirm New Password"
-										type="new-password"
-										autoComplete="new-password"
-										onChange={handleChange}
-										value={formData.confirmNew}
-										helperText={passwordMatchError.msg}
-									/>
-								}
-								
+								<TextField
+									required
+									fullWidth
+									name="newPassword"
+									label="New Password"
+									type="password"
+									id="newPassword"
+									autoComplete="new-password"
+									onChange={handleChange}
+									value={formData.newPassword}
+								/>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									required
+									fullWidth
+									name="confirmNew"
+									label="Confirm New Password"
+									type="password"
+									id="confirm-new"
+									autoComplete="new-password"
+									onChange={handleChange}
+									value={formData.confirmNew}
+									error={!!passwordMatchError}
+									helperText={
+										passwordMatchError ? 'Does Not Match' : null
+									}
+								/>
 							</Grid>
 						</Grid>
 					</Box>
@@ -168,9 +172,7 @@ const ChangePasswordDialog = () => {
 				</DialogActions>
 			</Dialog>
 		</>
-		
+	);
+};
 
-	)
-}
-
-export default ChangePasswordDialog
+export default ChangePasswordDialog;

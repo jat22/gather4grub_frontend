@@ -38,11 +38,18 @@ class UserServices {
 	}
 
 	static async updatePassword(data){
-		const res = await G4GApi.updatePassword(data)
-		if(res.status == 200) return {success:true, msg:''}
-		else {
-			return {success: false, msg: res.data.error.message}
+		try{
+			const res = await G4GApi.updatePassword(data)
+			console.log(res)
+			return 
+		}catch(err){
+			throw err
 		}
+		
+		// if(res.status == 200) return {success:true, msg:''}
+		// else {
+		// 	return {success: false, msg: res.data.error.message}
+		// }
 	}
 
 	static async checkUsernameExists(username){
