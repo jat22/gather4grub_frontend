@@ -5,147 +5,213 @@ import Format from "../../utilities/format"
 
 class EventServices {
 	static async getUpcoming(username) {
-		const res = await G4GApi.getUpcomingEvents(username)
-		const events = res.data.events
+		try{
+			const res = await G4GApi.getUpcomingEvents(username)
+			const events = res.data.events
 
-		if(events){
-			events.forEach(e => {
-				const date = new Date(e.date)
-				e.date = format(date, 'EEE, MMM d')
-				if(e.startTime){
-					const parsedTime = parse(e.startTime, 'HH:mm:ss', new Date());
-					e.startTime = format(parsedTime, 'h:mm a');
-				}
-			});
+			if(events){
+				events.forEach(e => {
+					const date = new Date(e.date)
+					e.date = format(date, 'EEE, MMM d')
+					if(e.startTime){
+						const parsedTime = parse(e.startTime, 'HH:mm:ss', new Date());
+						e.startTime = format(parsedTime, 'h:mm a');
+					}
+				});
+			}
+			return events
+		}catch(err){
+			throw err
 		}
-
-		return events
 	}
 
 	static async getHosting(username) {
-		const res = await G4GApi.getHostingEvents(username)
-		const events = res.data.events
-
-		if(events){
-			events.forEach(e => {
-				const date = new Date(e.date)
-				e.date = format(date, 'EEE, MMM d')
-				if(e.startTime){
-					const parsedTime = parse(e.startTime, 'HH:mm:ss', new Date());
-					e.startTime = format(parsedTime, 'h:mm a');
-				}
-			});
+		try{
+			const res = await G4GApi.getHostingEvents(username)
+			const events = res.data.events
+	
+			if(events){
+				events.forEach(e => {
+					const date = new Date(e.date)
+					e.date = format(date, 'EEE, MMM d')
+					if(e.startTime){
+						const parsedTime = parse(e.startTime, 'HH:mm:ss', new Date());
+						e.startTime = format(parsedTime, 'h:mm a');
+					}
+				});
+			}
+	
+			return events
+		}catch(err){
+			throw err
 		}
-
-		return events
 	}
 
 	static async createEvent(data, username) {
-		for(let key in data){
-			if(data[key] === '') delete data[key]
-		};
-		data.date = dayjs(data.date).format('YYYY-MM-DD');
-		if(data.startTime) data.startTime = dayjs(data.startTime).format('HH:mm:ss');
-		if(data.endTime) data.endTime = dayjs(data.endTime).format('HH:mm:ss')
-
-		const res = await G4GApi.createEvent(data, username)
-		console.log(res)
-		return res
+		try{
+			for(let key in data){
+				if(data[key] === '') delete data[key]
+			};
+			data.date = dayjs(data.date).format('YYYY-MM-DD');
+			if(data.startTime) data.startTime = dayjs(data.startTime).format('HH:mm:ss');
+			if(data.endTime) data.endTime = dayjs(data.endTime).format('HH:mm:ss')
+	
+			const res = await G4GApi.createEvent(data, username)
+			return res
+		}catch(err){
+			throw err
+		}
 	};
 
 	static async updateBasicDetails(eventId, data) {
-		const res = await G4GApi.updateBasicDetails(eventId, data)
-		return res.data.event
-	};
-
-	static async getBasicDetails(eventId) {
-
+		try{
+			const res = await G4GApi.updateBasicDetails(eventId, data)
+			return res.data.event
+		}catch(err){
+			throw err
+		}
+		
 	};
 
 	static async getEventMenu(eventId){
-		const res = await G4GApi.getEventMenu(eventId)
-		return res.data.menu
+		try{
+			const res = await G4GApi.getEventMenu(eventId)
+			return res.data.menu
+		}catch(err){
+			throw err
+		}
+
 	};
 
 	static async getEventInfo(eventId) {
-		const res = await G4GApi.getAllEventInfo(eventId)
-		console.log(res.data.event)
-		const eventInfo = res.data.event;
-		if(!eventInfo) return
-		eventInfo.date = Format.displayDate(eventInfo.date);
-		eventInfo['displayTime'] = Format.displayTime(eventInfo.startTime, eventInfo.endTime)
+		try{
+			const res = await G4GApi.getAllEventInfo(eventId)
+			console.log(res.data.event)
+			const eventInfo = res.data.event;
+			if(!eventInfo) return
+			eventInfo.date = Format.displayDate(eventInfo.date);
+			eventInfo['displayTime'] = Format.displayTime(eventInfo.startTime, eventInfo.endTime)
+	
+			return eventInfo
+		}catch(err){
+			throw err
+		}
 
-		return eventInfo
 	};
 
 	static async getPotentialInvites (currentGuestList, username) {
-		const connectionsRes = await G4GApi.getUserConnections(username)
-		const connections = connectionsRes.data.connections
-		if(!connections) return null
-		const seenGuestSet = new Set();
-		currentGuestList.map(g => seenGuestSet.add(g.username))
+		try{
+			const connectionsRes = await G4GApi.getUserConnections(username)
+			const connections = connectionsRes.data.connections
+			if(!connections) return null
+			const seenGuestSet = new Set();
+			currentGuestList.map(g => seenGuestSet.add(g.username))
+	
+			const potentialInvites = connections.filter( c => {
+				if(!seenGuestSet.has(c.username)){
+					seenGuestSet.add(c.username)
+					return c.username
+				} 
+			})
+			return potentialInvites
+		}catch(err){
+			throw err
+		}
 
-		const potentialInvites = connections.filter( c => {
-			if(!seenGuestSet.has(c.username)){
-				seenGuestSet.add(c.username)
-				return c.username
-			} 
-		})
-		return potentialInvites
 	};
 
 	static async uninvitedConnections (username, eventId) {
-		const connectionsPromise = G4GApi.getConnections(username);
-		const currentGuestsPromise = G4GApi.getGuests(eventId);
-		const [ connectionsRes, currentGuestsRes ] = 
-			await Promise.all([connectionsPromise, currentGuestsPromise]);
-		const connections = connectionsRes.connections;
+		try{
+			const connectionsPromise = G4GApi.getConnections(username);
+			const currentGuestsPromise = G4GApi.getGuests(eventId);
+			const [ connectionsRes, currentGuestsRes ] = 
+				await Promise.all([connectionsPromise, currentGuestsPromise]);
+			const connections = connectionsRes.connections;
+	
+			const currGuestSet = new Set();
+			currentGuestsRes.guests.map(g => currGuestSet.add(g.username))
+	
+			return connections ? connections.map( c => {
+				if(!currGuestSet.has(c.username)) return c
+			}) : null
+		}catch(err){
+			throw err
+		}
 
-		const currGuestSet = new Set();
-		currentGuestsRes.guests.map(g => currGuestSet.add(g.username))
-
-		return connections ? connections.map( c => {
-			if(!currGuestSet.has(c.username)) return c
-		}) : null
 
 	}
 
 	static async inviteGuests(guestUsernames, eventId) {
-		const res = await G4GApi.inviteGuests(guestUsernames, eventId)
-		return res.data.guests
+		try{
+			const res = await G4GApi.inviteGuests(guestUsernames, eventId)
+			return res.data.guests
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async uninviteGuest(username, eventId){
-		const uninviteRes = await G4GApi.uninviteGuest(username, eventId)
-		const guestListRes = await G4GApi.getGuestList(eventId)
-		return guestListRes.data.guests
+		try{
+			const uninviteRes = await G4GApi.uninviteGuest(username, eventId)
+			const guestListRes = await G4GApi.getGuestList(eventId)
+			return guestListRes.data.guests
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async addMenuCategory(eventId, newCategory){
-		const res = await G4GApi.addMenuCategory(eventId, newCategory)
-		return res.data.menu
+		try{
+			const res = await G4GApi.addMenuCategory(eventId, newCategory)
+			return res.data.menu
+		}catch(err){
+			throw err
+		}
+
 	};
 
 	static async addMenuItem(eventId, newItem){
-		const res = await G4GApi.addMenuItem(eventId, newItem);
-		return res.data.menu
+		try{
+			const res = await G4GApi.addMenuItem(eventId, newItem);
+			return res.data.menu
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async removeDish(dishId, eventId) {
-		await G4GApi.removeDish(dishId, eventId)
-		const updatedMenu = await this.getEventMenu(eventId)
-		return updatedMenu
+		try{
+			await G4GApi.removeDish(dishId, eventId)
+			const updatedMenu = await this.getEventMenu(eventId)
+			return updatedMenu
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async addComment(comment, username, eventId){
-		const res = await G4GApi.addComment(comment, username, eventId)
-		return res.data.comments
+		try{
+			const res = await G4GApi.addComment(comment, username, eventId)
+			return res.data.comments
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async removeComment(commentId, eventId){
-		await G4GApi.removeComment(commentId, eventId);
-		const updatedComments = await G4GApi.getEventComments(eventId)
-		return updatedComments.data.comments
+		try{
+			await G4GApi.removeComment(commentId, eventId);
+			const updatedComments = await G4GApi.getEventComments(eventId)
+			return updatedComments.data.comments
+		}catch(err){
+			throw err
+		}
+
 	}
 };
 

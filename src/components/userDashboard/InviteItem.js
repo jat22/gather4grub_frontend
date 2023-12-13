@@ -1,16 +1,20 @@
 import React from "react";
-import { ListItem, IconButton, ListItemAvatar, Avatar, ListItemText } from "@mui/material"
-
+import { ListItem, IconButton, ListItemText } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from '@mui/icons-material/Check';
+
 import FullInvitationDialog from "./FullInvitationDialog";
+
 
 const InviteListItem = ({ item, acceptInvite, declineInvite }) => {
 	return (
 		<ListItem
 			secondaryAction={
 				<>
-					<FullInvitationDialog invitation={item} acceptInvite={acceptInvite} declineInvite={declineInvite} />
+					<FullInvitationDialog 
+						invitation={item} 
+						acceptInvite={acceptInvite} 
+						declineInvite={declineInvite} />
 					<IconButton 
 						edge="end" 
 						aria-label="accept"
@@ -33,7 +37,7 @@ const InviteListItem = ({ item, acceptInvite, declineInvite }) => {
 				secondary={item.date}
 			/>
 		</ListItem>
-	)
-}
+	);
+};
 
-export default InviteListItem
+export default InviteListItem;

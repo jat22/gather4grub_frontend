@@ -1,10 +1,10 @@
-import { Paper, Table, TableBody, Typography, Button } from "@mui/material";
-import React, { useContext } from "react";
+import React from "react"; 
+import { Table, TableBody, Typography } from "@mui/material";
+
 import UpcomingTableRow	from './UpcomingTableRow';
-import UserContext from "../../context/UserContext";
+
 
 const EventsList = ({ events, short, type }) => {
-	const user = useContext(UserContext)
 	const createUpcomingTable = ()=> {
 		if(events && events.length > 0){
 			return (
@@ -25,7 +25,7 @@ const EventsList = ({ events, short, type }) => {
 		};
 		return(
 			<p>No upcoming events</p>
-		)
+		);
 	};
 
 	return (
@@ -39,8 +39,8 @@ const EventsList = ({ events, short, type }) => {
 			{createUpcomingTable()}
 		</>
 			
-	)
+	);
 	
-}
+};
 
 export default EventsList;

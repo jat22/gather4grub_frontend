@@ -13,16 +13,18 @@ import NavBar from './components/NavBar'
 import Footer from './components/Footer';
 import G4GApi from './api/G4GApi';
 import UserContext from './context/UserContext';
+import EditUser from './pages/user/EditUser';
 import NetworkError from './pages/error/NetworkError'
+import GeneralError from './pages/error/GeneralError';
 
 
 
 function App() {
 
-	const initialUserState = 
+	const initialState = 
 		JSON.parse(localStorage.getItem("currUser")) || {};
 
-	const [ user, setUser ] = useState(initialUserState);
+	const [ user, setUser ] = useState(initialState);
 
 	useEffect(()=>{
 		localStorage.setItem('currUser', JSON.stringify(user))
@@ -39,10 +41,12 @@ function App() {
 						<Route exact path='/login' element={<UserLogin />} />
 						<Route exact path='/signup' element={<UserSignUp />} />
 						<Route exact path='/users/:username/dashboard' element={<UserDashboard />} />
+						<Route exact path='/users/:username/edit' element={<EditUser />} />
 						<Route exact path='/gatherings/create' element={<GatheringCreate />} />
 						<Route exact path='/gatherings/:eventId' element={<GatheringDetails />} />
 						<Route exact path='/error/unauthorized' element={<Unauthorized />} />
 						<Route exact path='/error/network'element={<NetworkError />} />
+						<Route exact path='/error/general' element={<GeneralError />} />
 						<Route path='*' element={<NotFound />} /> 
 					</Routes>
 					<Footer />

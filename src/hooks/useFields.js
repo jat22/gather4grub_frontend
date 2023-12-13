@@ -24,7 +24,14 @@ const useFields = (initialState) => {
 			[name] : val
 		}))
 	}
-	return [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData]
+
+	const trimForSubmit = () => {
+		const fields = Object.keys(formData);
+		fields.forEach(f => formData[f] = formData[f].trim())
+		console.log('in trimForSubmit')
+	}
+
+	return [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData, trimForSubmit]
 }
 
 export default useFields

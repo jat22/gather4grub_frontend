@@ -1,42 +1,73 @@
-import { Dialog, Button, DialogTitle, DialogContent, DialogActions, FormControl, TextField, Grid } from "@mui/material"
+
 import React, { useState, useContext } from "react"
+import { useNavigate } from "react-router-dom";
+import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, Grid, Typography } from "@mui/material"
+
 import useFields from '../../hooks/useFields';
 import UserContext from "../../context/UserContext";
+
 import ConnectionServices from "../../api/services/connections.services";
+
 import PotentialConnectionsList from "./PotentialConnectionsList";
 
-const FindConnectionsDialog = () => {
-	const [open, setOpen] = useState(false)
-	const [potentialConnections, setPotenialConnections] = useState([])
-	const {user} = useContext(UserContext)
-	
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({input:''})
 
+const FindConnectionsDialog = () => {
+	// context
+	const {user} = useContext(UserContext);
+
+	// state
+	const [open, setOpen] = useState(false);
+	const [potentialConnections, setPotenialConnections] = useState([]);
+	const [getError, setGetError] = useState(false);
+	const [postError, setPostError] = useState(false);
+
+	// hooks
+	// const { formData, handleChange } = useFields({input: ''});
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({input:''});
+	const navigate = useNavigate();
+
+	// event handlers
 	const handleOpen = () => {
-		setPotenialConnections([])
-		setOpen(true)
+		setPotenialConnections([]);
+		setOpen(true);
 	};
 
 	const handleClose = () => {
-		setOpen(false)
-	}
-
-	const getPotentialConnetions = async () => {
-		const potential = await ConnectionServices.getPotential(formData.input)
-		return potential
-	} 
+		setOpen(false);
+		setGetError(false);
+		setPostError(false);
+		setPotenialConnections([]);
+	};
 
 	const handleFindUser = async () => {
 		const potentials = await getPotentialConnetions();
 		setPotenialConnections(potentials);
-	}
+	};
 
+	//  fecth functions
+	const getPotentialConnetions = async () => {
+		try{
+			const potential = await ConnectionServices.getPotential(formData.input);
+			return potential;
+		}catch(err){
+			if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else{
+				setGetError(true);
+			};
+		};
+	};
+
+	// post functions
 	const createConnectionRequest = async (connectionUsername) => {
-		handleClose();
-		const currUsername = user.username;
-		await ConnectionServices.createRequest(currUsername, connectionUsername);
-		setPotenialConnections([])
-	}
+		try{
+			const currUsername = user.username;
+			await ConnectionServices.createRequest(currUsername, connectionUsername);
+			handleClose();
+		}catch(err){
+			setPostError(true);
+		};
+	};
 
 	return (
 		<>
@@ -64,14 +95,23 @@ const FindConnectionsDialog = () => {
 								Find
 							</Button>
 						</Grid>
-						{potentialConnections && potentialConnections.length > 0 
-							? 	<Grid item  xs={12} lg={12}>
-									<PotentialConnectionsList 
-										createConnectionRequest={createConnectionRequest} 
-										potentials={potentialConnections} 
-									/>
-								</Grid>
+						{
+							postError ? 
+								<Typography>Something went wrong, request not sent.</Typography> 
 							: null
+						}
+						{
+							!getError ?
+								(potentialConnections && potentialConnections.length > 0 
+									? 	<Grid item  xs={12} lg={12}>
+											<PotentialConnectionsList 
+												createConnectionRequest={createConnectionRequest} 
+												potentials={potentialConnections}
+											/>
+										</Grid>
+									: null
+								)
+							: <Typography>Opps, somethig went wrong!</Typography>
 						}
 					</Grid>
 				</DialogContent>
@@ -80,7 +120,7 @@ const FindConnectionsDialog = () => {
 				</DialogActions>
 			</Dialog>
 		</>
-	)
-}
+	);
+};
 
-export default FindConnectionsDialog
+export default FindConnectionsDialog;

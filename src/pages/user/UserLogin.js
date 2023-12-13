@@ -15,10 +15,10 @@ const UserLogin = () => {
 
 	// hook variables
 	const navigate = useNavigate();
+	// const { formData, handleChange, resetFormData } = useFields({username: '', password: ''});
 	const [formData, setFormData, handleChange, resetFormData] = 
 							useFields({username: '', password: ''});
 
-	
 	// functions
 	const handleSubmit = async (event) => {
 		try {
@@ -129,7 +129,7 @@ const UserLogin = () => {
 								to='/signup'
 								href="#" variant="body2"
 							>
-								{"Don't have an account? Sign Up"}
+								Don't have an account? Sign Up
 							</Link>
 						</Grid>
 					</Grid>

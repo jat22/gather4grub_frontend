@@ -15,76 +15,98 @@ import useApiValidation from '../../hooks/useApiValidation';
 
 
 const UserSignUp = () => {
-	const { user, setUser } = useContext(UserContext)
+	// context
+	const { user, setUser } = useContext(UserContext);
 
-	const navigate = useNavigate()
+	// state
+	const [generalError, setGeneralError] = useState(false);
+	const [submitted, setSubmitted] = useState(false);
+
+	// hooks
+	const navigate = useNavigate();
+	// TO DO: refactor useField to return object
+	// const {formData, handleChange, resetFormData} = useFields({
+	// 			firstName : '',
+	// 			lastName : '',
+	// 			email : '',
+	// 			username : '',
+	// 			password : ''
+	// 		})
 	const [formData, setFormData, handleChange, resetFormData] = useFields({
 			firstName : '',
 			lastName : '',
 			email : '',
 			username : '',
 			password : ''
-		})
-	const [generalError, setGeneralError] = useState(false)
+		});
+	const {	validationErrors, validateRegisterForm} = useFormValidate({});
+	const { apiValidationErrors, validateUniqueFields } = useApiValidation({});
 
-	const {	validationErrors, validateRegisterForm} = useFormValidate({})
-	const { apiErrors, validateUniqueFields } = useApiValidation({});
-	const [submitted, setSubmitted] = useState(false)
-
-	const requiredFields = Object.keys(formData)
-
+	// functions
+	const requiredFields = Object.keys(formData);
 	const handleSubmit = (event) => {
-		event.preventDefault()
-		setGeneralError(false)
-		setSubmitted(true)
-		validateRegisterForm(formData, requiredFields)
+		event.preventDefault();
+		setGeneralError(false);
+		setSubmitted(true);
+
+		// triggers frontend validations
+		validateRegisterForm(formData, requiredFields);
+		
 	};
 
 	const register = async () => {
-		const registerRes = await UserServices.registerUser(formData);
-		if(registerRes?.status == 201) {
-			setUser({username: registerRes.data.user.username, token: registerRes.data.token})
-			resetFormData()
-			setSubmitted(false)
+		try{
+			const registerRes = await UserServices.registerUser(formData);
+			setUser({username: registerRes.data.user.username, token: registerRes.data.token});
+			resetFormData();
+			setSubmitted(false);
 			return
-		} else{
-			setGeneralError(true)
-			setSubmitted(false)
+		} catch(err){
+			setGeneralError(true);
+			setSubmitted(false);
 			return
-		}
-	}
+		};
+	};
 
 	const checkApiValidations = async() => {
-		await validateUniqueFields({username: formData.username, email: formData.email})
-	}
+		try{
+			await validateUniqueFields({username: formData.username, email: formData.email});
+		} catch(err){
+			setGeneralError(true);
+		};
+	};
 
+	// effects
 	useEffect(() => {
+		// after frontend validation is successful, trigger api validations
 		if(submitted && validationErrors && Object.keys(validationErrors).length === 0) {
-			checkApiValidations()
-		} else setSubmitted(false)
+			checkApiValidations();
+		} else setSubmitted(false);
 	}, [validationErrors]);
 
 	useEffect(() => {
-		if(submitted && apiErrors && Object.keys(apiErrors).length === 0){
-			register()
-		} else setSubmitted(false)
-	}, [apiErrors])
+		// after all validations are successful, call register function
+		if(submitted && apiValidationErrors && Object.keys(apiValidationErrors).length === 0){
+			register();
+		} else setSubmitted(false);
+	}, [apiValidationErrors])
 
 	useEffect(() => {
+		// if there's a logged in user, navigate to their dashboard
 		if(user.username){
-			navigate(`/users/${user.username}/dashboard`)
-		}
-	},[user])
+			navigate(`/users/${user.username}/dashboard`);
+		};
+	},[user]);
 
 	return (
 		<Container component="main" maxWidth="xs">
 			<Box
-			sx={{
-				marginTop: 8,
-				display: 'flex',
-				flexDirection: 'column',
-				alignItems: 'center',
-			}}
+				sx={{
+					marginTop: 8,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}
 			>
 			<Typography component="h1" variant="h3">
 				Sign Up
@@ -94,7 +116,7 @@ const UserSignUp = () => {
 						{generalError ? 
 							<Grid item xs={12} lg={12}>
 								<Typography component={'span'} sx={{color:'red'}}>
-									Oops! Something went wrong, please try again.
+									Unable to process your request at this time. Please try again later.
 								</Typography>
 							</Grid>
 							: null
@@ -138,8 +160,8 @@ const UserSignUp = () => {
 								autoComplete="email"
 								onChange={handleChange}
 								value={formData.email}
-								error={!!validationErrors?.email || !!apiErrors?.email}
-								helperText={validationErrors?.email || apiErrors?.email}
+								error={!!validationErrors?.email || !!apiValidationErrors?.email}
+								helperText={validationErrors?.email || apiValidationErrors?.email}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -152,8 +174,8 @@ const UserSignUp = () => {
 								autoComplete='username'
 								onChange={handleChange}
 								value={formData.username}
-								error={!!validationErrors?.username || !!apiErrors?.username}
-								helperText={validationErrors?.username || apiErrors?.username}
+								error={!!validationErrors?.username || !!apiValidationErrors?.username}
+								helperText={validationErrors?.username || apiValidationErrors?.username}
 							/>
 						</Grid>
 						<Grid item xs={12}>

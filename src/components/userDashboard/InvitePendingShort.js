@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { List, Paper, Typography, Link } from "@mui/material";
+import React from "react";
+
+import { List, Link } from "@mui/material";
+
 import InviteListItem from "./InviteItem";
 
 
 const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 
 	const InviteList = () => {
-
 		if(invites && invites.length > 0){
 			return (
 				<>
@@ -19,22 +20,24 @@ const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 							acceptInvite={acceptInvite} 
 							declineInvite={declineInvite} 
 						/>
-					))}
+						))
+					}
 					</List>
 					<Link color="primary" sx={{ }}>
 						All Invites
 					</Link>
 				</>
-				
-			)
-	} else { return <p>No Pending Invites</p>}
-};
+			);
+		} else { 
+			return <p>No Pending Invites</p>
+		};
+	};
 
 	return (
 		<>
 			<InviteList />
 		</>
-	)
-}
+	);
+};
 
-export default InvitePendingShort
+export default InvitePendingShort;

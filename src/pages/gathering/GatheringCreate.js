@@ -11,7 +11,15 @@ import { useNavigate } from 'react-router-dom';
 
 const PartyCreate = () => {
 	const navigate = useNavigate();
-	const [formData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(
+	// const {formData, handleChange, handlePickerData} = useFields({
+	// 		title: '',
+	// 		date: '',
+	// 		startTime: '',
+	// 		endTime: '',
+	// 		location: '',
+	// 		description: '',
+	// 	})
+	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(
 		{
 			title: '',
 			date: '',

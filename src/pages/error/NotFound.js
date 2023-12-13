@@ -1,11 +1,12 @@
-import React from 'react';
+import React from "react";
+
+import ErrorMessage from "../../components/error/ErrorMessage";
 
 const NotFound = () => {
-	return(
-		<>
-			<h1>NOT FOUND</h1>
-		</>
+	const message = '404: The Page You Are Looking For Was Not Found.'
+	return (
+		<ErrorMessage errorMessage={message} />
 	)
-};
+}
 
 export default NotFound

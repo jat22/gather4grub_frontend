@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Modal, Button, Paper, Typography } from "@mui/material";
+
 import EventsList from "./EventsList";
 
 
 const AllEventsModal = ({ events, type }) => {
+	// state
 	const [open, setOpen] = useState(false);
+
+	// event handlers
 	const handleOpen = () => setOpen(true);
   	const handleClose = () => setOpen(false);
 
@@ -16,7 +20,7 @@ const AllEventsModal = ({ events, type }) => {
 			<Modal 
 				open={open}
 				onClose={handleClose}
-				aria-labeledby='modal-all-upcoming-events'
+				aria-labelledby='modal-all-upcoming-events'
 				aria-describedby='modal-description'
 			>
 				<Paper 
@@ -39,7 +43,7 @@ const AllEventsModal = ({ events, type }) => {
 					
 			</Modal>
 		</>
-	)
-}
+	);
+};
 
-export default AllEventsModal
+export default AllEventsModal;

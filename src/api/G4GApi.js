@@ -23,178 +23,343 @@ class G4GApi {
 				throw new ApiError(500, {error:{message:'Network Error'}})
 			} else {
 				console.log('Error', err);
-				return {status: 'unknown', data : {error: {message: 'Unknown Error Occured'}}}
+				throw new ApiError('unknown', {error: {message: 'Unknown Error Occured'}})
 			}
 
 		}
 	}
 
 	static async getToken(data) {
-		return await this.request('auth/token', data, "post")
+		try{
+			return await this.request('auth/token', data, "post")
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async register(data) {
-		let res = await this.request('auth/register', data, 'post')
-		return res
+		try{
+			let res = await this.request('auth/register', data, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
-	static async getUser(username){
-		let res = await this.request('')
-	}
+	// static async getUser(username){
+	// 	try{
+	// 		let res = await this.request('')
+	// 	}catch(err){
+	// 		throw err
+	// 	}
+
+	// }
 
 	static async getUserInvitations(username){
-		let res = await this.request(`users/${username}/invitations`, {}, 'get')
-		return res
+		try{
+			let res = await this.request(`users/${username}/invitations`, {}, 'get')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getUpcomingEvents(username){
-		let res = await this.request(`users/${username}/events/upcoming`)
+		try{
+			let res = await this.request(`users/${username}/events/upcoming`)
+			return res
+		}catch(err){
+			throw err
+		}
 
-		return res
 	}
 
 	static async getHostingEvents(username) {
-		let res = await this.request(`users/${username}/events/hosting`)
-		return res
+		try{
+			let res = await this.request(`users/${username}/events/hosting`)
+			return res
+		}catch(err){
+			throw err
+		}
 	}
 
 	static async getUserConnections(username){
-		let res = await this.request(`users/${username}/connections`);
-		return res
+		try{
+			let res = await this.request(`users/${username}/connections`);
+			return res
+		}catch(err){
+			throw err
+		}
 	}
 
 	static async acceptInvite(username, inviteId){
-		let res = await this.request(`events/invitations/${username}/${inviteId}`, {rsvp:'accept'}, 'put')
-		return res
+		try{
+			let res = await this.request(`events/invitations/${username}/${inviteId}`, {rsvp:'accept'}, 'put')
+			return res
+		}catch(err){
+			throw err
+		}
 	}
 
 	static async declineInvite(username, inviteId){
-		let res = await this.request(`events/invitations/${username}/${inviteId}`, {rsvp:'decline'}, 'put')
+		try{
+			let res = await this.request(`events/invitations/${username}/${inviteId}`, {rsvp:'decline'}, 'put')
+		}catch(err){
+			throw err
+		}
 	}
 
 	static async createEvent(data){
-		let res = await this.request('events', data, 'post')
-		return res
+		try{
+			let res = await this.request('events', data, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getAllEventInfo(id){
-		let res = await this.request(`events/${id}/full`);
-		return res
+		try{
+			let res = await this.request(`events/${id}/full`);
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async updateBasicDetails(eventId, data){
-		console.log(data)
-		let res = await this.request(`events/${eventId}/basic`, {data}, 'put')
-		return res
+		try{
+			console.log(data)
+			let res = await this.request(`events/${eventId}/basic`, {data}, 'put')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async inviteGuests(usernames, eventId){
-		let res = await this.request(`events/${eventId}/guests`, {usernames}, 'post')
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/guests`, {usernames}, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async uninviteGuest(username, eventId){
-		let res = await this.request(`events/${eventId}/guests/${username}`, {}, 'delete')
-		return
+		try{
+			let res = await this.request(`events/${eventId}/guests/${username}`, {}, 'delete')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getGuestList(eventId){
-		let res = await this.request(`events/${eventId}/guests`)
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/guests`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async addMenuCategory(eventId, newCategory){
-		let res = await this.request(`events/${eventId}/menu/categories`, {newCategory}, 'post')
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/menu/categories`, {newCategory}, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	};
 
 	static async addMenuItem(eventId, newItem){
-		let res = await this.request(`events/${eventId}/menu`, {newItem}, 'post')
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/menu`, {newItem}, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async removeDish(dishId, eventId){
-		let res = await this.request(`dishes/${dishId}`, {}, 'delete')
-		return
+		try{
+			let res = await this.request(`dishes/${dishId}`, {}, 'delete')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getEventMenu(eventId){
-		let res = await this.request(`events/${eventId}/menu`)
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/menu`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async addComment(comment, username, eventId){
-		let res = await this.request(`events/${eventId}/comments`, {comment: comment, author:username}, 'post')
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/comments`, {comment: comment, author:username}, 'post')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async removeComment(commentId, eventId){
-		let res = await this.request(`events/${eventId}/comments/${commentId}`, {}, 'delete')
-		return
+		try{
+			let res = await this.request(`events/${eventId}/comments/${commentId}`, {}, 'delete')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getEventComments(eventId) {
-		let res = await this.request(`events/${eventId}/comments`)
-		return res
+		try{
+			let res = await this.request(`events/${eventId}/comments`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getConnections(username){
-		let res = await this.request(`users/${username}/connections`)
-		return res
+		try{
+			let res = await this.request(`users/${username}/connections`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async createConnectionRequest(fromUsername, toUsername){
-		let res = await this.request(`users/${fromUsername}/connections/requests`, { 'toUsername' : toUsername}, 'post')
-		return
+		try{
+			let res = await this.request(`users/${fromUsername}/connections/requests`, { 'toUsername' : toUsername}, 'post')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getPotentialConnections(input){
-		let res = await this.request(`users/find/${input}`)
-		return res
+		try{
+			let res = await this.request(`users/find/${input}`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getConnectionRequests(username){
-		let res = await this.request(`users/${username}/connections/requests`);
-		return res
+		try{
+			let res = await this.request(`users/${username}/connections/requests`);
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async acceptConnectionRequest(id, curUsername){
-		let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put')
-		return
+		try{
+			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async deleteConnectionRequest(id, curUsername){
-		let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete')
-		return
+		try{
+			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete')
+			return
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getUserProfile(username){
-		const res = await this.request(`users/${username}/profile`)
-		return res
+		try{
+			const res = await this.request(`users/${username}/profile`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async getUserInfo(username) {
-		const res = await this.request(`users/${username}`)
-		return res
+		try{
+			const res = await this.request(`users/${username}`)
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async editUser(username, data) {
-		const res = await this.request(`users/${username}`, data, 'patch')
+		try{
+			const res = await this.request(`users/${username}`, data, 'patch')
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async updatePassword(data) {
-		const res = await this.request(`users/${data.username}/password`, data, 'patch')
-		return res
+		try{
+			const res = await this.request(`users/${data.username}/password`, data, 'patch')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 
 	static async checkUsernameExists(username){
-		const res = await this.request(`auth/check/username`, {username:username}, 'get')
-		return res
+		try{
+			const res = await this.request(`auth/check/username`, {username:username}, 'get')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	};
 	
 	static async checkEmailExists(email){
-		const res = await this.request(`auth/check/email`, {email:email}, 'get')
-		return res
+		try{
+			const res = await this.request(`auth/check/email`, {email:email}, 'get')
+			return res
+		}catch(err){
+			throw err
+		}
+
 	}
 }
 export default G4GApi

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Popover, Typography, Box, ListItemText } from "@mui/material";
+import { Popover, ListItemText } from "@mui/material";
 import UserProfileCard from "./UserProfileCard";
 
 const UserDetailsPopover = ({ user }) => {
+	// state
 	const [anchorEl, setAnchorEl] = useState(null);
 
+	// event handlers
 	const handleOpen = (event) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -13,19 +15,7 @@ const UserDetailsPopover = ({ user }) => {
 		setAnchorEl(null);
 	};
 
-	const open = Boolean(anchorEl)
-
-	// const [userProfile, setUserProfile] = useState({})
-
-	// const { username } = useParams();
-
-	// useEffect(() => {
-	// 	const getProfile = async() => {
-	// 		const profile = G4GApi.getProfile(username)
-	// 		setUserProfile(p => profile)
-	// 	};
-	// 	getProfile();
-	// }, [username])
+	const open = Boolean(anchorEl);
 
 	return(
 		<>
@@ -52,10 +42,9 @@ const UserDetailsPopover = ({ user }) => {
 				}}
 			>
 				<UserProfileCard username={user.username} />
-
 			</Popover>
 		</>
-	)
-}
+	);
+};
 
-export default UserDetailsPopover
+export default UserDetailsPopover;

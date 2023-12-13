@@ -4,15 +4,20 @@ import { format } from 'date-fns'
 
 class InvitationServices{
 	static async getInvites(username) {
-		const res = await G4GApi.getUserInvitations(username);
-		const invites = res.data.invitations
-		if(invites){
-			invites.forEach(i => {
-				const date = new Date(i.date)
-				i.date = format(date, 'EEE, MMM d, yyyy')
-			})
-			return invites
+		try{
+			const res = await G4GApi.getUserInvitations(username);
+			const invites = res.data.invitations
+			if(invites){
+				invites.forEach(i => {
+					const date = new Date(i.date)
+					i.date = format(date, 'EEE, MMM d, yyyy')
+				})
+				return invites
+			}
+		}catch(err){
+			throw err
 		}
+		
 		
 	}
 

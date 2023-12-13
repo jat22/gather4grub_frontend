@@ -1,21 +1,25 @@
 import React from "react";
-import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate} from "react-router-dom";
 import { TableCell, Avatar, TableRow } from "@mui/material";
 import EventIcon from '@mui/icons-material/Event';
-import { useNavigate} from "react-router-dom";
+
 
 const UpcomingTableRow = ({ event, type })=>{
+	// hooks
 	const navigate = useNavigate();
-
+	
+	// event handlers
 	const handleRowClick = (eventId) => {
-		navigate(`/gatherings/${eventId}`)
-	}
+		navigate(`/gatherings/${eventId}`);
+	};
 
+	// variables
 	const rsvpMap = {
 		accept : 'Attending',
 		decline : 'Declined',
 		pending : 'Undecided'
-	}
+	};
+
 	return(
 		<TableRow 
 			key={event.id} 
@@ -47,9 +51,8 @@ const UpcomingTableRow = ({ event, type })=>{
 						{rsvpMap[event.rsvp]}	
 					</TableCell>
 				}
-				
 		</TableRow>
-	)
+	);
 };
 
 export default UpcomingTableRow;

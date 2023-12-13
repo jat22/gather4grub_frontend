@@ -1,75 +1,137 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Box, Container, Grid, Paper, List, Avatar, Typography, Link, Table, TableBody, TableRow, TableCell, TableHead, CircularProgress } from '@mui/material'
-import {  Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { Box, Container, Grid, Paper, Typography } from '@mui/material'
+import { useNavigate, useParams } from 'react-router-dom';
+
 import UserContext from '../../context/UserContext';
+
 import InvitationServices from '../../api/services/invitation.services';
 import EventServices from '../../api/services/event.services';
+import G4GApi from '../../api/G4GApi';
+
 import InvitePendingShort from '../../components/userDashboard/InvitePendingShort';
 import EventsList from '../../components/userDashboard/EventsList';
-import G4GApi from '../../api/G4GApi';
 import AllEventsModal from '../../components/userDashboard/AllEventsModal'
 import FindConnectionsDialog from '../../components/userDashboard/FindConnectionsDialog';
 import ViewConnectionsDialog from '../../components/userDashboard/ViewConnectionsDialog';
 import ConnectionRequestDialog from '../../components/userDashboard/ConnectionRequestDialog';
 
 const UserDashboard = () => {
-	const isFirstRender = useRef(true)
+	// state
+	const [invitations, setInvitations] = useState([]);
+	const [upcomingEvents, setUpcomingEvents] = useState([]);
+	const [hostingEvents, setHostingEvents] = useState([]);
+	const [rsvpError, setRsvpError] = useState(false);
 
+	// hooks
+	const isFirstRender = useRef(true);
 	const { user } = useContext(UserContext);
 	const { username } = useParams();
-
-	const [ invitations, setInvitations ] = useState([])
-	const [ upcomingEvents, setUpcomingEvents ] = useState([])
-
-	const [ hostingEvents, setHostingEvents ] = useState([])
-
 	const navigate = useNavigate();
 
+	// functions
 	const getInvitations = async()=> {
+		// get event invitations for logged in user and set state.
 		try{
-			const invites = await InvitationServices.getInvites(username)
-			setInvitations(i => invites)
+			const invites = await InvitationServices.getInvites(username);
+			setInvitations(i => invites);
 		} catch(err){
-			navigate('/unauthorized')
-		}
+			if(err.status === 500){
+				navigate('/error/network');
+			} else if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else{
+				navigate('/error/general');
+			};
+		};
 	}
 
 	const getUpcomingEvents = async() => {
-		const events = await EventServices.getUpcoming(username)
-		setUpcomingEvents(e => events)
-	}
+		// get upcoming events for logged in user and set state
+		try{
+			const events = await EventServices.getUpcoming(username);
+			setUpcomingEvents(e => events);
+		}catch(err){
+			if(err.status === 500){
+				navigate('/error/network');
+			} else if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else{
+				navigate('/error/general');
+			};
+		};
+	};
 
 	const getHostingEvents = async() => {
-		const events = await EventServices.getHosting(username)
-		setHostingEvents(e => events)
-	}
+		// get events hosted by logged in user and set state
+		try{
+			const events = await EventServices.getHosting(username);
+			setHostingEvents(e => events);
+		}catch(err){
+			if(err.status === 500){
+				navigate('/error/network');
+			} else if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else{
+				navigate('/error/general');
+			};
+		};
+		
+	};
 
 	const getAllData =	() => {
+		//  get upcomingEvents, invitations, and hosting for logged in user
+		if(user.username !== username){
+			navigate('/error/unauthorized');
+			return;
+		}
 		getUpcomingEvents();
 		getInvitations();
-		getHostingEvents()
-	}
+		getHostingEvents();
+	};
 
+	const acceptInvite = async (id) => {
+		try{
+			await G4GApi.acceptInvite(username, id);
+		} catch(err){
+			if(err.status === 401){
+				navigate('/errors/unauthorized');
+				return;
+			} else{
+				setRsvpError(true);
+				return;
+			}
+
+		}
+
+		getInvitations();
+		getUpcomingEvents();
+	};
+
+	const declineInvite = async (id) => {
+		try{
+			await G4GApi.declineInvite(username, id);
+		} catch(err){
+			setRsvpError(true);
+			return;
+		};
+
+		getInvitations();
+		getUpcomingEvents();
+	};
+
+	// effect
 	useEffect(() => {
+		// prevents data fetching on intial render when user is not yet set.
 		if (isFirstRender.current) {
 			isFirstRender.current = false;
 			return;
 		}
-		if(!user.token) navigate('/unauthorized')
-		getAllData()
-	}, [user])
-
-	const acceptInvite = async (id) => {
-		await G4GApi.acceptInvite(username, id);
-		getInvitations();
-		getUpcomingEvents();
-	}
-
-	const declineInvite = (id) => {
-		G4GApi.declineInvite(username, id);
-		getInvitations();
-		getUpcomingEvents();
-	}
+		if(!user.token) {
+			navigate('/unauthorized')
+			return;
+		};
+		getAllData();
+	}, [user]);
 
 	return(
 		<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -88,6 +150,10 @@ const UserDashboard = () => {
 						<Typography variant="h5" component='h2'>
 							Pending Invites
 						</Typography>
+						{rsvpError ? 
+							<Typography>Error: RSVP was not processed</Typography>
+							: null
+						}
 						<InvitePendingShort 
 							invites={invitations} 
 							acceptInvite={acceptInvite} 
@@ -98,7 +164,6 @@ const UserDashboard = () => {
 
               	{/* Upcoming Events */}
               	<Grid item xs={12} md={8} lg={8}>
-
 						<Paper 
 							sx={{
 								p: 2,
@@ -159,7 +224,7 @@ const UserDashboard = () => {
 				</Grid>
 			</Grid>
 		</Container>
-	)
+	);
 };
 
 export default UserDashboard;

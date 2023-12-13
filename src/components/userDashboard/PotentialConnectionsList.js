@@ -1,11 +1,12 @@
-import { Avatar, Chip, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+
 import React from "react";
+import { Avatar, Chip, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 
 
 const PotentialConnectionsList = ({ potentials, createConnectionRequest }) => {
 	const handleAdd = (connectionUsername) => {
-		createConnectionRequest(connectionUsername)
-	}
+		createConnectionRequest(connectionUsername);
+	};
 
 	return (
 		<List>
@@ -34,7 +35,7 @@ const PotentialConnectionsList = ({ potentials, createConnectionRequest }) => {
 				)
 			})}
 		</List>
-	)
-}
+	);
+};
 
-export default PotentialConnectionsList
+export default PotentialConnectionsList;

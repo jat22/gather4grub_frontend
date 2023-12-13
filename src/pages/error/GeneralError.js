@@ -1,12 +1,13 @@
+
 import React from "react";
 
 import ErrorMessage from "../../components/error/ErrorMessage";
 
-const Unauthorized = () => {
-	const message = 'You Are Not Authorized to Be Here.'
+const GeneralError = () => {
+	const message = 'Oh No! Something went wrong. Please try again.'
 	return (
 		<ErrorMessage errorMessage={message} />
 	)
 }
 
-export default Unauthorized
+export default GeneralError
