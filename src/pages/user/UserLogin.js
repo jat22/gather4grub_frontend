@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Button, TextField, Link, Grid, Box, Typography, Container  } from '@mui/material';
+
 import UserContext from '../../context/UserContext';
 import useFields from '../../hooks/useFields';
 import UserServices from '../../api/services/user.services';
@@ -8,12 +9,14 @@ import UserServices from '../../api/services/user.services';
 
 
 const UserLogin = () => {
-	// state variables
+	// context
 	const { user, setUser } = useContext(UserContext);
+
+	// state
 	const [loginError, setLoginError] = useState(null);
 	const [disableSubmit, setDisableSubmit] = useState(true);
 
-	// hook variables
+	// hooks
 	const navigate = useNavigate();
 	// const { formData, handleChange, resetFormData } = useFields({username: '', password: ''});
 	const [formData, setFormData, handleChange, resetFormData] = 
@@ -29,6 +32,7 @@ const UserLogin = () => {
 			setUser({username:formData.username, token: result.token});
 
 			setLoginError(e => (null));
+			setDisableSubmit(true)
 		} catch(err) {
 			if(err.status === 401){
 				setLoginError( e => (
@@ -139,4 +143,4 @@ const UserLogin = () => {
   	);
 };
 
-export default UserLogin
+export default UserLogin;
