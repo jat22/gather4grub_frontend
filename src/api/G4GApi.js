@@ -325,6 +325,7 @@ class G4GApi {
 
 	static async editUser(username, data) {
 		try{
+			console.log(data)
 			const res = await this.request(`users/${username}`, data, 'patch')
 		}catch(err){
 			throw err

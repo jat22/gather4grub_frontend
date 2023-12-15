@@ -23,11 +23,13 @@ const useFormValidate = () => {
 	}
 
 	const validateRequired = (formData, requiredFields) => {
+		console.log(formData)
 		const newErrors = {}
 		for(let f of requiredFields){
-			if(!formData[f].trim()){
-				newErrors[f] = `${Format.varNameToDisplay(f)} is Required.`
-			};
+			console.log(formData[f])
+			// if(!formData[f].trim()){
+			// 	newErrors[f] = `${Format.varNameToDisplay(f)} is Required.`
+			// };
 		}
 		return newErrors
 	};
@@ -39,7 +41,7 @@ const useFormValidate = () => {
 		} else return {}
 	}
 
-	return { validationErrors, validateRegisterForm }
+	return { validationErrors, validateRegisterForm, validateEmail, validateRequired }
 }	
 
 export default useFormValidate

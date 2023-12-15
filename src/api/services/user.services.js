@@ -3,87 +3,111 @@ import G4GApi from "../G4GApi";
 class UserServices {
 	static async login(input){
 		try{
-			const res = await G4GApi.getToken(input)
-			return res.data
+			const res = await G4GApi.getToken(input);
+			return res.data;
 		}catch(err){
-			
-		}
-		
-	}		
+			throw err;
+		};	
+	};	
 	
 	static async registerUser(data){
-		const res = await G4GApi.register(data)
-		return res
-	}
+		try{
+			const res = await G4GApi.register(data);
+			return res;
+		} catch(err){
+			throw err;
+		};
+	};
 
 	static async getUserConnections(username){
-		const res = await G4GApi.getUserConnections(username);
-		return res.data.connections
-	}
+		try{
+			const res = await G4GApi.getUserConnections(username);
+			return res.data.connections;
+		} catch(err){
+			throw err;
+		};
+	};
 
 	static async getUserProfile(username){
-		const res = await G4GApi.getUserProfile(username);
-
-		return res.data.profile
-	}
+		try{
+			const res = await G4GApi.getUserProfile(username);
+			return res.data.profile;
+		} catch(err){
+			throw err;
+		};
+	};
 
 	static async getUserInfo(username) {
-		const res = await G4GApi.getUserInfo(username)
-		return res.data.user
+		try{
+			const res = await G4GApi.getUserInfo(username);
+			return res.data.user;
+		} catch(err){
+			throw err;
+		};
 	}
 
 	static async editUser(username, data){
-		await G4GApi.editUser(username, data)
-		return
-	}
+		try{
+			await G4GApi.editUser(username, data);
+			return;
+		} catch(err){
+			throw err;
+		};
+	};
 
 	static async updatePassword(data){
 		try{
-			const res = await G4GApi.updatePassword(data)
-			console.log(res)
-			return 
+			const res = await G4GApi.updatePassword(data);
+			return ;
 		}catch(err){
-			throw err
-		}
-		
-		// if(res.status == 200) return {success:true, msg:''}
-		// else {
-		// 	return {success: false, msg: res.data.error.message}
-		// }
-	}
+			throw err;
+		};
+	};
 
 	static async checkUsernameExists(username){
-		const res = await G4GApi.checkUsernameExists(username)
-		return res.data.usernameExists
-	}
+		try{
+			const res = await G4GApi.checkUsernameExists(username);
+			return res.data.usernameExists;
+		}catch(err){
+			throw err;
+		};	
+	};
 
 	static async checkEmailExists(email){
-		const res = await G4GApi.checkEmailExists(email);
-		return res.data.emailExists
-	}
+		try{
+			const res = await G4GApi.checkEmailExists(email);
+			return res.data.emailExists;
+		}catch(err){
+			throw err;
+		};
+	};
 
 	static async checkUnique (inputs){
-		const validations = {
+		// map of validation functions.
+		const validationsMap = {
 			username : this.checkUsernameExists,
 			email : this.checkEmailExists
-		}
+		};
 
-		const fields = Object.keys(inputs)
+		// promises created based on input fields.
+		const fields = Object.keys(inputs);
 		const checkUniquePromises = fields.map((f) => {
-			return validations[f](inputs[f])
+			return validationsMap[f](inputs[f]);
 		})
+		try{
+			const results = await Promise.all(checkUniquePromises);
+			const uniqueValueErrors = [];
+			fields.forEach((f,i) => {
+				if(results[i]){
+					uniqueValueErrors.push(f);
+				};
+			});
+	
+			return uniqueValueErrors;
+		} catch(err){
+			throw err;
+		};
+	};
+};
 
-		const results = await Promise.all(checkUniquePromises)
-
-		const uniqueValueErrors = []
-		fields.forEach((f,i) => {
-			if(results[i]){
-				uniqueValueErrors.push(f)
-			}
-		})
-
-		return uniqueValueErrors
-	}
-}
-
-export default UserServices
+export default UserServices;

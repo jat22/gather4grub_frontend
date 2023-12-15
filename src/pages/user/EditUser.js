@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Box, Grid, Typography, TextField, Button, Link } from "@mui/material";
+import { Container, Box, Grid, Typography, TextField, Button } from "@mui/material";
 
 import UserContext from "../../context/UserContext";
 import useFields from "../../hooks/useFields";
 import UserServices from "../../api/services/user.services";
+import useFormValidate from "../../hooks/useFormValidate";
 
 import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
 
-// *********************** NEXT - change password dialog ^^^ ************************
-
-
 // inital state variables
 const formInitialState = {
-	username: '',
 	firstName: '',
 	lastName: '',
 	email: '',
@@ -23,7 +20,6 @@ const formInitialState = {
 	state: '',
 	zip: '',
 	tagLine: '',
-	bio: '',
 	avatarUrl: ''
 };
 
@@ -33,17 +29,25 @@ const EditUser = () => {
 
 	// state
 	const [error, setError] = useState(false);
+	const [submitted, setSubmitted] = useState(false);
 
 	// hooks
 	// const { formData, handleChange, resetFormData, updateFormData} = useFields(formInitialState);
 	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(formInitialState);
 	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
+	const { validationErrors, validateRegisterForm } = useFormValidate();
 
 	// event handlers
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		delete formData.username;
+	const requiredFields = ['firstName', 'lastName', 'email']
+	const handleSubmit = async(evt) => {
+		evt.preventDefault();
+		setError(false);
+		setSubmitted(true);
+		validateRegisterForm(formData, requiredFields);
+	};
+
+	const updateUserInfo = async () => {
 		try{
 			await UserServices.editUser(user.username, formData);
 			navigate(`/users/${user.username}/dashboard`);
@@ -57,7 +61,7 @@ const EditUser = () => {
 	const getCurUserInfo = async () => {
 		try{
 			const info = await UserServices.getUserInfo(user.username);
-			const fields = Object.keys(info)
+			const fields = Object.keys(formInitialState);
 			fields.forEach(f => {
 				info[f] = info[f] || '' 
 			});
@@ -81,6 +85,12 @@ const EditUser = () => {
 		}
 		getCurUserInfo();
 	}, []);
+
+	useEffect(() => {
+		if(submitted && validationErrors && Object.keys(validationErrors).length === 0){
+			updateUserInfo();
+		} else setSubmitted(false);
+	}, [validationErrors]);
 
 	return (
 		<Container >
@@ -111,6 +121,8 @@ const EditUser = () => {
 								label="First Name"
 								value={formData.firstName}
 								onChange={handleChange}
+								error={!!validationErrors?.firstName}
+								helperText={validationErrors?.firstName || null}
 							/>
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -122,6 +134,8 @@ const EditUser = () => {
 								name="lastName"
 								value={formData.lastName}
 								onChange={handleChange}
+								error={!!validationErrors?.lastName}
+								helperText={validationErrors?.lastName || null}
 							/>
 						</Grid>
 						<Grid item xs={12} md={6}>
@@ -133,6 +147,8 @@ const EditUser = () => {
 								name="email"
 								value={formData.email}
 								onChange={handleChange}
+								error={!!validationErrors?.email}
+								helperText={validationErrors?.email || null}
 							/>
 						</Grid>
 						<Grid item xs={12} md={6}>
@@ -200,12 +216,12 @@ const EditUser = () => {
 						</Grid>
 					</Grid>
 					<Button
-					type="submit"
-					fullWidth
-					variant="contained"
-					sx={{ mt: 3, mb: 2 }}
+						type="submit"
+						fullWidth
+						variant="contained"
+						sx={{ mt: 3, mb: 2 }}
 					>
-					Save
+						Save
 					</Button>
 				</Box>
 			</Box>

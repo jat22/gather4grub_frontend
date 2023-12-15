@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Container, Typography, Box, Grid, TextField, Button } from '@mui/material';
 import useFields from '../../hooks/useFields';
 import EventServices from '../../api/services/event.services';
@@ -6,10 +6,18 @@ import UserContext from '../../context/UserContext';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import useFormValidate from '../../hooks/useFormValidate';
 
 const PartyCreate = () => {
+	// context
+	const user = useContext(UserContext)
+
+	// state
+	const [submitted, setSubmitted] = useState(false)
+	const [error, setError] = useState(false)
+
+	// hooks
 	const navigate = useNavigate();
 	// const {formData, handleChange, handlePickerData} = useFields({
 	// 		title: '',
@@ -29,15 +37,36 @@ const PartyCreate = () => {
 			description: '',
 		}
 	)
-	
-	const user = useContext(UserContext)
+	const { validationErrors, validateRequired } = useFormValidate();
+	const requiredFields = ['date', 'title'];
 
+	// event handlers
 	const handleSubmit = async (evt)=> {
 		evt.preventDefault();
-		const res = await EventServices.createEvent(formData, user.username)
-		
-		navigate(`/gatherings/${res.data.event.id}`)
+		setError(false);
+		setSubmitted(true);
+
+		validateRequired(formData, requiredFields);
 	}
+
+	const createEvent = async () => {
+		try{
+			const res = await EventServices.createEvent(formData, user.username)
+			navigate(`/gatherings/${res.data.event.id}`)
+			resetFormData();
+			setSubmitted(false)
+		}catch(err){
+			setError(true);
+		};
+	};
+
+	useEffect(()=> {
+		if(submitted && validationErrors && Object.keys(validationErrors).length === 0) {
+			createEvent();
+		} else{
+			setSubmitted(false);
+		};
+	}, [validateRequired]);
 
 	return(
 		<Container component='main'>
@@ -52,7 +81,7 @@ const PartyCreate = () => {
 				<Typography component='h1' variant='h3'>
 					Create New Event
 				</Typography>
-				<Box component='form' onSubmit={handleSubmit} sx={{ mt:3 }}>
+				<Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt:3 }}>
 					<Grid container spacing={2}>
 						<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<Grid item xs={4} md={4}>
@@ -65,6 +94,8 @@ const PartyCreate = () => {
 								label='Date'
 								value={formData.date !== '' ? formData.date : null}
 								onChange={(val) => handlePickerData(val, 'date')}
+								error={!!validationErrors?.date}
+								helperText={validationErrors?.date || null}
 							/>
 						</Grid>
 						<Grid item xs={4}>
@@ -92,6 +123,8 @@ const PartyCreate = () => {
 								label='Title'
 								value={formData.title}
 								onChange={handleChange}
+								error={!!validationErrors?.title}
+								helperText={validationErrors?.title || null}
 							>
 							</TextField>
 						</Grid>

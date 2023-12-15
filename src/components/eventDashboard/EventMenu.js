@@ -3,28 +3,34 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListIt
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Link } from "react-router-dom";
 
+
+
+
 const EventMenu = ({ menu, isHost, username, removeDish }) => {
+	// state
 	const accordianExpandInitialState = () => {
-		const result = {}
+		const result = {};
 		let i = 0; 
 		while(i <= menu.length){
 			result[`panel${i}`] = false;
 			i++;
 		}
-		return result
+		return result;
 	}
-
 	const [menuAccordianExpanded, setMenuAccordianExpanded] = useState(accordianExpandInitialState);
 
+
+	// event handlers
 	const toggleMenuAccordians = (panel) => (event) => {
-		const newMenuAccordianExpanded = {...menuAccordianExpanded, [panel] : !menuAccordianExpanded[panel]}
+		const newMenuAccordianExpanded = {...menuAccordianExpanded, [panel] : !menuAccordianExpanded[panel]};
 		setMenuAccordianExpanded( cur => newMenuAccordianExpanded);
 	};
 
 	const handleRemoveDish = (dishId) => {
-		removeDish(dishId)
-	}
+		removeDish(dishId);
+	};
 
+	// component generators
 	const generateMenu = () => {
 		return (
 			<>
@@ -37,7 +43,11 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 								aria-controls={`${panel}bh-content`}
 								id={`${panel}bh-header`}
 							>
-								<Typography sx={{fontWeight:'bold', width: '33%', textAlign:'start'}}>
+								<Typography sx={{
+									fontWeight:'bold',
+									width: '33%', 
+									textAlign:'start'}}
+								>
 									{c.courseName}
 								</Typography>
 							</AccordionSummary>
@@ -50,7 +60,7 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 					)
 				}) : null}
 			</>
-		)
+		);
 	};
 
 	const generateDish = (dish) => {
@@ -60,12 +70,12 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 				alignItems='flex-start'
 				secondaryAction={
 					isHost || dish.username === username ?
-					<Chip
-						label="Remove"
-						size='small' 
-						edge='end'
-						onClick={() => handleRemoveDish(dish.id)}
-					/>
+						<Chip
+							label="Remove"
+							size='small' 
+							edge='end'
+							onClick={() => handleRemoveDish(dish.id)}
+						/>
 					: null
 				}
 			>
@@ -91,8 +101,8 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 					}
 				/>
 			</ListItem>
-		)
-	}
+		);
+	};
 
 	return generateMenu()
 }
