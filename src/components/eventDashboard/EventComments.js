@@ -2,11 +2,19 @@ import React, { Fragment } from "react";
 import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Divider, Chip } from "@mui/material";
 
 const EventComments = ({ comments, isHost, username, removeComment }) => {
-	if(comments === undefined) return
+	// display message if there are not already comments.
+	if(comments === undefined || comments.length === 0) {
+		return (
+			<Typography >
+				No Comments Yet.
+			</Typography>
+		);
+	};
 
+	// event handler
 	const handleRemoveComment = (commentId) => {
-		removeComment(commentId)
-	}
+		removeComment(commentId);
+	};
 
 	const generateComments = () => {
 		return (
@@ -43,50 +51,14 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 							</ListItem>
 							{i !== comments.length - 1 ? <Divider component='li'/> : null}
 						</Fragment>
-					)
+					);
 				})}
 			</List>
-		)
-	}
+		);
+	};
 
-	return generateComments()
+	return generateComments();
 }
 
 
 export default EventComments;
-
-{/* <ListItem 
-	alignItems='flex-start'
-	secondaryAction={
-		isHost || dish.username === username ?
-		<Chip
-			label="Remove"
-			size='small' 
-			edge='end'
-			onClick={() => handleRemoveDish(dish.id)}
-		/>
-		: null
-	}
->
-<ListItemText
-	primary={dish.name}
-	secondary={
-		<>
-			<Typography
-				sx={ {display: 'inline'}}
-				componenet='span'
-				variant='body2'
-			>
-				{dish.description}
-			</Typography>
-			<Typography variant='caption' display='block'>
-				<Link
-					sx={{ fontSize: 1, }}
-				>
-					{dish.username}
-				</Link>
-			</Typography>
-		</>
-	}
-/>
-</ListItem>  */}

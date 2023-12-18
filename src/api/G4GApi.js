@@ -134,7 +134,6 @@ class G4GApi {
 
 	static async updateBasicDetails(eventId, data){
 		try{
-			console.log(data)
 			let res = await this.request(`events/${eventId}/basic`, {data}, 'put')
 			return res
 		}catch(err){

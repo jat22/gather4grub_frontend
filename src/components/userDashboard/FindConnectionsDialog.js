@@ -22,8 +22,7 @@ const FindConnectionsDialog = () => {
 	const [postError, setPostError] = useState(false);
 
 	// hooks
-	// const { formData, handleChange } = useFields({input: ''});
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields({input:''});
+	const { formData, handleChange } = useFields({input:''});
 	const navigate = useNavigate();
 
 	// event handlers

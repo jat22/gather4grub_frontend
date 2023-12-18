@@ -1,7 +1,7 @@
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Paper, Typography, Grid } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Paper, Typography, Grid, Box } from '@mui/material';
 
 import UserContext from '../../context/UserContext';
 import EventServices from '../../api/services/event.services';
@@ -11,10 +11,10 @@ import EventMenu from '../../components/eventDashboard/EventMenu';
 import EventComments from '../../components/eventDashboard/EventComments';
 import EditDetailsDialog from '../../components/eventDashboard/EditDetailsDialog';
 import InviteDialog from '../../components/eventDashboard/InviteDialog';
-import EditMenuDialog from '../../components/eventDashboard/EditMenuDialog';
+import AddCourseDialog from '../../components/eventDashboard/AddCourseDialog';
 import AddMenuItemDialog from '../../components/eventDashboard/AddMenuItemDialog';
 import AddCommentDialog from '../../components/eventDashboard/AddCommentDialog';
-
+import Loader from '../../components/Loader';
 
 const eventInitialState = {
 	id: '',
@@ -32,36 +32,30 @@ const eventInitialState = {
 	currUserHost : false
 }
 
-const PartyDetails = () => {
+const GatheringDashboard = () => {
 	// context
 	const { user } = useContext(UserContext);
 
 	// state
 	const [eventInfo, setEventInfo] = useState(eventInitialState);
+	const [apiErrors, setApiErrors] = useState({})
+	const [loaded, setLoaded] = useState(false)
 
 	// hooks
 	const { eventId } = useParams();
 	const isFirstRender = useRef(true);
+	const navigate = useNavigate();
 
 
-	const basicDetails = eventInfo ? {
-		id : eventInfo.id,
-		title : eventInfo.title,
-		date : eventInfo.date,
-		startTime : eventInfo.startTime,
-		endTime : eventInfo.endTime,
-		displayTime : eventInfo.displayTime,
-		location : eventInfo.location ? eventInfo.location : '',
-		description : eventInfo.description ? eventInfo.description : ''
-	} : null;
-
-
-	const getEventInfo = async() => {
-		const info = await EventServices.getEventInfo(eventId)
-		if(info !== undefined){
-			info.currUserHost = user.username === info.host
-		};
-		setEventInfo(i => info);
+	const basicDetails = {
+		id : eventInfo?.id || '',
+		title : eventInfo?.title || '',
+		date : eventInfo?.date || '',
+		startTime : eventInfo?.startTime || '',
+		endTime : eventInfo?.endTime || '',
+		displayTime : eventInfo?.displayTime || '',
+		location : eventInfo?.location || '',
+		description : eventInfo?.description || ''
 	};
 
 	// update views functions
@@ -76,42 +70,69 @@ const PartyDetails = () => {
 	const updateDisplayMenu = (menu) => {
 		setEventInfo(i => ({...i, menu:menu}));
 	};
-	
-	const updateBasicDetails = async (data) => {
-		const res = await EventServices.updateBasicDetails(eventId, data);
-		updateDisplayDetails(res);
-	};
 
-	const updateDisplayComments = async(comments) => {
+	const updateDisplayComments = (comments) => {
 		setEventInfo(i => ({...i, comments: comments}));
-	}
+	};
 
 
 	// api interactions
+	const getEventInfo = async() => {
+		try{
+			const info = await EventServices.getEventInfo(eventId)
+			if(info !== undefined){
+				info.currUserHost = user.username === info.host
+			};
+			setEventInfo(i => info);
+			setLoaded(l => true)
+		}catch(err){
+			if(err.status === 401){
+				navigate('/error/unauthorized')
+			} else if(err.status === 500 && err.msg === 'Network Error'){
+				navigate('/error/network')
+			} else{
+				navigate('/error/general')
+			};
+		}
+	};
+
+	const updateBasicDetails = async (data) => {
+		try{
+			const res = await EventServices.updateBasicDetails(eventId, data);
+			setApiErrors({})
+			updateDisplayDetails(res);
+		}catch(err){
+			setApiErrors(e => ({basicDetails: true}) )
+		};
+	};
+
 	const inviteGuests = async (usernames) => {
 		try{
 			const res = await EventServices.inviteGuests(usernames, eventId);
+			setApiErrors({});
 			updateDisplayGuestList(res);
 		}catch(err){
-
+			setApiErrors(e => ({invites: true}))
 		};
 	};
 
 	const uninviteGuest = async(username) => {
 		try{
 			const res = await EventServices.uninviteGuest(username, eventId);
+			setApiErrors({})
 			updateDisplayGuestList(res);
 		}catch(err){
-
+			setApiErrors(e=>({uninvite: true}))
 		};	
 	};
 
-	const addNewCategory = async(newCategory) => {
+	const addNewCourse = async(newCourse) => {
 		try{
-			const res = await EventServices.addMenuCategory(eventId, newCategory);
+			const res = await EventServices.addMenuCategory(eventId, newCourse);
+			setApiErrors({})
 			updateDisplayMenu(res);
 		}catch(err){
-
+			setApiErrors(e => ({newCourse:true}))
 		};
 	}
 
@@ -120,36 +141,40 @@ const PartyDetails = () => {
 			eventInfo.menu.find( c => c.courseName === newItem.course).courseId;
 		try{
 			const res = await EventServices.addMenuItem(eventId, {...newItem, username:user.username});
+			setApiErrors({});
 			updateDisplayMenu(res);
 		}catch(err){
-
+			setApiErrors(e => ({addMenuItem: true}))
 		};
 	};
 
 	const removeDish = async(dishId) => {
 		try{
 			const res = await EventServices.removeDish(dishId, eventInfo.id);
+			setApiErrors({})
 			updateDisplayMenu(res);
 		}catch(err){
-
+			setApiErrors(e => ({removeDish: true}))
 		};
 	};
 
 	const addComment = async(comment) => {
 		try{
 			const res = await EventServices.addComment(comment, user.username, eventInfo.id);
+			setApiErrors({})
 			updateDisplayComments(res);
 		}catch(err){
-
+			setApiErrors(e => ({addComment: true}))
 		};
 	};
 
 	const removeComment = async(commentId) => {
 		try{
 			const res = await EventServices.removeComment(commentId, eventInfo.id);
+			setApiErrors({})
 			updateDisplayComments(res);
 		}catch(err){
-
+			setApiErrors(e => ({removeComment: true}))
 		};
 	};
 
@@ -161,6 +186,19 @@ const PartyDetails = () => {
 		}
 		getEventInfo();
 	}, []);
+
+	if(!loaded){
+		return (
+			<Box sx={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				height: '100vh'
+			}}>
+				<Loader />
+			</Box>
+		);
+	};
 
 	return(
 		<Container maxWidth='lg' sx={{ mt:4, mb:4 }}>
@@ -183,7 +221,9 @@ const PartyDetails = () => {
 								{eventInfo.currUserHost ? 
 									<EditDetailsDialog 
 										basicDetails={basicDetails} 
-										updateBasicDetails={updateBasicDetails} 
+										updateBasicDetails={updateBasicDetails}
+										apiErrors={apiErrors} 
+										setApiErrors={setApiErrors}
 									/>
 									: null
 								}
@@ -224,10 +264,16 @@ const PartyDetails = () => {
 					<Typography variant='h4' components='h4' sx={{margin:1,}}>
 						Guests
 					</Typography>
+					{apiErrors?.uninvite ? 
+						<Typography>Something went wrong, guest not removed.</Typography>
+						: null
+					}
 					{eventInfo.currUserHost ? 
 						<InviteDialog 
 							inviteGuests={inviteGuests} 
-							currentGuestList={eventInfo.guests} 
+							currentGuestList={eventInfo.guests}
+							apiErrors={apiErrors} 
+							setApiErrors={setApiErrors}
 						/> 
 						: null
 					}
@@ -255,26 +301,45 @@ const PartyDetails = () => {
 						>
 							Menu
 						</Typography>
-						<AddMenuItemDialog menu={eventInfo.menu} addMenuItem={addMenuItem} />
+						<AddMenuItemDialog 
+							menu={eventInfo.menu} 
+							addMenuItem={addMenuItem} 
+							apiErrors={apiErrors} 
+							setApiErrors={setApiErrors} 
+						/>
 					 	{eventInfo.currUserHost ? 	
-							<EditMenuDialog 
-								menu={eventInfo.menu}
-								addNewCategory={addNewCategory}
+							<AddCourseDialog 
+								addNewCourse={addNewCourse}
+								apiErrors={apiErrors}
+								setApiErrors={setApiErrors}
+							/>
+							: null
+						}
+						{eventInfo?.menu.length > 0 ?
+							<EventMenu 
+								menu={eventInfo.menu} 
+								isHost={eventInfo.currUserHost} 
+								username={user.username}
+								removeDish={removeDish}
 							/>
 							: null
 						}						
-						<EventMenu 
-							menu={eventInfo.menu} 
-							isHost={eventInfo.currUserHost} 
-							username={user.username}
-							removeDish={removeDish}
-						/>
+						
 					</Grid>
 					<Grid item lg={12} sx={{margin:'0 0 0 0'}}>
 						<Typography variant='h4' components='h4'sx={{margin:1,}}>
 							Comments
 						</Typography>
-						<AddCommentDialog addComment={addComment} />
+						{apiErrors?.removeComment ? 
+							<Typography>
+								Something went wrong, comment not removed.
+							</Typography>
+							: null
+						}
+						<AddCommentDialog 
+							addComment={addComment} 
+							apiErrors={apiErrors} 
+							setApiErrors={setApiErrors} />
 						<Paper >
 							<EventComments 
 								comments={eventInfo.comments} 
@@ -288,4 +353,4 @@ const PartyDetails = () => {
 	);
 };
 
-export default PartyDetails;
+export default GatheringDashboard;

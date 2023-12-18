@@ -13,6 +13,13 @@ import useFields from '../../hooks/useFields';
 import UserServices from '../../api/services/user.services';
 import useApiValidation from '../../hooks/useApiValidation';
 
+const validationRules = {
+	firstName: {required:true},
+	lastName: {required:true},
+	email: {required:true, format: 'email'},
+	username : {required: true, length: {min:3, max:20}},
+	password: {required:true, length:{min:8, max:20}}
+}
 
 const UserSignUp = () => {
 	// context
@@ -24,33 +31,25 @@ const UserSignUp = () => {
 
 	// hooks
 	const navigate = useNavigate();
-	// TO DO: refactor useField to return object
-	// const {formData, handleChange, resetFormData} = useFields({
-	// 			firstName : '',
-	// 			lastName : '',
-	// 			email : '',
-	// 			username : '',
-	// 			password : ''
-	// 		})
-	const [formData, setFormData, handleChange, resetFormData] = useFields({
+
+	const { formData, handleChange, resetFormData } = useFields({
 			firstName : '',
 			lastName : '',
 			email : '',
 			username : '',
 			password : ''
 		});
-	const {	validationErrors, validateRegisterForm} = useFormValidate({});
+	const {	validationErrors, validateForm} = useFormValidate({});
 	const { apiValidationErrors, validateUniqueFields } = useApiValidation({});
 
 	// functions
-	const requiredFields = Object.keys(formData);
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		setGeneralError(false);
 		setSubmitted(true);
 
 		// triggers frontend validations
-		validateRegisterForm(formData, requiredFields);
+		validateForm(formData, validationRules);
 		
 	};
 

@@ -18,9 +18,7 @@ const UserLogin = () => {
 
 	// hooks
 	const navigate = useNavigate();
-	// const { formData, handleChange, resetFormData } = useFields({username: '', password: ''});
-	const [formData, setFormData, handleChange, resetFormData] = 
-							useFields({username: '', password: ''});
+	const { formData, handleChange, resetFormData } = useFields({username: '', password: ''});
 
 	// functions
 	const handleSubmit = async (event) => {

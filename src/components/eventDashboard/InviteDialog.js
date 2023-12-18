@@ -1,28 +1,22 @@
 import React, {useEffect, useState, useContext } from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { List, ListItem, IconButton, ListItemButton, Checkbox, ListItemText, ListItemIcon } from '@mui/material';
-import CommentIcon from '@mui/icons-material/Comment'
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import useFields from '../../hooks/useFields';
-import G4GApi from '../../api/G4GApi';
+import { List, ListItem, ListItemButton, Checkbox, ListItemText, ListItemIcon, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+
 import UserContext from '../../context/UserContext';
-import UserServices from '../../api/services/user.services';
 import EventServices from '../../api/services/event.services';
+import { SettingsPowerTwoTone } from '@mui/icons-material';
 
-export default function InviteDialog({ inviteGuests, currentGuestList }) {
-	const [open, setOpen] = useState(false);
+
+const InviteDialog = ({ inviteGuests, currentGuestList, apiErrors, setApiErrors }) => {
+	// context
 	const { user } = useContext(UserContext)
+
+	// state
+	const [open, setOpen] = useState(false);
 	const [potentialInvites, setPotentialInvites] = useState([]);
-
 	const [checked, setChecked] = useState([0]);
+	const [submitted, setSubmitted] = useState(false);
 
+	// event handlers
 	const handleToggle = (value) => () => {
 		const currentIndex = checked.indexOf(value);
 		const newChecked = [...checked];
@@ -31,8 +25,7 @@ export default function InviteDialog({ inviteGuests, currentGuestList }) {
 			newChecked.push(value);
 		} else {
 			newChecked.splice(currentIndex, 1);
-		}
-
+		};
 		setChecked(newChecked);
 	};
 
@@ -42,23 +35,43 @@ export default function InviteDialog({ inviteGuests, currentGuestList }) {
 	};
 
 	const handleClose = () => {
+		setSubmitted(false)
 		setOpen(false);
+		setChecked(c => [0]);
+		setPotentialInvites(i => []);
+		setApiErrors({});
 	};
 
 	const handleInvite = () => {
-		setOpen(false);
-		inviteGuests(checked)
-	}
+		inviteGuests(checked);
+		setSubmitted(true);
+	};
+
+	// fetching function
+	const getPotentialInvites = async() => {
+		try{
+			setPotentialInvites(await EventServices.getPotentialInvites(currentGuestList, user.username));
+		} catch(err){
+			setApiErrors(e=> ({potentialInvites: true}));
+		};
+	};
+
+	// effects
+	useEffect(() => {	
+		getPotentialInvites();
+	}, [open]);
 
 	useEffect(() => {
-		const getPotentialInvites = async() => {
-			setPotentialInvites(await EventServices.getPotentialInvites(currentGuestList, user.username))
-		}
-		getPotentialInvites()
-	}, [open])
+		if(submitted && !apiErrors?.invites){
+			handleClose();
+		}else if(submitted){
+			setSubmitted(false);
+		};
+	}, [apiErrors]);
 
+	// generates list of current user's connections that are not currently invited to the event.
 	const uninvitedConnections = () => {
-		if(!potentialInvites || potentialInvites.length < 1) return null
+		if(!potentialInvites || potentialInvites.length < 1) return null;
 		return (
 			<List>
 				{potentialInvites.map((c) => {
@@ -85,9 +98,8 @@ export default function InviteDialog({ inviteGuests, currentGuestList }) {
 					)
 				})}
 			</List>
-			
-		)
-	}
+		);
+	};
 
 	return (
 		<>
@@ -97,6 +109,14 @@ export default function InviteDialog({ inviteGuests, currentGuestList }) {
 			<Dialog open={open} onClose={handleClose}>
 				<DialogTitle>Add Guests</DialogTitle>
 				<DialogContent>
+					{apiErrors?.invites ? 
+						<Typography>Something went wrong, invites not sent.</Typography>
+						: null
+					}
+					{apiErrors?.potentialInvites ? 
+						<Typography>Unable to load connections at this time.</Typography>
+						: null
+					}
 					{uninvitedConnections()}
 				</DialogContent>
 				<DialogActions>
@@ -106,4 +126,6 @@ export default function InviteDialog({ inviteGuests, currentGuestList }) {
 			</Dialog>
 		</>
 	);
-}
+};
+
+export default InviteDialog;

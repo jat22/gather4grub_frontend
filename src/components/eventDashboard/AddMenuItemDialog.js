@@ -1,30 +1,67 @@
-import React, { useState } from "react";
-import { Dialog, Button, DialogActions, DialogContent, DialogTitle, TextField, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
-import useFields from "../../hooks/useFields";
+import React, { useEffect, useState } from "react";
+import { Dialog, Button, DialogActions, DialogContent, DialogTitle, TextField, FormControl, InputLabel, Select, MenuItem, Box, FormHelperText } from "@mui/material";
 
-const AddMenuItemDialog = ({ menu, addMenuItem }) => {
+import useFields from "../../hooks/useFields";
+import useFormValidate from "../../hooks/useFormValidate";
+
+
+const initialFormData = {
+	course: '',
+	dishName : '',
+	description: ''
+}
+
+const validationRules = {
+	course: {required:true},
+	dishName: {required:true}
+}
+
+const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 	const [open, setOpen] = useState(false);
+	const [submitted, setSubmitted] = useState(false);
+
 	const handleClickOpen = () => {
 		resetFormData()
 		setOpen(true);
 	};
+
 	const handleClose = () => {
 		setOpen(false);
+		resetFormData();
+		resetValidationErrors();
+		setSubmitted(false);
+		setApiErrors(e=>{})
 	};
 
-	const initialFormData = {
-		course: '',
-		dishName : '',
-		description: ''
-	}
 
-	const [formData, setFormData, handleChange, resetFormData] = useFields(initialFormData)
-	const [course, setCourse] = useState({courseName:'', courseId:''})
+	const { formData, handleChange, resetFormData } = useFields(initialFormData)
+	const { validationErrors, validateForm, resetValidationErrors } = useFormValidate();
 
 	const handleAdd = () => {
-		handleClose();
-		addMenuItem(formData);
+		setSubmitted(true)
 	};
+
+	useEffect(() => {
+		if(submitted){
+			validateForm(formData, validationRules);
+		}
+	}, [submitted]);
+
+	useEffect(() => {
+		if(submitted && Object.keys(validationErrors).length === 0){
+			addMenuItem(formData)
+		}else{
+			setSubmitted(false)
+		}
+	}, [validationErrors])
+
+	useEffect(() => {
+		if(submitted && Object.keys(apiErrors).length === 0){
+			handleClose();
+		} else{
+			setSubmitted(false)
+		}
+	},[apiErrors])
 
 	return (
 		<>
@@ -34,7 +71,7 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 			<Dialog open={open}>
 				<DialogTitle>Add Menu Item</DialogTitle>
 				<DialogContent>
-					<Box sx={{ minWidth: 120 }}>
+					<Box sx={{ minWidth: 120 }} component='form' noValidate>
 						<FormControl>
 							<InputLabel id='course-select-label'>Course</InputLabel>
 							<Select
@@ -45,9 +82,19 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 								onChange={handleChange}
 								sx={{ minWidth:120 }}
 								name='course'
+								required={true}
+								error={!!validationErrors?.course}
+								helperText={validationErrors?.course || null}
 							>
 								{menu.map(c => <MenuItem key={c.courseId} value={c.courseName} data-courseid={c.courseId}>{c.courseName}</MenuItem>)}
 							</Select>
+							{!!validationErrors?.course ? 
+								<FormHelperText>
+									{validationErrors.course}
+								</FormHelperText>
+							: null
+							}
+							
 						</FormControl>
 						<TextField 
 							label='Name'
@@ -55,6 +102,8 @@ const AddMenuItemDialog = ({ menu, addMenuItem }) => {
 							id='dishName'
 							onChange={handleChange}
 							name='dishName'
+							error={!!validationErrors?.dishName}
+							helperText={validationErrors?.dishName || null}
 						/>
 						<TextField 
 							label='Description'

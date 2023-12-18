@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Box, Grid, Typography, TextField, Button } from "@mui/material";
+import { Container, Box, Grid, Typography, TextField, Button, Select, InputLabel, MenuItem, FormControl } from "@mui/material";
 
 import UserContext from "../../context/UserContext";
 import useFields from "../../hooks/useFields";
 import UserServices from "../../api/services/user.services";
 import useFormValidate from "../../hooks/useFormValidate";
+import Format from "../../utilities/format";
 
 import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
 
@@ -23,6 +24,15 @@ const formInitialState = {
 	avatarUrl: ''
 };
 
+const usStatesMap = Format.stateMap
+const validationRules = {
+	firstName: {required:true},
+	lastName: {required:true},
+	email: {required:true, format: 'email'},
+	state: {length: {min:2, max:2}},
+	zip: {length: {min:5, max:5}, format: 'number'}
+}
+
 const EditUser = () => {
 	// context
 	const { user } = useContext(UserContext);
@@ -32,19 +42,17 @@ const EditUser = () => {
 	const [submitted, setSubmitted] = useState(false);
 
 	// hooks
-	// const { formData, handleChange, resetFormData, updateFormData} = useFields(formInitialState);
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(formInitialState);
+	const { formData, handleChange, resetFormData, updateFormData } = useFields(formInitialState);
 	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
-	const { validationErrors, validateRegisterForm } = useFormValidate();
+	const { validationErrors, validateForm } = useFormValidate();
 
 	// event handlers
-	const requiredFields = ['firstName', 'lastName', 'email']
 	const handleSubmit = async(evt) => {
 		evt.preventDefault();
 		setError(false);
 		setSubmitted(true);
-		validateRegisterForm(formData, requiredFields);
+		validateForm(formData, validationRules);
 	};
 
 	const updateUserInfo = async () => {
@@ -91,6 +99,29 @@ const EditUser = () => {
 			updateUserInfo();
 		} else setSubmitted(false);
 	}, [validationErrors]);
+
+	// component generators
+	const createStateSelector = () => {
+		return (
+			<FormControl fullWidth>
+				<InputLabel id='state-select-label'>State</InputLabel>
+				<Select
+					labelId="state-select-label"
+					id="state=select-label"
+					value={formData.state}
+					label="state"
+					onChange={handleChange}
+					name='state'
+				>
+					{Object.keys(usStatesMap).map(s => {
+						return (
+							<MenuItem value={usStatesMap[s]}>{s}</MenuItem>
+						)
+					})}
+				</Select>
+			</FormControl>
+		)
+	};
 
 	return (
 		<Container >
@@ -175,14 +206,7 @@ const EditUser = () => {
 							/>
 						</Grid>
 						<Grid item xs={3} md={3}>
-							<TextField
-								fullWidth
-								name="state"
-								label="State"
-								id="state"
-								value={formData.state}
-								onChange={handleChange}
-							/>
+							{createStateSelector()}
 						</Grid>
 						<Grid item xs={9} md={4}>
 							<TextField
@@ -192,6 +216,8 @@ const EditUser = () => {
 								id="zip"
 								value={formData.zip}
 								onChange={handleChange}
+								error={validationErrors?.zip}
+								helperText={validationErrors?.zip || null}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -207,7 +233,7 @@ const EditUser = () => {
 						<Grid item xs={12}>
 							<TextField
 								fullWidth
-								name="avatar"
+								name="avatarUrl"
 								label="Avatar"
 								id="avatar"
 								value={formData.avatarUrl}

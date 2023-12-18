@@ -1,28 +1,44 @@
-import React, { useContext, useEffect, useState } from "react";
-import UserContext from "../context/UserContext";
+import React, { useEffect, useState } from "react";
 import { Paper, Grid, Avatar, Typography, } from "@mui/material";
 import UserServices from "../api/services/user.services";
+import { useNavigate } from "react-router-dom";
+
+const profileInitialState = {
+	username: '',
+	firstName: '',
+	lastName: '',
+	email: '',
+	tagLine: '',
+	avatarUrl: ''
+}
 
 const UserProfileCard = ({ username }) => {
-	const [userProfile, setUserProfile] = useState({
-		username: '',
-		firstName: '',
-		lastName: '',
-		email: '',
-		tagLine: '',
-		avatarUrl: ''
-	})
+	// state
+	const [userProfile, setUserProfile] = useState(profileInitialState);
+	const [error, setError] = useState(false);
 
-	useEffect(() => {
-		const getUserProfile = async() => {
+	// hooks
+	const navigate = useNavigate();
+
+	// fetch function
+	const getUserProfile = async() => {
+		try{
 			const userProfileNew = await UserServices.getUserProfile(username);
 			setUserProfile(p => userProfileNew);
-			console.log(userProfileNew)
+		}catch(err){
+			if(err.status === 401){
+				navigate('/error/unauthorized');
+			}else{
+				setError(e=>true);
+			};
 		};
+	};
+
+	useEffect(() => {
 		getUserProfile();
 	}, [])
 
-	if(!userProfile) return null
+	if(!userProfile) return null;
 
 	return (
 		<>
@@ -35,51 +51,40 @@ const UserProfileCard = ({ username }) => {
 					</Grid>
 					<Grid item xs={9} lg={9}> 
 						<Typography>
-							{userProfile.username}
+							{username}
 						</Typography>
 					</Grid>
 					<Grid item lg={3} /> 
-					<Grid item lg={9}>
-						<Typography>
-							{userProfile.firstName} {userProfile.lastName}
-						</Typography>
-					</Grid>
-					<Grid item lg={3} /> 
-					<Grid item lg={9}>
-						<Typography>
-							{userProfile.email}
-						</Typography>
-					</Grid>
-					<Grid item lg={3} /> 
-					<Grid item lg={9}>
-						<Typography>
-							{userProfile.tagLine}
-						</Typography>
-					</Grid>
-
+					{error?
+						<Grid item lg={9}>
+							<Typography>Unable to load information at this time.</Typography>
+						</Grid>
+						:
+						<>
+							<Grid item lg={9}>
+								<Typography>
+									{userProfile.firstName} {userProfile.lastName}
+								</Typography>
+							</Grid>
+							<Grid item lg={3} /> 
+							<Grid item lg={9}>
+								<Typography>
+									{userProfile.email}
+								</Typography>
+							</Grid>
+							<Grid item lg={3} /> 
+							<Grid item lg={9}>
+								<Typography>
+									{userProfile.tagLine}
+								</Typography>
+							</Grid>
+						</>
+					}
 				</Grid>
 			</Paper>
 		</>
-	)
+	);
+};
 
 
-}
-
-
-export default UserProfileCard
-
-{/* <Box 
-					sx={{
-						width:300,
-						padding:3
-					}}>
-					<Typography component='h2' variant='h6'>
-						{user.username}
-					</Typography>
-					<Typography component='h2' variant='h6'>
-						{`${user.firstName} ${user.lastName}`}
-					</Typography>
-					<Typography component='h2' variant='h6'>
-						{user.email}
-					</Typography>
-				</Box> */}
+export default UserProfileCard;

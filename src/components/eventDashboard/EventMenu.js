@@ -11,7 +11,7 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 	const accordianExpandInitialState = () => {
 		const result = {};
 		let i = 0; 
-		while(i <= menu.length){
+		while(i < menu.length){
 			result[`panel${i}`] = false;
 			i++;
 		}
@@ -85,7 +85,7 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 						<>
 							<Typography
 								sx={ {display: 'inline'}}
-								componenet='span'
+								component='span'
 								variant='body2'
 							>
 								{dish.description}

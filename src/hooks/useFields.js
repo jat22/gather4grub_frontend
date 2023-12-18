@@ -4,10 +4,14 @@ const useFields = (initialState) => {
 	const [formData, setFormData] = useState(initialState);
 	const handleChange = e => {
 		const { name, value } = e.target;
-		setFormData(data => ({
-			...data,
-			[name] : value
-		}))
+		setFormData(data => {
+			const newData = {
+				...data,
+				[name] : value
+			}
+			return newData
+		})
+
 	}
 
 	const resetFormData = () => {
@@ -30,7 +34,7 @@ const useFields = (initialState) => {
 		fields.forEach(f => formData[f] = formData[f].trim())
 	}
 
-	return [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData, trimForSubmit]
+	return {formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData, trimForSubmit}
 }
 
 export default useFields

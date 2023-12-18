@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useNavigate } from 'react-router-dom';
 import useFormValidate from '../../hooks/useFormValidate';
 
-const PartyCreate = () => {
+const GatheringCreate = () => {
 	// context
 	const user = useContext(UserContext)
 
@@ -19,26 +19,20 @@ const PartyCreate = () => {
 
 	// hooks
 	const navigate = useNavigate();
-	// const {formData, handleChange, handlePickerData} = useFields({
-	// 		title: '',
-	// 		date: '',
-	// 		startTime: '',
-	// 		endTime: '',
-	// 		location: '',
-	// 		description: '',
-	// 	})
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(
-		{
+	const {formData, handleChange, handlePickerData, resetFormData} = useFields({
 			title: '',
 			date: '',
 			startTime: '',
 			endTime: '',
 			location: '',
 			description: '',
-		}
-	)
-	const { validationErrors, validateRequired } = useFormValidate();
-	const requiredFields = ['date', 'title'];
+		})
+
+	const { validationErrors, validateForm } = useFormValidate();
+	const validationRules = {
+		date : {required:true},
+		title : {required:true}
+	}
 
 	// event handlers
 	const handleSubmit = async (evt)=> {
@@ -46,7 +40,8 @@ const PartyCreate = () => {
 		setError(false);
 		setSubmitted(true);
 
-		validateRequired(formData, requiredFields);
+		validateForm(formData, validationRules);
+		console.log(validationErrors)
 	}
 
 	const createEvent = async () => {
@@ -66,7 +61,7 @@ const PartyCreate = () => {
 		} else{
 			setSubmitted(false);
 		};
-	}, [validateRequired]);
+	}, [validationErrors]);
 
 	return(
 		<Container component='main'>
@@ -88,14 +83,16 @@ const PartyCreate = () => {
 							<DatePicker
 								fullWidth
 								slotProps={{
-									textField : {required:true,}
+									textField : {
+										required:true,
+										error: !!validationErrors?.date,
+										helperText:validationErrors?.date || null}
 								}}
 								disablePast
 								label='Date'
 								value={formData.date !== '' ? formData.date : null}
 								onChange={(val) => handlePickerData(val, 'date')}
-								error={!!validationErrors?.date}
-								helperText={validationErrors?.date || null}
+
 							/>
 						</Grid>
 						<Grid item xs={4}>
@@ -165,4 +162,4 @@ const PartyCreate = () => {
 	)
 };
 
-export default PartyCreate
+export default GatheringCreate

@@ -27,9 +27,7 @@ const ChangePasswordDialog = () => {
 		newPassword: '', 
 		confirmNew: ''
 	}
-	// const { formData, handleChange, resetFormData } = useFields(initialFormState)
-	const [formData, setFormData, handleChange, resetFormData, updateFormData, handlePickerData] = useFields(initialFormState);
-	
+	const { formData, handleChange, resetFormData } = useFields(initialFormState)
 
 	// event handlers
 	const handleOpen = () => {

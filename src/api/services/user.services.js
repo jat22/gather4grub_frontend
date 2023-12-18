@@ -1,3 +1,4 @@
+import Format from "../../utilities/format";
 import G4GApi from "../G4GApi";
 
 class UserServices {
@@ -47,8 +48,9 @@ class UserServices {
 	}
 
 	static async editUser(username, data){
+		const cleanData = Format.emptyStringToNull(data)
 		try{
-			await G4GApi.editUser(username, data);
+			await G4GApi.editUser(username, cleanData);
 			return;
 		} catch(err){
 			throw err;
