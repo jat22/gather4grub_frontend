@@ -31,7 +31,6 @@ const ViewConnectionsDialog = () => {
 	const handleClose = () => {
 		setOpen(false);
 		setError(false);
-		setConnections([]);
 	};
 
 	// fetch functions

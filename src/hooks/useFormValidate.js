@@ -70,11 +70,33 @@ const useFormValidate = (initialState={}) => {
 			return formatValidations[type].msg
 		}
 	}
+	
+	const validateArray = (field, value, conditions) => {
+		console.log(value)
+		if(conditions.length){
+			const min = conditions.length.min
+			const max = conditions.length.max
+			if(min && max){
+				if(value.length < min || value.length > max){
+					return true;
+				} else return false;
+			} else if(min && !max){
+				if(value.length < min){
+					return true;
+				} else return false;
+			} else if(max && !min){
+				if(value.length > max){
+					return true;
+				} else return false;
+			}
+		}
+	}
 
 	const validationMap = {
 		required : validateRequired,
 		format : validateFormat,
-		length : validateLength
+		length : validateLength,
+		array : validateArray
 	};
 	
 	/**
@@ -85,14 +107,12 @@ const useFormValidate = (initialState={}) => {
 	 */
 
 	const validateForm = (formData, validationRules) => {
-		console.log('validateForm')
 		setValidationErrors( e => {
 			const newErrors = {};
 	
 			for(let field in validationRules){
 				const value = formData[field];
 				const rules = validationRules[field]
-	
 				for(let rule in rules){
 					if(rules.hasOwnProperty(rule)){
 						const ruleParams = rules[rule]
@@ -103,7 +123,6 @@ const useFormValidate = (initialState={}) => {
 					}
 				}
 			}
-			console.log(newErrors)
 			return newErrors
 		})
 	}

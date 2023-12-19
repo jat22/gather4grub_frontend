@@ -48,7 +48,6 @@ const ConnectionRequestDialog = () => {
 	const handleRequestAccept = async (requestId) => {
 		try{
 			await ConnectionServices.acceptRequest(requestId, user.username);
-			handleClose();
 		} catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');
@@ -61,7 +60,6 @@ const ConnectionRequestDialog = () => {
 	const handleRequestDelete = async (requestId) => {
 		try{
 			await ConnectionServices.deleteRequest(requestId, user.username);
-			handleClose();
 		}catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');

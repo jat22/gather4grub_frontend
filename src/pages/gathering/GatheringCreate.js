@@ -1,5 +1,5 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Container, Typography, Box, Grid, TextField, Button } from '@mui/material';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { Container, Typography, Box, Grid, TextField, Button, List, ListItem, ListItemText } from '@mui/material';
 import useFields from '../../hooks/useFields';
 import EventServices from '../../api/services/event.services';
 import UserContext from '../../context/UserContext';
@@ -15,59 +15,92 @@ const GatheringCreate = () => {
 
 	// state
 	const [submitted, setSubmitted] = useState(false)
-	const [error, setError] = useState(false)
+	const [apiErrors, setApiErrors] = useState(false)
+	const [courses, setCourses] = useState([])
+	const [newEventId, setNewEventId] = useState(null)
 
 	// hooks
 	const navigate = useNavigate();
-	const {formData, handleChange, handlePickerData, resetFormData} = useFields({
+	const {formData, handleChange, handlePickerData, updateFormData, resetFormData} = useFields({
 			title: '',
 			date: '',
 			startTime: '',
 			endTime: '',
 			location: '',
 			description: '',
+			courses:[]
 		})
 
-	const { validationErrors, validateForm } = useFormValidate();
+	const { validationErrors, validateForm, resetValidationErrors } = useFormValidate();
 	const validationRules = {
 		date : {required:true},
-		title : {required:true}
+		title : {required:true},
+		courses : {array: {length : {min:1}}}
 	}
+
+	const courseInputRef = useRef('')
 
 	// event handlers
 	const handleSubmit = async (evt)=> {
 		evt.preventDefault();
-		setError(false);
+		setApiErrors(false);
 		setSubmitted(true);
 
 		validateForm(formData, validationRules);
-		console.log(validationErrors)
+	}
+
+	const handleAddCourse = () => {
+		if(courseInputRef.current) {
+			const newCourse = courseInputRef.current.value;
+			if(newCourse){
+				setCourses(c=>{
+					const newCourses = [...c, newCourse];
+					return newCourses;
+				})
+			}
+			
+			courseInputRef.current.value = ''
+		}
 	}
 
 	const createEvent = async () => {
 		try{
 			const res = await EventServices.createEvent(formData, user.username)
-			navigate(`/gatherings/${res.data.event.id}`)
-			resetFormData();
-			setSubmitted(false)
+			handleNavigate(res.data.event.id)
 		}catch(err){
-			setError(true);
+			setApiErrors(true);
 		};
 	};
 
+	const  handleNavigate = (id) => {
+		setSubmitted(false);
+		navigate(`/gatherings/${id}`)
+		resetFormData();
+		setApiErrors(e=>false);
+		resetValidationErrors();
+	}
+
 	useEffect(()=> {
-		if(submitted && validationErrors && Object.keys(validationErrors).length === 0) {
+		const newFormData = {
+			...formData, courses
+		}
+		updateFormData(newFormData)
+	},[courses])
+
+	useEffect(()=> {
+		if(submitted && Object.keys(validationErrors).length === 0) {
 			createEvent();
 		} else{
 			setSubmitted(false);
 		};
 	}, [validationErrors]);
 
+
 	return(
 		<Container component='main'>
 			<Box
 				sx={{
-					marginTop: 8,
+					marginTop: 3,
 					display: 'flex',
 					flexDirection: 'column',
 					alignItems: 'center'
@@ -76,6 +109,13 @@ const GatheringCreate = () => {
 				<Typography component='h1' variant='h3'>
 					Create New Event
 				</Typography>
+				{
+					apiErrors ?
+					<Typography sx={{color:'red'}}>
+						Something went wrong. Event not created.
+					</Typography>
+					: null
+				}
 				<Box component='form' noValidate onSubmit={handleSubmit} sx={{ mt:3 }}>
 					<Grid container spacing={2}>
 						<LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -146,6 +186,45 @@ const GatheringCreate = () => {
 								onChange={handleChange}
 							>
 							</TextField>
+						</Grid>
+						<Grid item xs={12} xl={12}>
+							<Typography>
+								Courses
+							</Typography>
+							{validationErrors?.courses ? 
+								<Typography sx={{color:'red'}}>
+									You must add at least one course.
+								</Typography>
+								: null
+						}
+						</Grid>
+						<Grid item xs={12} md={6}>
+							<TextField
+									fullWidth
+									name='newCourse'
+									id='new-course'
+									label='Add A Course'
+									inputRef={courseInputRef}
+							/>
+							<Button 
+								onClick={handleAddCourse}
+							>
+								Add Course
+							</Button>
+
+						</Grid>
+						<Grid item xs={12} md={6}>
+							<List>
+								{courses.map(c=>{
+									return (
+										<ListItem>
+											<ListItemText>
+												{c}
+											</ListItemText>
+										</ListItem>
+									)
+								})}
+							</List>
 						</Grid>
 					</Grid>
 					<Button

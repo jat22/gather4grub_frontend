@@ -1,7 +1,7 @@
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Typography, Grid, Box } from '@mui/material';
+import { Container, Paper, Typography, Grid, Box, ButtonGroup, Button } from '@mui/material';
 
 import UserContext from '../../context/UserContext';
 import EventServices from '../../api/services/event.services';
@@ -16,6 +16,7 @@ import AddMenuItemDialog from '../../components/eventDashboard/AddMenuItemDialog
 import AddCommentDialog from '../../components/eventDashboard/AddCommentDialog';
 import Loader from '../../components/Loader';
 
+
 const eventInitialState = {
 	id: '',
 	title: '',
@@ -29,7 +30,8 @@ const eventInitialState = {
 	menu: [],
 	guests: [],
 	comments: [],
-	currUserHost : false
+	currUserHost : false,
+	currUserRsvp: {}
 }
 
 const GatheringDashboard = () => {
@@ -75,11 +77,16 @@ const GatheringDashboard = () => {
 		setEventInfo(i => ({...i, comments: comments}));
 	};
 
+	const updateDisplayRsvp = (rsvp) => {
+		setEventInfo(i => ({...i, currUserRsvp: rsvp}))
+	};
+
 
 	// api interactions
 	const getEventInfo = async() => {
 		try{
 			const info = await EventServices.getEventInfo(eventId)
+			console.log(info)
 			if(info !== undefined){
 				info.currUserHost = user.username === info.host
 			};
@@ -178,6 +185,22 @@ const GatheringDashboard = () => {
 		};
 	};
 
+	const updateRsvp = async(rsvp) => {
+		try{
+			console.log(rsvp)
+			const res = await EventServices.updateRsvp(user.username, eventInfo.currUserRsvp.id, rsvp)
+			updateDisplayRsvp(res.data);
+		}catch(err){
+
+		}
+	}
+
+	const handleRsvpUpdate = async(rsvp)=>{
+		if(eventInfo.currUserRsvp.rsvp === rsvp) return;
+		await updateRsvp(rsvp);
+	}
+
+
 	// effects
 	useEffect(() => {
 		if(isFirstRender.current){
@@ -186,6 +209,7 @@ const GatheringDashboard = () => {
 		}
 		getEventInfo();
 	}, []);
+
 
 	if(!loaded){
 		return (
@@ -225,7 +249,28 @@ const GatheringDashboard = () => {
 										apiErrors={apiErrors} 
 										setApiErrors={setApiErrors}
 									/>
-									: null
+									: 
+									<ButtonGroup>
+										<Button 
+											onClick={()=>handleRsvpUpdate('accept')}
+											variant={eventInfo.currUserRsvp.rsvp === 'accept' ? 'contained' : 'outlined'}
+										>
+											Attending
+										</Button>
+										<Button
+											onClick={()=>handleRsvpUpdate('decline')}
+											variant={eventInfo.currUserRsvp.rsvp === 'decline' ? 'contained' : 'outlined'}
+										>
+											Not Attending
+										</Button>
+										<Button
+											onClick={()=>handleRsvpUpdate('pending')}
+											variant={eventInfo.currUserRsvp.rsvp === 'pending' ? 'contained' : 'outlined'}
+										>
+											TBD
+										</Button>
+									</ButtonGroup>
+
 								}
 								<Typography variant='h5' components='h3'>
 									Hosted By: {eventInfo.host}
@@ -301,18 +346,30 @@ const GatheringDashboard = () => {
 						>
 							Menu
 						</Typography>
-						<AddMenuItemDialog 
-							menu={eventInfo.menu} 
-							addMenuItem={addMenuItem} 
-							apiErrors={apiErrors} 
-							setApiErrors={setApiErrors} 
-						/>
-					 	{eventInfo.currUserHost ? 	
-							<AddCourseDialog 
-								addNewCourse={addNewCourse}
-								apiErrors={apiErrors}
-								setApiErrors={setApiErrors}
+						{eventInfo.currUserRsvp?.rsvp === 'accept' ?
+							<AddMenuItemDialog 
+								menu={eventInfo.menu} 
+								addMenuItem={addMenuItem} 
+								apiErrors={apiErrors} 
+								setApiErrors={setApiErrors} 
 							/>
+							: null
+						}
+						
+					 	{eventInfo.currUserHost ? 
+							<>
+								<AddMenuItemDialog 
+									menu={eventInfo.menu} 
+									addMenuItem={addMenuItem} 
+									apiErrors={apiErrors} 
+									setApiErrors={setApiErrors} 
+								/>	
+								<AddCourseDialog 
+									addNewCourse={addNewCourse}
+									apiErrors={apiErrors}
+									setApiErrors={setApiErrors}
+								/>
+							</>
 							: null
 						}
 						{eventInfo?.menu.length > 0 ?

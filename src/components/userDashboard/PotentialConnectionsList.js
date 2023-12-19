@@ -1,12 +1,16 @@
 
 import React from "react";
-import { Avatar, Chip, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Avatar, Chip, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 
 
 const PotentialConnectionsList = ({ potentials, createConnectionRequest }) => {
 	const handleAdd = (connectionUsername) => {
 		createConnectionRequest(connectionUsername);
 	};
+
+	if(potentials.length === 0){
+		return <Typography>No matching user's found.</Typography>
+	}
 
 	return (
 		<List>

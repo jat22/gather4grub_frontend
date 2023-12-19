@@ -112,6 +112,15 @@ class G4GApi {
 		}
 	}
 
+	static async updateRsvp(username, rsvpId, rsvp){
+		try{
+			let res = await this.request(`events/invitations/${username}/${rsvpId}`, {rsvp:rsvp}, 'put')
+			return res
+		}catch(err){
+			throw err
+		}
+	}
+
 	static async createEvent(data){
 		try{
 			let res = await this.request('events', data, 'post')

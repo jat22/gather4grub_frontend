@@ -202,10 +202,10 @@ class EventServices {
 			const res = await G4GApi.addComment(comment, username, eventId)
 			return res.data.comments
 		}catch(err){
-			throw err
-		}
+			throw err;
+		};
 
-	}
+	};
 
 	static async removeComment(commentId, eventId){
 		try{
@@ -215,10 +215,20 @@ class EventServices {
 			console.log(updatedComments)
 			return updatedComments.data.posts
 		}catch(err){
-			throw err
-		}
+			throw err;
+		};
 
 	}
+
+	static async updateRsvp(username, rsvpId, rsvp){
+		console.log(rsvp)
+		try{
+			const res = await G4GApi.updateRsvp(username, rsvpId, rsvp)
+			return res
+		}catch(err){
+			throw err
+		};
+	};
 };
 
 export default EventServices;

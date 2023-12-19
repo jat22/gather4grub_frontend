@@ -1,15 +1,19 @@
 
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, Grid, Typography } from "@mui/material"
 
 import useFields from '../../hooks/useFields';
 import UserContext from "../../context/UserContext";
+import useFormValidate from "../../hooks/useFormValidate";
 
 import ConnectionServices from "../../api/services/connections.services";
 
 import PotentialConnectionsList from "./PotentialConnectionsList";
 
+const validationRules = {
+	input : {required:true}
+};
 
 const FindConnectionsDialog = () => {
 	// context
@@ -20,10 +24,12 @@ const FindConnectionsDialog = () => {
 	const [potentialConnections, setPotenialConnections] = useState([]);
 	const [getError, setGetError] = useState(false);
 	const [postError, setPostError] = useState(false);
+	const [findSubmitted, setFindSubmitted] = useState(false);
 
 	// hooks
-	const { formData, handleChange } = useFields({input:''});
+	const { formData, handleChange, resetFormData } = useFields({input:''});
 	const navigate = useNavigate();
+	const { validationErrors, validateForm, resetValidationErrors } = useFormValidate();
 
 	// event handlers
 	const handleOpen = () => {
@@ -36,23 +42,26 @@ const FindConnectionsDialog = () => {
 		setGetError(false);
 		setPostError(false);
 		setPotenialConnections([]);
+		setFindSubmitted(false);
+		resetValidationErrors();
+		resetFormData()
 	};
 
 	const handleFindUser = async () => {
-		const potentials = await getPotentialConnetions();
-		setPotenialConnections(potentials);
+		setFindSubmitted(s=>true)
 	};
 
 	//  fecth functions
 	const getPotentialConnetions = async () => {
 		try{
 			const potential = await ConnectionServices.getPotential(formData.input);
-			return potential;
+			setPotenialConnections(p => potential);
 		}catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');
 			} else{
 				setGetError(true);
+				setFindSubmitted(false)
 			};
 		};
 	};
@@ -67,6 +76,22 @@ const FindConnectionsDialog = () => {
 			setPostError(true);
 		};
 	};
+
+	useEffect(() => {
+		if(findSubmitted){
+			validateForm(formData, validationRules);
+		} else{
+			setFindSubmitted(s=>false);
+		}
+	}, [findSubmitted])
+
+	useEffect(()=>{
+		if(findSubmitted && Object.keys(validationErrors).length === 0){
+			getPotentialConnetions()
+		} else{
+			setFindSubmitted(s=>false)
+		}
+	}, [validationErrors])
 
 	return (
 		<>
@@ -86,6 +111,8 @@ const FindConnectionsDialog = () => {
 								label='Username or Email'
 								placeholder="Username or Email"
 								onChange={handleChange}
+								error={!!validationErrors?.input}
+								helperText={validationErrors?.input || null}
 							/>
 							<Button 
 								variant='outlined'
@@ -94,15 +121,13 @@ const FindConnectionsDialog = () => {
 								Find
 							</Button>
 						</Grid>
-						{
-							postError ? 
-								<Typography>Something went wrong, request not sent.</Typography> 
-							: null
-						}
-						{
+						{findSubmitted && validationErrors.input ?
+							null 
+							:
 							!getError ?
-								(potentialConnections && potentialConnections.length > 0 
-									? 	<Grid item  xs={12} lg={12}>
+								(potentialConnections && findSubmitted
+									? 	
+										<Grid item  xs={12} lg={12}>
 											<PotentialConnectionsList 
 												createConnectionRequest={createConnectionRequest} 
 												potentials={potentialConnections}
@@ -111,6 +136,11 @@ const FindConnectionsDialog = () => {
 									: null
 								)
 							: <Typography>Opps, somethig went wrong!</Typography>
+						}
+						{
+							postError ? 
+								<Typography>Something went wrong, request not sent.</Typography> 
+							: null
 						}
 					</Grid>
 				</DialogContent>

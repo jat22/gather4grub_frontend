@@ -1,6 +1,6 @@
 import React from "react";
 
-import { List, Link } from "@mui/material";
+import { List, Link, Typography } from "@mui/material";
 
 import InviteListItem from "./InviteItem";
 
@@ -29,7 +29,7 @@ const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 				</>
 			);
 		} else { 
-			return <p>No Pending Invites</p>
+			return <Typography>No Pending Invites</Typography>
 		};
 	};
 
