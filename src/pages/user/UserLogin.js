@@ -27,7 +27,7 @@ const UserLogin = () => {
 			const result = await UserServices.login(formData);
 
 			// on successful login user context is set
-			setUser({username:formData.username, token: result.token});
+			setUser({username:formData.username, token: result.token, avatar: result.avatar});
 
 			setLoginError(e => (null));
 			setDisableSubmit(true)

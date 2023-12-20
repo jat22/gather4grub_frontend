@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Box, Grid, Typography, TextField, Button, Select, InputLabel, MenuItem, FormControl } from "@mui/material";
+import { Container, Box, Grid, Typography, TextField, Button, Select, InputLabel, MenuItem, FormControl, Avatar } from "@mui/material";
 
 import UserContext from "../../context/UserContext";
 import useFields from "../../hooks/useFields";
 import UserServices from "../../api/services/user.services";
 import useFormValidate from "../../hooks/useFormValidate";
 import Format from "../../utilities/format";
+import ChangeAvatarDialog from "../../components/editUser/ChangeAvatarDialog";
 
 import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
 
@@ -21,10 +22,10 @@ const formInitialState = {
 	state: '',
 	zip: '',
 	tagLine: '',
-	avatarUrl: ''
 };
 
 const usStatesMap = Format.stateMap
+
 const validationRules = {
 	firstName: {required:true},
 	lastName: {required:true},
@@ -42,16 +43,19 @@ const EditUser = () => {
 	const [submitted, setSubmitted] = useState(false);
 
 	// hooks
+	const { validationErrors, validateForm } = useFormValidate();
 	const { formData, handleChange, resetFormData, updateFormData } = useFields(formInitialState);
+
 	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
-	const { validationErrors, validateForm } = useFormValidate();
+
 
 	// event handlers
 	const handleSubmit = async(evt) => {
 		evt.preventDefault();
 		setError(false);
 		setSubmitted(true);
+		console.log(formData)
 		validateForm(formData, validationRules);
 	};
 
@@ -69,6 +73,7 @@ const EditUser = () => {
 	const getCurUserInfo = async () => {
 		try{
 			const info = await UserServices.getUserInfo(user.username);
+			console.log(info)
 			const fields = Object.keys(formInitialState);
 			fields.forEach(f => {
 				info[f] = info[f] || '' 
@@ -115,7 +120,7 @@ const EditUser = () => {
 				>
 					{Object.keys(usStatesMap).map(s => {
 						return (
-							<MenuItem value={usStatesMap[s]}>{s}</MenuItem>
+							<MenuItem key={usStatesMap[s]} value={usStatesMap[s]}>{s}</MenuItem>
 						)
 					})}
 				</Select>
@@ -127,15 +132,20 @@ const EditUser = () => {
 		<Container >
 			<Box
 				sx={{
-				marginTop: 8,
+				marginTop: 5,
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
 				}}
 			>
 			<Typography component="h1" variant="h3">
-				Update Information
+				{user.username.toUpperCase()}
 			</Typography>
+			<Avatar 
+				sx={{width:100, height:100}} 
+				src={user.avatar.url}
+			/>
+			<ChangeAvatarDialog currAvatarId={user.avatar.id}/>
 			{
 				error ?
 					<Typography>Something went wrong, information not updated.</Typography>
@@ -216,7 +226,7 @@ const EditUser = () => {
 								id="zip"
 								value={formData.zip}
 								onChange={handleChange}
-								error={validationErrors?.zip}
+								error={!!validationErrors?.zip}
 								helperText={validationErrors?.zip || null}
 							/>
 						</Grid>
@@ -227,16 +237,6 @@ const EditUser = () => {
 								label="Tag Line"
 								id="tagLine"
 								value={formData.tagLine}
-								onChange={handleChange}
-							/>
-						</Grid>
-						<Grid item xs={12}>
-							<TextField
-								fullWidth
-								name="avatarUrl"
-								label="Avatar"
-								id="avatar"
-								value={formData.avatarUrl}
 								onChange={handleChange}
 							/>
 						</Grid>

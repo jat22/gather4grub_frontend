@@ -4,8 +4,11 @@ import G4GApi from "../G4GApi";
 class UserServices {
 	static async login(input){
 		try{
-			const res = await G4GApi.getToken(input);
-			return res.data;
+			console.log(input)
+			const tokenRes = await G4GApi.getToken(input);
+			const avatarRes = await G4GApi.getAvatar(input.username)
+			const avatar = avatarRes.data.avatar || {}
+			return {token:tokenRes.data.token, avatar:avatar}
 		}catch(err){
 			throw err;
 		};	
@@ -110,6 +113,24 @@ class UserServices {
 			throw err;
 		};
 	};
+
+	static async getAvatarList (){
+		try{
+			const res = await G4GApi.getAvatarList();
+			return res.data.avatars
+		}catch(err){
+			throw err
+		}
+	}
+
+	static async updateAvatar (username, avatarId){
+		try{
+			const res = await G4GApi.updateAvatar(username, avatarId);
+			return res.data.avatar
+		}catch(err){
+			throw err
+		}
+	}
 };
 
 export default UserServices;

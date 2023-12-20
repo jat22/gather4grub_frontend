@@ -1,7 +1,7 @@
 
 import React, { useContext, useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import { Dialog, Button, DialogTitle, DialogContent, DialogActions, List, Typography } from "@mui/material"
+import { Dialog, Button, DialogTitle, DialogContent, DialogActions, List, Typography, ListItem, Box } from "@mui/material"
 
 import UserContext from "../../context/UserContext"
 import ConnectionServices from "../../api/services/connections.services"
@@ -63,7 +63,7 @@ const ViewConnectionsDialog = () => {
 			<Button onClick={handleOpen} size='large' variant='contained'>
 				My Connections
 			</Button>
-			<Dialog open={open}>
+			<Dialog open={open} fullWidth>
 				<DialogTitle>
 					Connections
 				</DialogTitle>
@@ -77,7 +77,10 @@ const ViewConnectionsDialog = () => {
 								<List>
 									{connections.map( c => {
 										return(
-												<UserDetailsPopover key={c.username} user={c} />
+												<ListItem key={c.username} >
+													<UserDetailsPopover user={c} />
+												</ListItem>
+												
 										)
 										})
 									}
@@ -86,6 +89,8 @@ const ViewConnectionsDialog = () => {
 						:
 						<Typography>Opps, something went wrong!</Typography>
 					}
+
+					
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Close</Button>

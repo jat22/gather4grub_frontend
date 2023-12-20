@@ -29,7 +29,9 @@ const useFormValidate = (initialState={}) => {
 	  * @returns {(string|undefined)} if there is an error, returns error message, otherwise undefined.
 	  */
 	const validateLength = (field, value, minMax) => {
-		const fieldDisplay = Format.varNameToDisplay(field)
+		if(value.trim() === '') return;
+
+		const fieldDisplay = Format.varNameToDisplay(field);
 		const min = minMax.min;
 		const max = minMax.max;
 		const valLen = value.length
@@ -50,6 +52,7 @@ const useFormValidate = (initialState={}) => {
 	 * @returns {(string|undefined)} if there is an error, returns error message, otherwise undefined.
 	 */
 	const validateFormat = (field, value, type) => {
+		if(value.trim() === '') return
 		const formatValidations = {
 			'email' : {
 				test: (val) => {

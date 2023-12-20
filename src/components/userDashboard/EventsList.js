@@ -24,7 +24,7 @@ const EventsList = ({ events, short, type }) => {
 			)
 		};
 		return(
-			<p>No upcoming events</p>
+			<Typography>No upcoming events</Typography>
 		);
 	};
 

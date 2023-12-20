@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Popover, ListItemText } from "@mui/material";
+import { Popover, ListItemText, ListItemAvatar, Avatar } from "@mui/material";
 import UserProfileCard from "./UserProfileCard";
 
 const UserDetailsPopover = ({ user }) => {
@@ -19,6 +19,9 @@ const UserDetailsPopover = ({ user }) => {
 
 	return(
 		<>
+			<ListItemAvatar>
+				<Avatar src={user.avatarUrl}/>
+			</ListItemAvatar>
 			<ListItemText 
 				primary={user.username}	
 				secondary={`${user.firstName} ${user.lastName}`}
@@ -41,7 +44,7 @@ const UserDetailsPopover = ({ user }) => {
 					horizontal: 'center',
 				}}
 			>
-				<UserProfileCard username={user.username} />
+				<UserProfileCard user={user} />
 			</Popover>
 		</>
 	);

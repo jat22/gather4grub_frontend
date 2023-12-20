@@ -370,5 +370,32 @@ class G4GApi {
 		}
 
 	}
+
+	static async getAvatarList(){
+		try{
+			const res = await this.request('users/avatars')
+			return res
+		}catch(err){
+			throw err
+		}
+	}
+
+	static async getAvatar(username){
+		try{
+			const res = await this.request(`users/${username}/avatar`)
+			return res
+		}catch(err){
+			throw err
+		}
+	}
+
+	static async updateAvatar(username, avatarId){
+		try{
+			const res = await this.request(`users/${username}/avatar`, {avatarId:avatarId}, 'patch')
+			return res
+		}catch(err){
+			throw err
+		}
+	}
 }
 export default G4GApi
