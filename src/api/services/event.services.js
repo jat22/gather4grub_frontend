@@ -10,7 +10,7 @@ class EventServices {
 			const events = res.data.events
 
 			if(events){
-				events.forEach(e => {
+				events.upcoming.forEach(e => {
 					const date = new Date(e.date)
 					e.date = format(date, 'EEE, MMM d')
 					if(e.startTime){

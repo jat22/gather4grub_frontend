@@ -25,6 +25,7 @@ const FindConnectionsDialog = () => {
 	const [getError, setGetError] = useState(false);
 	const [postError, setPostError] = useState(false);
 	const [findSubmitted, setFindSubmitted] = useState(false);
+	const [showResult, setShowResults] = useState(false);
 
 	// hooks
 	const { formData, handleChange, resetFormData } = useFields({input:''});
@@ -48,6 +49,9 @@ const FindConnectionsDialog = () => {
 	};
 
 	const handleFindUser = async () => {
+		setShowResults(r=>false)
+		setGetError(false)
+		setPostError(false)
 		setFindSubmitted(s=>true)
 	};
 
@@ -88,6 +92,8 @@ const FindConnectionsDialog = () => {
 	useEffect(()=>{
 		if(findSubmitted && Object.keys(validationErrors).length === 0){
 			getPotentialConnetions()
+			setFindSubmitted(false)
+			setShowResults(r=>true)
 		} else{
 			setFindSubmitted(s=>false)
 		}
@@ -95,10 +101,18 @@ const FindConnectionsDialog = () => {
 
 	return (
 		<>
-			<Button onClick={handleOpen} size='large' variant="contained">
+			<Button 
+				onClick={handleOpen} 
+				size='large' 
+				variant="contained"
+				fullWidth
+				sx={{
+					height:100
+				}}
+			>
 				Find People
 			</Button>
-			<Dialog open={open}>
+			<Dialog open={open} fullWidth>
 				<DialogTitle>
 					Enter email or username:
 				</DialogTitle>
@@ -113,35 +127,45 @@ const FindConnectionsDialog = () => {
 								onChange={handleChange}
 								error={!!validationErrors?.input}
 								helperText={validationErrors?.input || null}
+								fullWidth
+								sx={{ marginTop:1 }}
 							/>
 							<Button 
 								variant='outlined'
-								onClick={handleFindUser}	
+								onClick={handleFindUser}
+								size='large'
+								sx={{marginTop:1}}
+								fullWidth
 							>
 								Find
 							</Button>
 						</Grid>
-						{findSubmitted && validationErrors.input ?
-							null 
-							:
-							!getError ?
-								(potentialConnections && findSubmitted
-									? 	
-										<Grid item  xs={12} lg={12}>
-											<PotentialConnectionsList 
-												createConnectionRequest={createConnectionRequest} 
-												potentials={potentialConnections}
-											/>
-										</Grid>
-									: null
-								)
-							: <Typography>Opps, somethig went wrong!</Typography>
-						}
-						{
-							postError ? 
-								<Typography>Something went wrong, request not sent.</Typography> 
-							: null
-						}
+						<Grid item xs={12} lg={12} textAlign='center'>
+							{validationErrors.input ?
+								null 
+								:
+								!getError ?
+									(showResult
+										? 	
+											<Grid item  xs={12} lg={12}>
+												<PotentialConnectionsList 
+													createConnectionRequest={createConnectionRequest} 
+													potentials={potentialConnections}
+												/>
+											</Grid>
+										: null
+									)
+								: 
+								<Typography color='error' sx={{marginTop: 2,}}>
+									Somethig went wrong! Unable to complete search.
+								</Typography>
+							}
+							{
+								postError ? 
+									<Typography textAlign='center'>Something went wrong, request not sent.</Typography> 
+								: null
+							}
+						</Grid>
 					</Grid>
 				</DialogContent>
 				<DialogActions>

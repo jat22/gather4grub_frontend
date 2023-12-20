@@ -79,8 +79,8 @@ function NavBar() {
 							display: { xs: 'none', md: 'flex' },
 							fontFamily: 'monospace',
 							fontWeight: 700,
-							letterSpacing: '.3rem',
 							color: 'inherit',
+							letterSpacing: '.3rem',
 							textDecoration: 'none',
 						}}
 					>
@@ -163,7 +163,7 @@ function NavBar() {
 					<Box sx={{ flexGrow: 0, }}>
 						<Tooltip title={user.username}>
 							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-								<Avatar alt={user.username} src={user.avatar?.url} sx={{backgroundColor:'white'}} />
+								<Avatar alt={user.username} src={user.avatar?.url} />
 							</IconButton>
 						</Tooltip>
 						<Menu

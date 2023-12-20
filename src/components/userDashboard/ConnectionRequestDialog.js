@@ -4,20 +4,16 @@ import { Dialog, Button, DialogTitle, DialogContent, DialogActions, Chip, List, 
 
 import UserContext from "../../context/UserContext";
 import ConnectionServices from "../../api/services/connections.services";
+import UserList from "../UserList";
 
 
-const ConnectionRequestDialog = () => {
+const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFollowRequest }) => {
 	// context
 	const {user} = useContext(UserContext);
 
 	// state
 	const [open, setOpen] = useState(false);
-	const [requests, setRequests] = useState([]);
 	const [error, setError] = useState('');
-
-	// hooks
-	const navigate = useNavigate();
-	const isFirstRender = useRef(true);
 
 	// event handlers
 	const handleOpen = () => {
@@ -27,113 +23,47 @@ const ConnectionRequestDialog = () => {
 	const handleClose = () => {
 		setError(false);
 		setOpen(false);
-		setRequests([]);
 	};
 
-	// fetch functions
-	const getRequests = async() => {
-		try{
-			const requests = await ConnectionServices.getRequests(user.username);
-			setRequests(r=>requests);
-		}catch(err){
-			if(err.status === 401){
-				navigate('/error/unauthorized');
-			} else{
-				setError('Something went wrong, unable to get requests.');
-			};
-		};
+	const handleAccept = (requestId) => {
+		acceptFollowRequest(requestId)
 	};
 
-	// patch functions
-	const handleRequestAccept = async (requestId) => {
-		try{
-			await ConnectionServices.acceptRequest(requestId, user.username);
-		} catch(err){
-			if(err.status === 401){
-				navigate('/error/unauthorized');
-			} else{
-				setError('Error: unable to process at this time.');
-			};
-		};
+	const handleDelete = (requestId) => {
+		deleteFollowRequest(requestId)
 	};
-
-	const handleRequestDelete = async (requestId) => {
-		try{
-			await ConnectionServices.deleteRequest(requestId, user.username);
-		}catch(err){
-			if(err.status === 401){
-				navigate('/error/unauthorized');
-			} else{
-				setError('Error: unable to process at this time.');
-			};
-		};
-	};
-
-	// effects
-	useEffect(() => {
-		if(isFirstRender.current) {
-			isFirstRender.current = false;
-			return;
-		}
-		if(open){
-			getRequests();
-		} else return;
-	}, [open]);
 
 	return (
 		<>
-			<Button onClick={handleOpen} size='large' variant="contained">
+			<Button 
+				onClick={handleOpen} 
+				size='large' 
+				variant="contained"
+				fullWidth
+				sx={{
+					height:100
+				}}
+			>
 				Pending Requests
 			</Button>
 			<Dialog 
 				open={open} 
+				fullWidth
 			>
 				<DialogTitle>Connection Requests</DialogTitle>
 				<DialogContent>
 					{!error ?
-						(!requests || requests.length < 1 
+						(!followRequests || followRequests.length < 1 
 							?
 							<Typography >No Requests</Typography>
 							:
-							<Box sx={{width:400}}>
-								<List>
-									{requests.map( c => {
-										return(
-											<ListItem 
-												key={c.requestId} 
-												alignItems="flex-start"
-												secondaryAction={
-													<>
-														<Chip 
-															label="Accept"
-															size="small"
-															edge='end'
-															onClick={() => handleRequestAccept(c.requestId)}
-														/>
-														<Chip 
-															label="Delete"
-															size="small"
-															edge='end'
-															onClick={() => handleRequestDelete(c.requestId)}
-														/>
-													</>
-													
-												}	
-											>
-												<ListItemAvatar>
-													<Avatar />
-												</ListItemAvatar>
-												<ListItemText 
-													component={RouterLink}
-													to={`/users/${c.username}`} 
-													primary={c.username}
-													secondary={`${c.firstName} ${c.lastName}`} />
-											</ListItem>
-										)
-										})
-									}
-								</List>
-							</Box>
+								<UserList 
+									users={followRequests} 
+									actions={[
+										{label:'Accept', function: handleAccept, targetData:'requestId'},
+										{label: 'Delete', function: handleDelete, targetData:'requestId'}
+									]} 
+								/>
 						)
 						: 
 						<Typography>{error}</Typography>

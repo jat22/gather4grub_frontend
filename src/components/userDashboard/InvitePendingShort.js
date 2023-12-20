@@ -29,7 +29,7 @@ const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 				</>
 			);
 		} else { 
-			return <Typography>No Pending Invites</Typography>
+			return <Typography sx={{padding:3}}>No Invitations to Review</Typography>
 		};
 	};
 

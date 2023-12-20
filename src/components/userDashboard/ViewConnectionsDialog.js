@@ -1,12 +1,11 @@
 
 import React, { useContext, useEffect, useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
-import { Dialog, Button, DialogTitle, DialogContent, DialogActions, List, Typography, ListItem, Box } from "@mui/material"
+import { Dialog, Button, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material"
 
 import UserContext from "../../context/UserContext"
-import ConnectionServices from "../../api/services/connections.services"
-
-import UserDetailsPopover from "../UserDetailsPopover"
+import ConnectionServices from "../../api/services/connections.services";
+import UserList from "../UserList"
 
 
 
@@ -34,10 +33,11 @@ const ViewConnectionsDialog = () => {
 	};
 
 	// fetch functions
-	const getConnections = async(username) =>{
+	const getConnections = async() =>{
 		try{
-			const connections = await ConnectionServices.getConnections(username);
+			const connections = await ConnectionServices.getConnections(user.username);
 			setConnections(c => connections);
+			console.log(connections)
 		}catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');
@@ -47,6 +47,22 @@ const ViewConnectionsDialog = () => {
 		};
 	};
 
+	const handleUnfollow = async (connectionId) => {
+		try{
+			const res = await ConnectionServices.unfollow(user.username, connectionId);
+			if(res === 204){
+				getConnections()
+			}
+			
+		}catch(err){
+			if(err.status === 401){
+				navigate('/error/unauthorized');
+			}else {
+				setError(true);
+			};
+		}
+	};
+
 	// effects
 	useEffect(() => {
 		if(isFirstRender.current){
@@ -54,13 +70,21 @@ const ViewConnectionsDialog = () => {
 			return;
 		}
 		if(open){
-			getConnections(user.username);
+			getConnections();
 		} else return;
 	}, [open]);
 
 	return (
 		<>
-			<Button onClick={handleOpen} size='large' variant='contained'>
+			<Button 
+				onClick={handleOpen} 
+				size='large'
+				variant='contained'
+				fullWidth
+				sx={{
+					height:100
+				}}
+			>
 				My Connections
 			</Button>
 			<Dialog open={open} fullWidth>
@@ -74,17 +98,15 @@ const ViewConnectionsDialog = () => {
 								?
 								<Typography >No Connections</Typography>
 								:
-								<List>
-									{connections.map( c => {
-										return(
-												<ListItem key={c.username} >
-													<UserDetailsPopover user={c} />
-												</ListItem>
-												
-										)
-										})
-									}
-								</List>
+								<UserList 
+									users={connections}
+									actions={[
+										{
+											label:'UnFollow', 
+											function:handleUnfollow, targetData:'connectionId'
+										}
+									]}
+								/>
 							)
 						:
 						<Typography>Opps, something went wrong!</Typography>

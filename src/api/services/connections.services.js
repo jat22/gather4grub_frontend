@@ -24,11 +24,18 @@ class ConnectionServices {
 	}
 
 	static async acceptRequest(id, curUsername){
-		await G4GApi.acceptConnectionRequest(id, curUsername)
+		const res = await G4GApi.acceptConnectionRequest(id, curUsername)
+		return res.status
 	}
 
 	static async deleteRequest(id, curUsername){
-		await G4GApi.deleteConnectionRequest(id, curUsername)
+		const res = await G4GApi.deleteConnectionRequest(id, curUsername)
+		return res.status
+	}
+
+	static async unfollow(username, connectionId){
+		const res = await G4GApi.unfollow(username, connectionId);
+		return res.status
 	}
 }
 

@@ -19,9 +19,9 @@ const UserDetailsPopover = ({ user }) => {
 
 	return(
 		<>
-			<ListItemAvatar>
+			{/* <ListItemAvatar>
 				<Avatar src={user.avatarUrl}/>
-			</ListItemAvatar>
+			</ListItemAvatar> */}
 			<ListItemText 
 				primary={user.username}	
 				secondary={`${user.firstName} ${user.lastName}`}

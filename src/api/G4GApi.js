@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ApiError } from '../utilities/error';
 
+
 const BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:3001";
 
 class G4GApi {
@@ -294,7 +295,7 @@ class G4GApi {
 	static async acceptConnectionRequest(id, curUsername){
 		try{
 			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put')
-			return
+			return res
 		}catch(err){
 			throw err
 		}
@@ -304,7 +305,7 @@ class G4GApi {
 	static async deleteConnectionRequest(id, curUsername){
 		try{
 			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete')
-			return
+			return res
 		}catch(err){
 			throw err
 		}
@@ -397,5 +398,15 @@ class G4GApi {
 			throw err
 		}
 	}
+
+	static async unfollow(username, connectionId){
+		try{
+			const res = await this.request(`users/${username}/connections/${connectionId}`, {}, 'delete')
+			return res
+		}catch(err){
+			throw err
+		}
+	}
 }
+
 export default G4GApi

@@ -17,7 +17,8 @@ const UpcomingTableRow = ({ event, type })=>{
 	const rsvpMap = {
 		accept : 'Attending',
 		decline : 'Declined',
-		pending : 'Undecided'
+		pending : 'TBD',
+		host: 'Host'
 	};
 
 	return(
@@ -40,17 +41,9 @@ const UpcomingTableRow = ({ event, type })=>{
 				<TableCell>
 					{event.title}
 				</TableCell>
-				{type === 'host' ? null 
-					:
-					event.isHost ? 
-					<TableCell>
-						Host
-					</TableCell>
-					:
-					<TableCell>
-						{rsvpMap[event.rsvp]}	
-					</TableCell>
-				}
+				<TableCell>
+					{rsvpMap[event.rsvp]}	
+				</TableCell>
 		</TableRow>
 	);
 };
