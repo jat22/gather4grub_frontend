@@ -35,9 +35,6 @@ const AllEventsModal = ({ events, type }) => {
 							p: 4,
 						}}
 				>
-					<Typography>
-						Upcoming Events
-					</Typography>
 					<EventsList short={false} events={events} type={type} />
 				</Paper>
 					

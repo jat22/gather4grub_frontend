@@ -1,6 +1,6 @@
 import React from "react";
 
-import { List, Link, Typography } from "@mui/material";
+import { List, Typography } from "@mui/material";
 
 import InviteListItem from "./InviteItem";
 
@@ -11,7 +11,7 @@ const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 		if(invites && invites.length > 0){
 			return (
 				<>
-					<List dense={true}>
+					<List dense>
 					{invites.slice(0,3).map((i) => (
 						<InviteListItem 
 							key={i.id}
@@ -23,9 +23,6 @@ const InvitePendingShort = ({ invites, acceptInvite, declineInvite }) => {
 						))
 					}
 					</List>
-					<Link color="primary" sx={{ }}>
-						All Invites
-					</Link>
 				</>
 			);
 		} else { 

@@ -1,5 +1,6 @@
 import React from "react";
 import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Chip } from "@mui/material";
+import UserList from "../UserList";
 
 const GuestList = ({ guests, isHost, uninviteGuest }) => {
 	// if(guests === undefined) return;
@@ -7,9 +8,21 @@ const GuestList = ({ guests, isHost, uninviteGuest }) => {
 	const handleUninvite = (username) => {
 		uninviteGuest(username);
 	};
+	const rsvpMap = {
+		pending : 'TBD',
+		host : 'Host',
+		accept : "Attending",
+		decline : "Not Attending"
+	};
+	console.log(guests)
 
 	return (
-		<List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+		<List 
+			sx={{ 
+				width: '100%', 
+			}}
+			dense
+		>
 			{guests.map( g => {
 				return (
 					<ListItem 
@@ -25,9 +38,9 @@ const GuestList = ({ guests, isHost, uninviteGuest }) => {
 							: null
 						}>
 						<ListItemAvatar>
-							<Avatar/>
+							<Avatar src={g.avatarUrl}/>
 						</ListItemAvatar>
-						<ListItemText primary={g.username} secondary={g.rsvp} />
+						<ListItemText primary={g.username} secondary={rsvpMap[g.rsvp]} />
 					</ListItem>
 				)
 			})}

@@ -21,7 +21,7 @@ const generateSecondaryActions  = (actions, user) => {
 	)
 }
 
-const UserList = ({ users, actions }) => {
+const UserList = ({ users, actions}) => {
 	return(
 		<List>
 			{users.map( user => {

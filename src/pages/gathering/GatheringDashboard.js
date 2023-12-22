@@ -1,7 +1,12 @@
 
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Paper, Typography, Grid, Box, ButtonGroup, Button } from '@mui/material';
+import { Container, Paper, Typography, Grid, Box, ButtonGroup, Button, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import MapIcon from '@mui/icons-material/Map';
+import PersonPinIcon from '@mui/icons-material/PersonPin';
 
 import UserContext from '../../context/UserContext';
 import EventServices from '../../api/services/event.services';
@@ -227,22 +232,77 @@ const GatheringDashboard = () => {
 	return(
 		<Container maxWidth='lg' sx={{ mt:4, mb:4 }}>
 			<Grid container spacing={3}>
+				{/* ###################### EVENT DETAILS ######################### */}
 				<Grid item xs={12} md={12}>
 					<Paper
+						elevation={4}
 						sx={{
-							p: 2,
+							p: 3,
 							display: 'flex',
 							flexDirection: 'column',
 							textAlign: 'start'
 						}}
 					>
 						<Grid container spacing={2}>
-							<Grid item xs={12} md={7}>
+							<Grid item xs={12}>
 								<Typography variant='h3' components='h2'>
 									{eventInfo.title}
 								</Typography>
-
-								{eventInfo.currUserHost ? 
+							</Grid>
+							<Grid item xs={12} md={4}>
+								<List  sx={{padding:0}}>
+									<ListItem 
+										key='host'
+										sx={{padding:0}}	
+									>
+										<ListItemIcon>
+											<PersonPinIcon />
+										</ListItemIcon>
+										<ListItemText>
+											{eventInfo.host}
+										</ListItemText>
+									</ListItem>
+									<ListItem 
+										key='date'
+										sx={{padding:0}}	
+									>
+										<ListItemIcon>
+											<CalendarMonthIcon />
+										</ListItemIcon>
+										<ListItemText>
+											{eventInfo.date}
+										</ListItemText>
+									</ListItem>
+									<ListItem 
+										key='time'
+										sx={{padding:0}}
+									>
+										<ListItemIcon>
+											<AccessTimeFilledIcon  />
+										</ListItemIcon>
+										<ListItemText>
+											{eventInfo.displayTime}
+										</ListItemText>
+									</ListItem>
+									<ListItem 
+										key='location'
+										sx={{padding:0}}
+									>
+										<ListItemIcon>
+											<MapIcon  />
+										</ListItemIcon>
+										<ListItemText>
+											{eventInfo.location}
+										</ListItemText>
+									</ListItem>
+								</List>
+							</Grid>
+							<Grid item xs={12} md={8}>
+								<Typography variant='overline'>What to Know</Typography>
+								<Typography variant='body2'>{eventInfo.description}</Typography>
+							</Grid>
+							<Grid item xs={12}>
+							{eventInfo.currUserHost ? 
 									<EditDetailsDialog 
 										basicDetails={basicDetails} 
 										updateBasicDetails={updateBasicDetails}
@@ -270,140 +330,144 @@ const GatheringDashboard = () => {
 											TBD
 										</Button>
 									</ButtonGroup>
-
 								}
-								<Typography variant='h5' components='h3'>
-									Hosted By: {eventInfo.host}
-								</Typography>
-								<Typography variant='h5' components='h3'>
-									{eventInfo.date}
-								</Typography>
-								<Typography variant='h5' components='h3'>
-									{eventInfo.displayTime}
-								</Typography>
-							</Grid>
-							<Grid item xs={12} md={5}>
-								<Grid container>
-									<Grid item lg={12}>
-										<Typography variant='h6'>
-											Where:
-										</Typography>
-										<Typography>
-											{eventInfo.location}
-										</Typography>
-									</Grid>
-									<Grid item lg={12}>
-										<Typography variant='h6'>
-											What:
-										</Typography>
-										<Typography>
-											{eventInfo.description}
-										</Typography>
-									</Grid>
-								</Grid>
 							</Grid>
 						</Grid>
 					</Paper>
 				</Grid>
-				<Grid item xs={12} md={3}>
-					<Typography variant='h4' components='h4' sx={{margin:1,}}>
-						Guests
-					</Typography>
-					{apiErrors?.uninvite ? 
-						<Typography>Something went wrong, guest not removed.</Typography>
-						: null
-					}
-					{eventInfo.currUserHost ? 
-						<InviteDialog 
-							inviteGuests={inviteGuests} 
-							currentGuestList={eventInfo.guests}
-							apiErrors={apiErrors} 
-							setApiErrors={setApiErrors}
-						/> 
-						: null
-					}
+				{/* ################### GUESTS ######################## */}
+				<Grid item xs={12} sm={6} md={5} lg={4}>
 					<Paper
+						elevation={4}
 						sx={{
-							p: 2,
+							p: 3,
 							display: 'flex',
 							flexDirection: 'column',
+							textAlign: 'start'
 						}}
 					>
-						<GuestList 
-							guests={eventInfo.guests} 
-							isHost={eventInfo.currUserHost} 
-							uninviteGuest={uninviteGuest} 
-						/>
+						<Grid container spacing={0}>
+							<Grid item xs={12}>
+								<Typography variant='h4' components='h3'>
+									Guests
+								</Typography>
+							</Grid>
+							{eventInfo.currUserHost ? 
+								<Grid item xs={12}>
+
+									<InviteDialog 
+										inviteGuests={inviteGuests} 
+										currentGuestList={eventInfo.guests}
+										apiErrors={apiErrors} 
+										setApiErrors={setApiErrors}
+									/> 
+									{apiErrors?.uninvite ? 
+										<Typography>Something went wrong, guest not removed.</Typography>
+										: null
+									}
+								</Grid>
+								: null
+							}
+							<Grid item xs={12}>
+								<GuestList 
+									guests={eventInfo.guests} 
+									isHost={eventInfo.currUserHost} 
+									uninviteGuest={uninviteGuest} 
+								/>
+							</Grid>
+						</Grid>
 					</Paper>
 				</Grid>
-				
-				<Grid item xs={12} md={9}>
-					<Grid item lg={12} sx={{marginBottom:2}}>
-						<Typography 
-							variant='h4'
-							components='h4' 
-							sx={{margin:1,}}
-						>
-							Menu
-						</Typography>
-						{eventInfo.currUserRsvp?.rsvp === 'accept' ?
-							<AddMenuItemDialog 
-								menu={eventInfo.menu} 
-								addMenuItem={addMenuItem} 
-								apiErrors={apiErrors} 
-								setApiErrors={setApiErrors} 
-							/>
-							: null
-						}
-						
-					 	{eventInfo.currUserHost ? 
-							<>
-								<AddMenuItemDialog 
-									menu={eventInfo.menu} 
-									addMenuItem={addMenuItem} 
-									apiErrors={apiErrors} 
-									setApiErrors={setApiErrors} 
-								/>	
-								<AddCourseDialog 
-									addNewCourse={addNewCourse}
-									apiErrors={apiErrors}
-									setApiErrors={setApiErrors}
-								/>
-							</>
-							: null
-						}
-						{eventInfo?.menu.length > 0 ?
-							<EventMenu 
-								menu={eventInfo.menu} 
-								isHost={eventInfo.currUserHost} 
-								username={user.username}
-								removeDish={removeDish}
-							/>
-							: null
-						}						
-						
+
+				<Grid item xs={12} sm={6} md={7} lg={8}>
+					<Grid container spacing={3}>
+						{/* ######################### MENU ###################### */}
+						<Grid item xs={12}>
+							<Paper
+								elevation={4}
+								sx={{
+									p: 3,
+									display: 'flex',
+									flexDirection: 'column',
+									textAlign: 'start'
+								}}
+							>
+								<Grid item xs={12}>
+									<Typography variant='h4' components='h3'>
+										Menu
+									</Typography>
+									{eventInfo.currUserRsvp?.rsvp === 'accept' || eventInfo.currUserHost ?
+										<>
+											<AddMenuItemDialog 
+												menu={eventInfo.menu} 
+												addMenuItem={addMenuItem} 
+												apiErrors={apiErrors} 
+												setApiErrors={setApiErrors} 
+											/>
+											{eventInfo.currUserHost ? 
+												<AddCourseDialog 
+													addNewCourse={addNewCourse}
+													apiErrors={apiErrors}
+													setApiErrors={setApiErrors}
+												/>
+												: null
+											}
+										</>
+										: null
+									}
+								</Grid>
+								<Grid item xs={12}>
+								{eventInfo?.menu.length > 0 ?
+									<EventMenu 
+										menu={eventInfo.menu} 
+										isHost={eventInfo.currUserHost} 
+										username={user.username}
+										removeDish={removeDish}
+									/>
+									: null
+								}					
+								</Grid>
+							</Paper>
+						</Grid>
+						{/* ############################## COMMENTS ########################## */}
+						<Grid item xs={12}>
+							<Paper
+								elevation={4}
+								sx={{
+									p: 3,
+									display: 'flex',
+									flexDirection: 'column',
+									textAlign: 'start'
+								}}
+							>
+								<Grid item xs={12}>
+									<Typography variant='h4' components='h3'>
+										Comments
+									</Typography>
+									<AddCommentDialog 
+										addComment={addComment} 
+										apiErrors={apiErrors} 
+										setApiErrors={setApiErrors} 
+									/>
+									{apiErrors?.removeComment ? 
+										<Typography>
+											Something went wrong, comment not removed.
+										</Typography>
+										: null
+									}
+								</Grid>
+								<Grid item xs={12}>
+									<EventComments 
+										comments={eventInfo.comments} 
+										removeComment={removeComment}
+										isHost={eventInfo.currUserHost}
+										username={user.username} 
+									/>
+								</Grid>
+							</Paper>
+						</Grid>
 					</Grid>
-					<Grid item lg={12} sx={{margin:'0 0 0 0'}}>
-						<Typography variant='h4' components='h4'sx={{margin:1,}}>
-							Comments
-						</Typography>
-						{apiErrors?.removeComment ? 
-							<Typography>
-								Something went wrong, comment not removed.
-							</Typography>
-							: null
-						}
-						<AddCommentDialog 
-							addComment={addComment} 
-							apiErrors={apiErrors} 
-							setApiErrors={setApiErrors} />
-						<Paper >
-							<EventComments 
-								comments={eventInfo.comments} 
-								removeComment={removeComment} 
-							/>
-						</Paper>
-					</Grid> 
+					
 				</Grid>
 			</Grid>
 		</Container>

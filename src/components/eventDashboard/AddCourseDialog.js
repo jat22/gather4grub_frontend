@@ -52,10 +52,10 @@ const AddCourseDialog = ({ addNewCourse, apiErrors, setApiErrors }) => {
 
 	return (
 		<>
-			<Button variant="outlined" size='small' onClick={handleClickOpen}>
+			<Button variant="text" size='small' onClick={handleClickOpen}>
 				Add Course
 			</Button>
-			<Dialog open={open} >
+			<Dialog fullWidth open={open} >
 				<DialogTitle>Add A Course</DialogTitle>
 				<DialogContent>
 					{apiErrors?.newCourse ? 
@@ -64,6 +64,8 @@ const AddCourseDialog = ({ addNewCourse, apiErrors, setApiErrors }) => {
 					}
 
 					<TextField
+						sx={{mt:1}}
+						fullWidth
 						label='New Course'
 						value={formData.newCourse}
 						name="newCourse"
@@ -73,15 +75,10 @@ const AddCourseDialog = ({ addNewCourse, apiErrors, setApiErrors }) => {
 						error={!!validationErrors?.newCourse}
 						helperText={validationErrors?.newCourse || null}
 					/>
-					<Button 
-						onClick={handleAddNewCourse}
-						size='small'
-					>
-						Add 
-					</Button>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Cancel</Button>
+					<Button onClick={handleAddNewCourse}>Add</Button>
 				</DialogActions>
 			</Dialog>
 		</>

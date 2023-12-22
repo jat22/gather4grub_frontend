@@ -180,7 +180,7 @@ const UserDashboard = () => {
 								p: 2,
 								display: 'flex',
 								flexDirection: 'column',
-								height: 300,
+
 							}}
 						>
 							<EventsList 

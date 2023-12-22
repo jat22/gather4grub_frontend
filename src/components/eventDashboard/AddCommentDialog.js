@@ -61,10 +61,10 @@ const AddCommentDialog = ({ addComment, apiErrors, setApiErrors }) => {
 
 	return (
 		<>
-			<Button variant='outlined' size='small' onClick={handleClickOpen}>
+			<Button variant='text' size='small' onClick={handleClickOpen}>
 				Add Comment
 			</Button>
-			<Dialog open={open} >
+			<Dialog open={open} fullWidth >
 				<DialogTitle>
 					Add Comment
 				</DialogTitle>
@@ -74,6 +74,8 @@ const AddCommentDialog = ({ addComment, apiErrors, setApiErrors }) => {
 						: null
 					}
 					<TextField 
+						fullWidth
+						sx={{mt:1}}
 						id='comment-field'
 						label='New Comment'
 						multiline

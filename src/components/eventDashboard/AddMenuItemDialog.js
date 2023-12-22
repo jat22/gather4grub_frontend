@@ -65,16 +65,17 @@ const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 
 	return (
 		<>
-			<Button variant='outlined' size='small' onClick={handleClickOpen}>
+			<Button variant='text' size='small' onClick={handleClickOpen}>
 				Add Item
 			</Button>
-			<Dialog open={open}>
+			<Dialog open={open} fullWidth>
 				<DialogTitle>Add Menu Item</DialogTitle>
 				<DialogContent>
 					<Box sx={{ minWidth: 120 }} component='form' noValidate>
-						<FormControl>
+						<FormControl fullWidth sx={{mb:1, mt:1}}>
 							<InputLabel id='course-select-label'>Course</InputLabel>
 							<Select
+								fullWidth
 								labelId='course-select-label'
 								id='course-select'
 								value={formData.course}
@@ -97,6 +98,7 @@ const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 							
 						</FormControl>
 						<TextField 
+							fullWidth
 							label='Name'
 							value={formData.dishName}
 							id='dishName'
@@ -104,13 +106,16 @@ const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 							name='dishName'
 							error={!!validationErrors?.dishName}
 							helperText={validationErrors?.dishName || null}
+							sx={{mb:1}}
 						/>
 						<TextField 
+							fullWidth
 							label='Description'
 							value={formData.description}
 							id='description'
 							onChange={handleChange}
 							name='description'
+
 						/>
 					</Box>
 				</DialogContent>

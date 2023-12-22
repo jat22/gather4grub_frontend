@@ -1,6 +1,7 @@
 import React, { useState} from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, Chip } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, List, ListItem, ListItemText, Chip, IconButton } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from "react-router-dom";
 
 
@@ -37,7 +38,12 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 				{menu !== undefined ? menu.map((c, i)=>{
 					let panel = `panel${i}`
 					return (
-						<Accordion key={c.courseId} expanded={menuAccordianExpanded[panel]} onChange={toggleMenuAccordians(panel)}>
+						<Accordion 
+							key={c.courseId} 
+							expanded={menuAccordianExpanded[panel]} 
+							onChange={toggleMenuAccordians(panel)}
+							elevation={0}
+						>
 							<AccordionSummary
 								expandIcon={<ExpandMoreIcon />}
 								aria-controls={`${panel}bh-content`}
@@ -46,13 +52,16 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 								<Typography sx={{
 									fontWeight:'bold',
 									width: '33%', 
-									textAlign:'start'}}
+									textAlign:'start'
+								}}
 								>
 									{c.courseName}
 								</Typography>
 							</AccordionSummary>
 							<AccordionDetails>
-								<List>
+								<List 
+									sx={{p:0}}
+								>
 									{c.dishes.map(d => generateDish(d))}
 								</List>
 							</AccordionDetails>
@@ -66,16 +75,18 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 	const generateDish = (dish) => {
 		return (
 			<ListItem 
+				sx={{p:0}}
 				key={dish.id}
 				alignItems='flex-start'
 				secondaryAction={
 					isHost || dish.username === username ?
-						<Chip
-							label="Remove"
-							size='small' 
+						<IconButton 
 							edge='end'
-							onClick={() => handleRemoveDish(dish.id)}
-						/>
+							aria-label='delete'
+							onClick={()=>handleRemoveDish(dish.id)}
+						>
+							<DeleteIcon fontSize="small" />
+						</IconButton>
 					: null
 				}
 			>

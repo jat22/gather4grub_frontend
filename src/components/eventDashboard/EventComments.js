@@ -1,11 +1,13 @@
 import React, { Fragment } from "react";
-import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Divider, Chip } from "@mui/material";
+import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Divider, IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const EventComments = ({ comments, isHost, username, removeComment }) => {
 	// display message if there are not already comments.
 	if(comments === undefined || comments.length === 0) {
 		return (
-			<Typography >
+			<Typography sx={{margin:1}}>
 				No Comments Yet.
 			</Typography>
 		);
@@ -16,6 +18,20 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 		removeComment(commentId);
 	};
 
+	const secondaryAction = (commentId, commentAuthor)=>{
+		if(isHost || commentAuthor === username){
+			return (
+				<IconButton
+					edge='end'
+					aria-label="delete"
+					onClick={()=>handleRemoveComment(commentId)}
+				>
+					<DeleteIcon fontSize="small"/>
+				</IconButton>
+			)
+		} else return null
+	}
+
 	const generateComments = () => {
 		return (
 			<List sx={{ width:'100%'}}>
@@ -25,14 +41,7 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 							<ListItem 
 								alignItems='flex-start'
 								secondaryAction={
-									isHost || c.author === username ?
-									<Chip
-										label="Remove"
-										size='small' 
-										edge='end'
-										onClick={() => handleRemoveComment(c.id)}
-									/>
-									: null
+									secondaryAction(c.id, c.username)
 								}
 							>
 								<ListItemAvatar>
@@ -42,7 +51,7 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 									primary={c.user}
 									secondary={
 										<>
-											<Typography >
+											<Typography component='span' variant='body1'>
 												{c.content}
 											</Typography>
 										</>}

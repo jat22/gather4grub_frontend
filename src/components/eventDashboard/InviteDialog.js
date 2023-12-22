@@ -103,10 +103,10 @@ const InviteDialog = ({ inviteGuests, currentGuestList, apiErrors, setApiErrors 
 
 	return (
 		<>
-			<Button variant="outlined" size='small' onClick={handleClickOpen}>
+			<Button variant="text" size='small' onClick={handleClickOpen}>
 			Invite
 			</Button>
-			<Dialog open={open} onClose={handleClose}>
+			<Dialog fullWidth open={open} onClose={handleClose}>
 				<DialogTitle>Add Guests</DialogTitle>
 				<DialogContent>
 					{apiErrors?.invites ? 

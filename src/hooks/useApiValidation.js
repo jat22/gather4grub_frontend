@@ -5,9 +5,11 @@ import UserServices from "../api/services/user.services";
 const useApiValidation = (initialState) => {
 	const [apiValidationErrors, setApiValidationErrors] = useState(initialState);
 
+
 	const validateUniqueFields = async (uniqueFields) => {
 		// checks api for duplicate values
 		try {
+
 			const uniqueErrors = await UserServices.checkUnique(uniqueFields)
 			setApiValidationErrors(e => {
 				const newErrors = {}

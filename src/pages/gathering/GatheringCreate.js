@@ -215,9 +215,9 @@ const GatheringCreate = () => {
 						</Grid>
 						<Grid item xs={12} md={6}>
 							<List>
-								{courses.map(c=>{
+								{courses.map((c) =>{
 									return (
-										<ListItem>
+										<ListItem key={c}>
 											<ListItemText>
 												{c}
 											</ListItemText>

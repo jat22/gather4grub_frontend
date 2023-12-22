@@ -9,7 +9,7 @@ const EventsList = ({ events, short, type }) => {
 		if(events && events.length > 0){
 			return (
 				<>
-					<Table >
+					<Table sx={{mb:2}}>
 						<TableBody >
 							{!short ? events.map(e => (
 								<UpcomingTableRow key={e.id} event={e} type={type}/>
