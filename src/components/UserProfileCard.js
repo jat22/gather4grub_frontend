@@ -5,35 +5,32 @@ const UserProfileCard = ({ user }) => {
 	return (
 		<>
 			<Paper sx={{
-				padding:5
+				padding:2
 			}}>
 				<Grid container>
-					<Grid item xs={3} lg={3}>
+					<Grid item xs={12}>
 						<Avatar src={user.avatarUrl} />
 					</Grid>
-					<Grid item xs={9} lg={9}> 
-						<Typography>
+					<Grid item xs={12}> 
+						<Typography variant='h6'>
 							{user.username}
 						</Typography>
 					</Grid>
-					<Grid item lg={3} /> 
-						<Grid item lg={9}>
-							<Typography>
-								{user.firstName} {user.lastName}
-							</Typography>
-						</Grid>
-						<Grid item lg={3} /> 
-						<Grid item lg={9}>
-							<Typography>
-								{user.email}
-							</Typography>
-						</Grid>
-						<Grid item lg={3} /> 
-						<Grid item lg={9}>
-							<Typography>
-								{user.tagLine}
-							</Typography>
-						</Grid>
+					<Grid item xs={12}>
+						<Typography variant='subtitle2'>
+							{user.firstName} {user.lastName}
+						</Typography>
+					</Grid>
+					<Grid item xs={12}>
+						<Typography variant='subtitle2'>
+							{user.email}
+						</Typography>
+					</Grid>
+					<Grid item xs={12}>
+						<Typography variant='caption'>
+							{user.tagLine}
+						</Typography>
+					</Grid>
 				</Grid>
 			</Paper>
 		</>

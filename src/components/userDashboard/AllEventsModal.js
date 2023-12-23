@@ -22,6 +22,7 @@ const AllEventsModal = ({ events, type }) => {
 				onClose={handleClose}
 				aria-labelledby='modal-all-upcoming-events'
 				aria-describedby='modal-description'
+				sx={{overflow:'scroll'}}
 			>
 				<Paper 
 						sx={{

@@ -6,6 +6,7 @@ import { Dialog, Button, DialogTitle, DialogContent, DialogActions, Typography }
 import UserContext from "../../context/UserContext"
 import ConnectionServices from "../../api/services/connections.services";
 import UserList from "../UserList"
+import Loader from "../Loader";
 
 
 
@@ -17,6 +18,7 @@ const ViewConnectionsDialog = () => {
 	const [open, setOpen] = useState(false);
 	const [connections, setConnections] = useState([]);
 	const [error, setError] = useState(false);
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	// hooks
 	const isFirstRender = useRef(true);
@@ -30,6 +32,7 @@ const ViewConnectionsDialog = () => {
 	const handleClose = () => {
 		setOpen(false);
 		setError(false);
+		setIsLoaded(false)
 	};
 
 	// fetch functions
@@ -37,6 +40,7 @@ const ViewConnectionsDialog = () => {
 		try{
 			const connections = await ConnectionServices.getConnections(user.username);
 			setConnections(c => connections);
+			setIsLoaded(true)
 		}catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');
@@ -91,27 +95,29 @@ const ViewConnectionsDialog = () => {
 					Connections
 				</DialogTitle>
 				<DialogContent>
-					{
-						!error ?
-							(!connections || connections.length < 1 
-								?
-								<Typography >No Connections</Typography>
-								:
-								<UserList 
-									users={connections}
-									actions={[
-										{
-											label:'UnFollow', 
-											function:handleUnfollow, targetData:'connectionId'
-										}
-									]}
-								/>
-							)
+					{isLoaded ?
+						(!connections || connections.length < 1 
+							?
+							<Typography >No Connections</Typography>
+							:
+							<UserList 
+								users={connections}
+								actions={[
+									{
+										label:'UnFollow', 
+										function:handleUnfollow, targetData:'connectionId'
+									}
+								]}
+							/>
+						)
 						:
-						<Typography>Opps, something went wrong!</Typography>
+						<Loader />
 					}
-
-					
+					{
+						error ?
+						<Typography>Opps, something went wrong!</Typography>
+						: null
+					}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Close</Button>

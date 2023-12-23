@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Badge, Box, Container, Grid, Paper, Typography } from '@mui/material'
+import { Badge, Container, Grid, Paper, Typography } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom';
 
 import UserContext from '../../context/UserContext';
@@ -15,6 +15,14 @@ import AllEventsModal from '../../components/userDashboard/AllEventsModal'
 import FindConnectionsDialog from '../../components/userDashboard/FindConnectionsDialog';
 import ViewConnectionsDialog from '../../components/userDashboard/ViewConnectionsDialog';
 import ConnectionRequestDialog from '../../components/userDashboard/ConnectionRequestDialog';
+import Loader from '../../components/Loader';
+import { set } from 'date-fns';
+
+const isLoadedInitialState = {
+	events: false,
+	invitations: false,
+	requets: false
+}
 
 const UserDashboard = () => {
 	// state
@@ -23,6 +31,7 @@ const UserDashboard = () => {
 	const [rsvpError, setRsvpError] = useState(false);
 	const [followRequests, setFollowRequests] = useState([]);
 	const [apiErrors, setApiErrors] = useState({})
+	const [isLoaded, setIsLoaded] = useState({})
 
 	// hooks
 	const isFirstRender = useRef(true);
@@ -35,7 +44,8 @@ const UserDashboard = () => {
 		// get event invitations for logged in user and set state.
 		try{
 			const invites = await InvitationServices.getInvites(username);
-			setInvitations(i => invites);
+			setInvitations(i => (invites));
+			setIsLoaded(l => ({invitiations:true}))
 		} catch(err){
 			if(err.status === 500){
 				navigate('/error/network');
@@ -55,6 +65,7 @@ const UserDashboard = () => {
 		try{
 			const allEvents = await EventServices.getUpcoming(username);
 			setUpcomingEvents(e => allEvents?.upcoming);
+			setIsLoaded(l => ({...l, events:true}))
 		}catch(err){
 			if(err.status === 500){
 				navigate('/error/network');
@@ -186,15 +197,22 @@ const UserDashboard = () => {
 
 							}}
 						>
-							<EventsList 
-								events={upcomingEvents}
-								short={true}
-								type="upcoming"
-							/>
-							{upcomingEvents && upcomingEvents.length > 3 ?
-								<AllEventsModal events={upcomingEvents} type='upcoming' />
-								: null
+							{isLoaded ? 
+								<>
+									<EventsList 
+										events={upcomingEvents}
+										short={true}
+										type="upcoming"
+									/>
+									{upcomingEvents && upcomingEvents.length > 3 ?
+										<AllEventsModal events={upcomingEvents} type='upcoming' />
+										: null
+									}
+								</>
+								:
+								<Loader />	
 							}
+							
 						</Paper>
             	</Grid>
 				<Grid item xs={12} md={6} >
