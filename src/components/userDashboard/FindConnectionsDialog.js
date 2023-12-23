@@ -46,6 +46,7 @@ const FindConnectionsDialog = () => {
 		setFindSubmitted(false);
 		resetValidationErrors();
 		resetFormData()
+		setShowResults(false)
 	};
 
 	const handleFindUser = async () => {
@@ -58,9 +59,11 @@ const FindConnectionsDialog = () => {
 	//  fecth functions
 	const getPotentialConnetions = async () => {
 		try{
-			const potential = await ConnectionServices.getPotential(formData.input);
+			const potential = 
+				await ConnectionServices.getPotential(formData.input, user.username);
 			setPotenialConnections(p => potential);
 		}catch(err){
+			console.log(err)
 			if(err.status === 401){
 				navigate('/error/unauthorized');
 			} else{
@@ -80,6 +83,26 @@ const FindConnectionsDialog = () => {
 			setPostError(true);
 		};
 	};
+
+	const generateResultDisplay = ()=>{
+		if(showResult && potentialConnections.length > 0){
+			return(
+				<Grid item  xs={12} lg={12}>
+					<PotentialConnectionsList 
+						createConnectionRequest={createConnectionRequest} 
+						potentials={potentialConnections}
+					/>
+				</Grid>
+			)
+		} else{
+			return (
+				<Typography sx={{marginTop: 2,}}>
+					No Users Found.
+				</Typography>
+			)
+
+		}
+	}
 
 	useEffect(() => {
 		if(findSubmitted){
@@ -114,7 +137,7 @@ const FindConnectionsDialog = () => {
 			</Button>
 			<Dialog open={open} fullWidth>
 				<DialogTitle>
-					Enter email or username:
+					Search
 				</DialogTitle>
 				<DialogContent>
 					<Grid container>
@@ -141,24 +164,18 @@ const FindConnectionsDialog = () => {
 							</Button>
 						</Grid>
 						<Grid item xs={12} lg={12} textAlign='center'>
-							{validationErrors.input ?
-								null 
-								:
-								!getError ?
-									(showResult
-										? 	
-											<Grid item  xs={12} lg={12}>
-												<PotentialConnectionsList 
-													createConnectionRequest={createConnectionRequest} 
-													potentials={potentialConnections}
-												/>
-											</Grid>
-										: null
-									)
-								: 
-								<Typography color='error' sx={{marginTop: 2,}}>
-									Somethig went wrong! Unable to complete search.
+							{showResult ?
+								generateResultDisplay()
+								: null
+							}
+							{getError ?
+								<Typography 
+									color='error' 
+									sx={{marginTop: 2,}}
+								>
+									Something went wrong! Unable to complete search.
 								</Typography>
+								: null
 							}
 							{
 								postError ? 

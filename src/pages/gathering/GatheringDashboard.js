@@ -194,7 +194,9 @@ const GatheringDashboard = () => {
 		try{
 			console.log(rsvp)
 			const res = await EventServices.updateRsvp(user.username, eventInfo.currUserRsvp.id, rsvp)
-			updateDisplayRsvp(res.data);
+			updateDisplayRsvp(res);
+			const newGuestList = await EventServices.getGuestList(eventInfo.id);
+			updateDisplayGuestList(newGuestList)
 		}catch(err){
 
 		}

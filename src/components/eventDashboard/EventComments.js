@@ -41,7 +41,7 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 							<ListItem 
 								alignItems='flex-start'
 								secondaryAction={
-									secondaryAction(c.id, c.username)
+									secondaryAction(c.id, c.user)
 								}
 							>
 								<ListItemAvatar>

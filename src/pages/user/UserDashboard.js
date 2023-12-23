@@ -21,7 +21,8 @@ const UserDashboard = () => {
 	const [invitations, setInvitations] = useState([]);
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [rsvpError, setRsvpError] = useState(false);
-	const [followRequests, setFollowRequests] = useState([])
+	const [followRequests, setFollowRequests] = useState([]);
+	const [apiErrors, setApiErrors] = useState({})
 
 	// hooks
 	const isFirstRender = useRef(true);
@@ -126,16 +127,18 @@ const UserDashboard = () => {
 
 	const acceptFollowRequest = async (requestId) => {
 		try{
-			const res = await ConnectionServices.acceptRequest(requestId, user.username);
-			if(res === 200){
+			const resStatus = await ConnectionServices.acceptRequest(requestId, user.username);
+			if(resStatus === 204){
 				getFollowRequests();
 			}
 		} catch(err){
-			// if(err.status === 401){
-			// 	navigate('/error/unauthorized');
-			// } else{
-			// 	setError('Error: unable to process at this time.');
-			// };
+			console.log(err)
+			if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else {
+				console.log(err.data.error.message)
+				setApiErrors(e => ({connectionRequests: err.data.error.message}))
+			}
 		};
 	};
 
@@ -227,6 +230,7 @@ const UserDashboard = () => {
 												followRequests={followRequests}
 												acceptFollowRequest={acceptFollowRequest}
 												deleteFollowRequest={deleteFollowRequest}
+												apiErrors={apiErrors}
 											/>
 										</Badge>
 										

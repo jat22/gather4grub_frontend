@@ -16,7 +16,9 @@ class G4GApi {
 			const response = await axios({url, method, data, params, headers})
 			return response
 		} catch(err){
-			if(err.response){
+			if(err.status === 401){
+				
+			} else if(err.response){
 				console.log('API Error', err.response);
 				throw new ApiError(err.response.status, err.response.data)
 			} else if(err.request){
@@ -272,9 +274,9 @@ class G4GApi {
 
 	}
 
-	static async getPotentialConnections(input){
+	static async getPotentialConnections(input, currUsername){
 		try{
-			let res = await this.request(`users/find/${input}`)
+			let res = await this.request(`users/find/${input}`, {currUser : currUsername})
 			return res
 		}catch(err){
 			throw err

@@ -4,7 +4,6 @@ import G4GApi from "../G4GApi";
 class UserServices {
 	static async login(input){
 		try{
-			console.log(input)
 			const tokenRes = await G4GApi.getToken(input);
 			const avatarRes = await G4GApi.getAvatar(input.username)
 			const avatar = avatarRes.data.avatar || {}

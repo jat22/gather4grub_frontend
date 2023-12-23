@@ -7,13 +7,14 @@ import ConnectionServices from "../../api/services/connections.services";
 import UserList from "../UserList";
 
 
-const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFollowRequest }) => {
+const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFollowRequest, apiErrors }) => {
 	// context
 	const {user} = useContext(UserContext);
 
 	// state
 	const [open, setOpen] = useState(false);
-	const [error, setError] = useState('');
+
+	const error = apiErrors.connectionRequests;
 
 	// event handlers
 	const handleOpen = () => {
@@ -21,7 +22,6 @@ const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFo
 	};
 
 	const handleClose = () => {
-		setError(false);
 		setOpen(false);
 	};
 
@@ -52,8 +52,11 @@ const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFo
 			>
 				<DialogTitle>Connection Requests</DialogTitle>
 				<DialogContent>
-					{!error ?
-						(!followRequests || followRequests.length < 1 
+						{error ? 
+							<Typography>{error}</Typography>
+							: null
+						}
+						{!followRequests || followRequests.length < 1 
 							?
 							<Typography >No Requests</Typography>
 							:
@@ -64,10 +67,7 @@ const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFo
 										{label: 'Delete', function: handleDelete, targetData:'requestId'}
 									]} 
 								/>
-						)
-						: 
-						<Typography>{error}</Typography>
-					}	
+						}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose}>Close</Button>

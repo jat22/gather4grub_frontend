@@ -13,8 +13,8 @@ class ConnectionServices {
 		return 
 	}
 
-	static async getPotential(input){
-		const res = await G4GApi.getPotentialConnections(input)
+	static async getPotential(input, currUsername){
+		const res = await G4GApi.getPotentialConnections(input, currUsername)
 		return res.data.users
 	}
 

@@ -209,10 +209,8 @@ class EventServices {
 
 	static async removeComment(commentId, eventId){
 		try{
-			console.log(eventId)
 			await G4GApi.removeComment(commentId, eventId);
 			const updatedComments = await G4GApi.getEventComments(eventId)
-			console.log(updatedComments)
 			return updatedComments.data.posts
 		}catch(err){
 			throw err;
@@ -221,14 +219,22 @@ class EventServices {
 	}
 
 	static async updateRsvp(username, rsvpId, rsvp){
-		console.log(rsvp)
 		try{
 			const res = await G4GApi.updateRsvp(username, rsvpId, rsvp)
-			return res
+			return res.data
 		}catch(err){
 			throw err
 		};
 	};
+
+	static async getGuestList(eventId){
+		try{
+			const res = await G4GApi.getGuestList(eventId)
+			return res.data.guests
+		}catch(err){
+			throw err
+		}
+	}
 };
 
 export default EventServices;

@@ -37,7 +37,6 @@ const ViewConnectionsDialog = () => {
 		try{
 			const connections = await ConnectionServices.getConnections(user.username);
 			setConnections(c => connections);
-			console.log(connections)
 		}catch(err){
 			if(err.status === 401){
 				navigate('/error/unauthorized');
