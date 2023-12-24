@@ -3,7 +3,6 @@ import G4GApi from "../G4GApi"
 
 class ConnectionServices {
 	static async getConnections(username) {
-
 		const res = await G4GApi.getConnections(username)
 		return res.data.connections
 	}

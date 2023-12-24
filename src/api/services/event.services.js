@@ -235,6 +235,25 @@ class EventServices {
 			throw err
 		}
 	}
+
+	static async acceptInvitation(username, id) {
+		try{
+			const res = await G4GApi.acceptInvite(username, id);
+			return res.status
+		}catch(err){
+			throw(err)
+		};
+	};
+
+	static async declineInvitation(username, id) {
+		try{
+			const res = await G4GApi.declineInvite(username, id)
+			return res
+		}catch(err){
+			throw(err)
+		};
+	};
+
 };
 
 export default EventServices;

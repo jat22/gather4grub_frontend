@@ -3,8 +3,33 @@ import { List, ListItem, Chip, ListItemAvatar, Avatar, IconButton} from "@mui/ma
 import UserDetailsPopover from "./UserDetailsPopover";
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const generateGuestListChip = (rsvp) => {
+// UserList component
+const UserList = ({ users, actions, type}) => {
+	return(
+		<List>
+			{users.map( user => {
+				return(
+					<ListItem 
+						key={user.username} 
+						secondaryAction={
+							generateSecondaryActions(actions, user, type)
+						}	
+					>
+						<ListItemAvatar>
+							<Avatar src={user.avatarUrl}/>
+						</ListItemAvatar>
+						<UserDetailsPopover user={user} />
+					</ListItem>
+				) 
+			})
+			}
+		</List>
+	)
+}
 
+// helper functions
+const generateGuestListChip = (rsvp) => {
+	// for a guest list, generates appropriate RSVP chip label
 	const rsvpMap = {
 		pending : 'TBD',
 		host : 'Host',
@@ -23,29 +48,7 @@ const generateGuestListChip = (rsvp) => {
 }
 
 const generateSecondaryActions  = (actions, user, type) => {
-	if(type === 'hostGuestList'){
-		return(
-			<>
-				{generateGuestListChip(user.rsvp)}
-				{user.rsvp !== 'host' ?
-					<IconButton>
-						<DeleteIcon 
-							fontSize='small' 
-							onClick={()=> actions(user.username)}
-						/>
-					</IconButton> 
-					: null
-				}
-			</>
-		)
-	}
-	if(type === 'guestList'){
-		return(
-			<>
-				{generateGuestListChip(user.rsvp)}
-			</>
-		)
-	}
+	// generates secondary actions for user list item based on props
 
 	if(!type){
 		return(
@@ -64,11 +67,31 @@ const generateSecondaryActions  = (actions, user, type) => {
 				}
 			</>
 		)
-	} else if(type === 'searchResults'){
+	}else if(type === 'hostGuestList'){
+		return(
+			<>
+				{generateGuestListChip(user.rsvp)}
+				{user.rsvp !== 'host' ?
+					<IconButton>
+						<DeleteIcon 
+							fontSize='small' 
+							onClick={()=> actions(user.username)}
+						/>
+					</IconButton> 
+					: null
+				}
+			</>
+		)
+	}else if(type === 'guestList'){
+		return(
+			<>
+				{generateGuestListChip(user.rsvp)}
+			</>
+		)
+	}else if(type === 'searchResults'){
 		const relationType = user.relation?.type;
 		return (
 			actions.map(a => {
-
 				if(!relationType && a.label === 'Send Connection Request'){
 					return (
 						<Chip 
@@ -107,27 +130,6 @@ const generateSecondaryActions  = (actions, user, type) => {
 	}
 }
 
-const UserList = ({ users, actions, type}) => {
-	return(
-		<List>
-			{users.map( user => {
-				return(
-					<ListItem 
-						key={user.username} 
-						secondaryAction={
-							generateSecondaryActions(actions, user, type)
-						}	
-					>
-						<ListItemAvatar>
-							<Avatar src={user.avatarUrl}/>
-						</ListItemAvatar>
-						<UserDetailsPopover user={user} />
-					</ListItem>
-				) 
-			})
-			}
-		</List>
-	)
-}
+
 
 export default UserList

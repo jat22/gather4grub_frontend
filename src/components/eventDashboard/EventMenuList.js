@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 
 
-const EventMenu = ({ menu, isHost, username, removeDish }) => {
+const EventMenuList = ({ menu, isHost, username, removeMenuItem }) => {
 	// state
 	const accordianExpandInitialState = () => {
 		const result = {};
@@ -27,8 +27,8 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 		setMenuAccordianExpanded( cur => newMenuAccordianExpanded);
 	};
 
-	const handleRemoveDish = (dishId) => {
-		removeDish(dishId);
+	const handleremoveMenuItem = (dishId) => {
+		removeMenuItem(dishId);
 	};
 
 	// component generators
@@ -83,7 +83,7 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 						<IconButton 
 							edge='end'
 							aria-label='delete'
-							onClick={()=>handleRemoveDish(dish.id)}
+							onClick={()=>handleremoveMenuItem(dish.id)}
 						>
 							<DeleteIcon fontSize="small" />
 						</IconButton>
@@ -118,4 +118,4 @@ const EventMenu = ({ menu, isHost, username, removeDish }) => {
 	return generateMenu()
 }
 
-export default EventMenu
+export default EventMenuList

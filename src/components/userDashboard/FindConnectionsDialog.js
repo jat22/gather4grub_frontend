@@ -130,7 +130,7 @@ const FindConnectionsDialog = () => {
 				variant="contained"
 				fullWidth
 				sx={{
-					height:100
+					height:90
 				}}
 			>
 				Find People

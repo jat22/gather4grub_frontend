@@ -85,7 +85,7 @@ const ViewConnectionsDialog = () => {
 				variant='contained'
 				fullWidth
 				sx={{
-					height:100
+					height:90
 				}}
 			>
 				My Connections
@@ -104,7 +104,7 @@ const ViewConnectionsDialog = () => {
 								users={connections}
 								actions={[
 									{
-										label:'UnFollow', 
+										label:'Remove Connection', 
 										function:handleUnfollow, targetData:'connectionId'
 									}
 								]}

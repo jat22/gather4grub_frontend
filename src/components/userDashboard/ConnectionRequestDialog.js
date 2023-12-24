@@ -41,7 +41,7 @@ const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFo
 				variant="contained"
 				fullWidth
 				sx={{
-					height:100
+					height:90
 				}}
 			>
 				Pending Requests

@@ -7,7 +7,6 @@ import useFields from '../../hooks/useFields';
 import UserServices from '../../api/services/user.services';
 
 
-
 const UserLogin = () => {
 	// context
 	const { user, setUser } = useContext(UserContext);
@@ -100,7 +99,7 @@ const UserLogin = () => {
 						onChange={handleChange}
 						autoComplete="username"
 						autoFocus
-						error={loginError}
+						error={!!loginError}
 					/>
 					<TextField
 						margin="normal"
@@ -113,7 +112,7 @@ const UserLogin = () => {
 						onChange={handleChange}
 						id="password"
 						autoComplete="current-password"
-						error={loginError}
+						error={!!loginError}
 					/>
 					<Button
 						type="submit"

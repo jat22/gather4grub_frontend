@@ -6,7 +6,7 @@ import UserSignUp from './pages/user/UserSignUp';
 import UserLogin from './pages/user/UserLogin';
 import UserDashboard from './pages/user/UserDashboard';
 import GatheringCreate from './pages/gathering/GatheringCreate';
-import GatheringDashboard from './pages/gathering/GatheringDashboard';
+import EventDashboard from './pages/gathering/EventDashboard';
 import Unauthorized from './pages/error/Unauthorized';
 import NotFound from './pages/error/NotFound';
 import NavBar from './components/NavBar'
@@ -43,7 +43,7 @@ function App() {
 						<Route exact path='/users/:username/dashboard' element={<UserDashboard />} />
 						<Route exact path='/users/:username/edit' element={<EditUser />} />
 						<Route exact path='/gatherings/create' element={<GatheringCreate />} />
-						<Route exact path='/gatherings/:eventId' element={<GatheringDashboard />} />
+						<Route exact path='/gatherings/:eventId' element={<EventDashboard />} />
 						<Route exact path='/error/unauthorized' element={<Unauthorized />} />
 						<Route exact path='/error/network'element={<NetworkError />} />
 						<Route exact path='/error/general' element={<GeneralError />} />

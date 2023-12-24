@@ -9,20 +9,10 @@ import EventServices from '../../api/services/event.services';
 import ConnectionServices from '../../api/services/connections.services';
 import G4GApi from '../../api/G4GApi';
 
-import InvitePendingShort from '../../components/userDashboard/InvitePendingShort';
-import EventsList from '../../components/userDashboard/EventsList';
-import AllEventsModal from '../../components/userDashboard/AllEventsModal'
-import FindConnectionsDialog from '../../components/userDashboard/FindConnectionsDialog';
-import ViewConnectionsDialog from '../../components/userDashboard/ViewConnectionsDialog';
-import ConnectionRequestDialog from '../../components/userDashboard/ConnectionRequestDialog';
+import UpcomingEvents from '../../components/userDashboard/UpcomingEvents';
 import Loader from '../../components/Loader';
-import { set } from 'date-fns';
-
-const isLoadedInitialState = {
-	events: false,
-	invitations: false,
-	requets: false
-}
+import ConnectPaper from '../../components/userDashboard/ConnectPaper';
+import InvitationsPaper from '../../components/userDashboard/InvitationsPaper';
 
 const UserDashboard = () => {
 	// state
@@ -31,7 +21,7 @@ const UserDashboard = () => {
 	const [rsvpError, setRsvpError] = useState(false);
 	const [followRequests, setFollowRequests] = useState([]);
 	const [apiErrors, setApiErrors] = useState({})
-	const [isLoaded, setIsLoaded] = useState({})
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	// hooks
 	const isFirstRender = useRef(true);
@@ -45,17 +35,14 @@ const UserDashboard = () => {
 		try{
 			const invites = await InvitationServices.getInvites(username);
 			setInvitations(i => (invites));
-			setIsLoaded(l => ({invitiations:true}))
+			return
 		} catch(err){
 			if(err.status === 500){
 				navigate('/error/network');
-				console.log(err)
 			} else if(err.status === 401){
 				navigate('/error/unauthorized');
-				console.log(err)
 			} else{
 				navigate('/error/general');
-				console.log(err)
 			};
 		};
 	}
@@ -65,17 +52,14 @@ const UserDashboard = () => {
 		try{
 			const allEvents = await EventServices.getUpcoming(username);
 			setUpcomingEvents(e => allEvents?.upcoming);
-			setIsLoaded(l => ({...l, events:true}))
+			return
 		}catch(err){
 			if(err.status === 500){
 				navigate('/error/network');
-				console.log(err)
 			} else if(err.status === 401){
 				navigate('/error/unauthorized');
-				console.log(err)
 			} else{
 				navigate('/error/general');
-				console.log(err)
 			};
 		};
 	};
@@ -84,54 +68,58 @@ const UserDashboard = () => {
 		try{
 			const requests = await ConnectionServices.getRequests(user.username);
 			setFollowRequests(r=>requests);
+			return
 		}catch(err){
-			// if(err.status === 401){
-			// 	navigate('/error/unauthorized');
-			// } else{
-			// 	setError('Something went wrong, unable to get requests.');
-			// };
+			if(err.status === 500){
+				navigate('/error/network');
+			} else if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else{
+				navigate('/error/general');
+			};
 		};
 	}
 
-	const getAllData =	() => {
+	const getAllData =	async () => {
 		//  get upcomingEvents, invitations, and hosting for logged in user
 		if(user.username !== username){
 			navigate('/error/unauthorized');
 			return;
 		}
-		getUpcomingEvents();
-		getInvitations();
-		getFollowRequests();
+		await getUpcomingEvents();
+		await getInvitations();
+		await getFollowRequests();
+		setIsLoaded(true)
 	};
 
 	const acceptInvite = async (id) => {
 		try{
-			await G4GApi.acceptInvite(username, id);
+			const res = await G4GApi.acceptInvite(username, id);
 		} catch(err){
 			if(err.status === 401){
 				navigate('/errors/unauthorized');
-				console.log(err)
 				return;
 			} else{
 				setRsvpError(true);
-				console.log(err)
 				return;
-			}
-		}
-
+			};
+		};
 		getInvitations();
 		getUpcomingEvents();
 	};
 
 	const declineInvite = async (id) => {
 		try{
-			await G4GApi.declineInvite(username, id);
+			const res = await G4GApi.declineInvite(username, id);
 		} catch(err){
-			setRsvpError(true);
-			console.log(err)
-			return;
+			if(err.status === 401){
+				navigate('/errors/unauthorized');
+				return;
+			} else{
+				setRsvpError(true);
+				return;
+			};
 		};
-
 		getInvitations();
 		getUpcomingEvents();
 	};
@@ -143,13 +131,11 @@ const UserDashboard = () => {
 				getFollowRequests();
 			}
 		} catch(err){
-			console.log(err)
 			if(err.status === 401){
 				navigate('/error/unauthorized');
 			} else {
-				console.log(err.data.error.message)
 				setApiErrors(e => ({connectionRequests: err.data.error.message}))
-			}
+			};
 		};
 	};
 
@@ -159,13 +145,12 @@ const UserDashboard = () => {
 			if(res === 204){
 				getFollowRequests();
 			}
-
 		}catch(err){
-			// if(err.status === 401){
-			// 	navigate('/error/unauthorized');
-			// } else{
-			// 	setError('Error: unable to process at this time.');
-			// };
+			if(err.status === 401){
+				navigate('/error/unauthorized');
+			} else {
+				setApiErrors(e => ({connectionRequests: err.data.error.message}))
+			}
 		};
 	};
 
@@ -183,105 +168,40 @@ const UserDashboard = () => {
 		getAllData();
 	}, [user]);
 
+	if(!isLoaded) return (
+		<Loader />
+	)
+
 	return(
 		<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
+
               	{/* Upcoming Events */}
               	<Grid item xs={12} md={12} lg={12}>
-						<Paper 
-							elevation={3}
-							sx={{
-								p: 2,
-								display: 'flex',
-								flexDirection: 'column',
-
-							}}
-						>
-							{isLoaded ? 
-								<>
-									<EventsList 
-										events={upcomingEvents}
-										short={true}
-										type="upcoming"
-									/>
-									{upcomingEvents && upcomingEvents.length > 3 ?
-										<AllEventsModal events={upcomingEvents} type='upcoming' />
-										: null
-									}
-								</>
-								:
-								<Loader />	
-							}
-							
-						</Paper>
+					<UpcomingEvents 
+						isLoaded={isLoaded} 
+						upcomingEvents={upcomingEvents} 
+					/>
             	</Grid>
-				<Grid item xs={12} md={6} >
-					<Grid container spacing={3}>
-						<Grid item xs={12}>
-							<Paper 
-								elevation={3}							
-								sx={{ 
-									p: 2, 
-									display: 'flex', 
-									flexDirection: 'column',
-									height: 300 
-									}
-							}>
-								<Typography variant="h5">
-									Connect
-								</Typography>
-								<Grid container spacing={2} sx={{padding:3}}>
-									<Grid item xs={12}>
-										<ViewConnectionsDialog />
-									</Grid>
-									<Grid item xs={6}>
-										<FindConnectionsDialog />
-									</Grid>
-									<Grid item xs={6}>
-										<Badge 
-											badgeContent={followRequests?.length} 
-											color='success'
-											component='div'
-											sx={{width:'100%'}}
-										>
-											<ConnectionRequestDialog 
-												followRequests={followRequests}
-												acceptFollowRequest={acceptFollowRequest}
-												deleteFollowRequest={deleteFollowRequest}
-												apiErrors={apiErrors}
-											/>
-										</Badge>
-										
-									</Grid>
-								</Grid>
-							</Paper>
-						</Grid>
-					</Grid>
+
+				{/* Connection Features */}
+				<Grid item xs={12} md={6}>
+					<ConnectPaper 
+						followRequests={followRequests}
+						acceptFollowRequest={acceptFollowRequest}
+						deleteFollowRequest={deleteFollowRequest}
+						apiErrors={apiErrors}
+					/>
 				</Grid>
+
 				{/* Pending Invitations*/}
             	<Grid item xs={12} md={6} >
-					<Paper
-						elevation={3}
-						sx={{
-							p: 2,
-							display: 'flex',
-							flexDirection: 'column',
-							height: 300,
-						}}
-					>	
-						<Typography variant="h5" component='h2'>
-							Invitations
-						</Typography>
-						{rsvpError ? 
-							<Typography>Error: RSVP was not processed</Typography>
-							: null
-						}
-						<InvitePendingShort 
-							invites={invitations} 
-							acceptInvite={acceptInvite} 
-							declineInvite={declineInvite} 
-						/>
-					</Paper>
+					<InvitationsPaper
+						rsvpError={rsvpError}
+						invitations={invitations}
+						acceptInvite={acceptInvite}
+						declineInvite={declineInvite}
+					/>
             	</Grid>
 			</Grid>
 		</Container>

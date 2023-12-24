@@ -3,7 +3,7 @@ import { List, ListItem, ListItemAvatar, Avatar, ListItemText, Typography, Divid
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const EventComments = ({ comments, isHost, username, removeComment }) => {
+const EventCommentsList = ({ comments, isHost, username, removeComment }) => {
 	// display message if there are not already comments.
 	if(comments === undefined || comments.length === 0) {
 		return (
@@ -70,4 +70,4 @@ const EventComments = ({ comments, isHost, username, removeComment }) => {
 }
 
 
-export default EventComments;
+export default EventCommentsList;

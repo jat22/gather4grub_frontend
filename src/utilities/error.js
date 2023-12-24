@@ -7,12 +7,4 @@ class ApiError extends Error {
 	}
 }
 
-class LoginUnauthorizedError extends Error {
-	constructor(message){
-		super();
-
-	}
-}
-
-
 export { ApiError }

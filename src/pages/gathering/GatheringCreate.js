@@ -17,7 +17,6 @@ const GatheringCreate = () => {
 	const [submitted, setSubmitted] = useState(false)
 	const [apiErrors, setApiErrors] = useState(false)
 	const [courses, setCourses] = useState([])
-	const [newEventId, setNewEventId] = useState(null)
 
 	// hooks
 	const navigate = useNavigate();
@@ -94,7 +93,6 @@ const GatheringCreate = () => {
 			setSubmitted(false);
 		};
 	}, [validationErrors]);
-
 
 	return(
 		<Container component='main'>
@@ -211,7 +209,6 @@ const GatheringCreate = () => {
 							>
 								Add Course
 							</Button>
-
 						</Grid>
 						<Grid item xs={12} md={6}>
 							<List>

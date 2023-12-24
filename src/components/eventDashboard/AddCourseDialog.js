@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material";
-import EventMenu from "./EventMenu";
+import EventMenu from "./EventMenuList";
 import useFields from "../../hooks/useFields";
 import useFormValidate from "../../hooks/useFormValidate";
 
