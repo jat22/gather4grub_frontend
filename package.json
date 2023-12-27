@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-react": "^7.23.3",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
@@ -15,8 +16,10 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.5.1",
+    "babel-jest": "^29.7.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
+    "jest": "^27.5.1",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,6 +50,14 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "//node_modules/variables/.+\\.(j|t)sx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "//node_modules/(?!variables/.*)"
     ]
   }
 }
