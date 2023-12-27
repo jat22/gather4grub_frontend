@@ -55,7 +55,6 @@ const EditUser = () => {
 		evt.preventDefault();
 		setError(false);
 		setSubmitted(true);
-		console.log(formData)
 		validateForm(formData, validationRules);
 	};
 
@@ -73,7 +72,6 @@ const EditUser = () => {
 	const getCurUserInfo = async () => {
 		try{
 			const info = await UserServices.getUserInfo(user.username);
-			console.log(info)
 			const fields = Object.keys(formInitialState);
 			fields.forEach(f => {
 				info[f] = info[f] || '' 

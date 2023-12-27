@@ -186,7 +186,6 @@ class G4GApi {
 
 	static async editUser(username, data) {
 		try{
-			console.log(data);
 			const res = await this.request(`users/${username}`, data, 'patch');
 		}catch(err){
 			throw err;
@@ -278,8 +277,6 @@ class G4GApi {
 	};
 
 	static async updateBasicDetails(eventId, data){
-		console.log(eventId)
-		console.log(data)
 		try{
 			let res = await this.request(`events/${eventId}/basic`, {data}, 'put');
 			return res;
