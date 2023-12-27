@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, HashRouter } from 'react-router-dom';
 import Landing from './pages/Landing';
 import UserSignUp from './pages/user/UserSignUp';
 import UserLogin from './pages/user/UserLogin';
@@ -34,7 +34,7 @@ function App() {
 	return (
 		<div className="App">
 			<UserContext.Provider value={{user, setUser}}>
-				<BrowserRouter>
+				<HashRouter>
 					<NavBar />
 					<Routes>
 						<Route path='/' element={<Landing />} />
@@ -50,7 +50,7 @@ function App() {
 						<Route path='*' element={<NotFound />} /> 
 					</Routes>
 					<Footer />
-				</BrowserRouter>
+				</HashRouter>
 			</UserContext.Provider>
 		</div>
 	);
