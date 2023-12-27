@@ -92,10 +92,6 @@ const EditUser = () => {
 
 	// effects
 	useEffect(() => {
-		if(isFirstRender.current){
-			isFirstRender.current = false;
-			return;
-		}
 		getCurUserInfo();
 	}, []);
 
