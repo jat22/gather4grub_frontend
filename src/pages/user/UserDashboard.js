@@ -168,6 +168,10 @@ const UserDashboard = () => {
 		getAllData();
 	}, [user]);
 
+	useEffect(()=>{
+		getAllData()
+	}, [])
+
 	if(!isLoaded) return (
 		<Loader />
 	)
