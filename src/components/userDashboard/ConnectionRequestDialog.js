@@ -7,7 +7,7 @@ import ConnectionServices from "../../api/services/connections.services";
 import UserList from "../UserList";
 
 
-const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFollowRequest, apiErrors }) => {
+const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFollowRequest, apiErrors, setApiErrors }) => {
 	// context
 	const {user} = useContext(UserContext);
 
@@ -26,6 +26,7 @@ const ConnectionRequestDialog = ({ followRequests, acceptFollowRequest, deleteFo
 	};
 
 	const handleAccept = (requestId) => {
+		setApiErrors(e=>false)
 		acceptFollowRequest(requestId)
 	};
 

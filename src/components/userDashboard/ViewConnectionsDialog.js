@@ -77,6 +77,8 @@ const ViewConnectionsDialog = () => {
 		} else return;
 	}, [open]);
 
+
+
 	return (
 		<>
 			<Button 

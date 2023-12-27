@@ -50,6 +50,8 @@ class UserServices {
 	}
 
 	static async editUser(username, data){
+		delete data.avatarurl
+		delete data.phone
 		const cleanData = Format.emptyStringToNull(data)
 		try{
 			await G4GApi.editUser(username, cleanData);

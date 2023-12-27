@@ -5,7 +5,7 @@ import ViewConnectionsDialog from "./ViewConnectionsDialog";
 import FindConnectionsDialog from "./FindConnectionsDialog";
 import ConnectionRequestDialog from "./ConnectionRequestDialog";
 
-const ConnectPaper = ({ followRequests, acceptFollowRequest, deleteFollowRequest, apiErrors }) => {
+const ConnectPaper = ({ followRequests, acceptFollowRequest, deleteFollowRequest, apiErrors, setApiErrors }) => {
 	return (
 		<Paper 
 			elevation={3}							
@@ -38,6 +38,7 @@ const ConnectPaper = ({ followRequests, acceptFollowRequest, deleteFollowRequest
 							acceptFollowRequest={acceptFollowRequest}
 							deleteFollowRequest={deleteFollowRequest}
 							apiErrors={apiErrors}
+							setApiErrors={setApiErrors}
 						/>
 					</Badge>
 				</Grid>

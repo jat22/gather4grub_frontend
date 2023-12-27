@@ -85,7 +85,6 @@ const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 								name='course'
 								required={true}
 								error={!!validationErrors?.course}
-								helperText={validationErrors?.course || null}
 							>
 								{menu.map(c => <MenuItem key={c.courseId} value={c.courseName} data-courseid={c.courseId}>{c.courseName}</MenuItem>)}
 							</Select>
@@ -95,7 +94,6 @@ const AddMenuItemDialog = ({ menu, addMenuItem, apiErrors, setApiErrors }) => {
 								</FormHelperText>
 							: null
 							}
-							
 						</FormControl>
 						<TextField 
 							fullWidth

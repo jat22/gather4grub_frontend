@@ -10,6 +10,7 @@ import useFormValidate from "../../hooks/useFormValidate";
 import ConnectionServices from "../../api/services/connections.services";
 
 import PotentialConnectionsList from "./PotentialConnectionsList";
+import Loader from "../Loader";
 
 const validationRules = {
 	input : {required:true}
@@ -85,6 +86,9 @@ const FindConnectionsDialog = () => {
 	};
 
 	const generateResultDisplay = ()=>{
+		if(!showResult && findSubmitted){
+			return <Loader />
+		}
 		if(showResult && potentialConnections.length > 0){
 			return(
 				<Grid item  xs={12} lg={12}>

@@ -191,6 +191,7 @@ const UserDashboard = () => {
 						acceptFollowRequest={acceptFollowRequest}
 						deleteFollowRequest={deleteFollowRequest}
 						apiErrors={apiErrors}
+						setApiErrors={setApiErrors}
 					/>
 				</Grid>
 
