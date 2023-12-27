@@ -47,13 +47,24 @@ class G4GApi {
 		};
 	};
 
-	// static async getUser(username){
-	// 	try{
-	// 		let res = await this.request('');
-	// 	}catch(err){
-	// 		throw err
-	// 	}
-	// }
+	static async checkUsernameExists(username){
+		try{
+			const res = await this.request(`auth/check/username`, {username:username}, 'get');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+	
+	static async checkEmailExists(email){
+		try{
+			const res = await this.request(`auth/check/email`, {email:email}, 'get');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
 
 	static async getUserInvitations(username){
 		try{
@@ -90,6 +101,136 @@ class G4GApi {
 			throw err;
 		};
 	};
+
+	// static async getConnections(username){
+	// 	try{
+	// 		let res = await this.request(`users/${username}/connections`);
+	// 		return res;
+	// 	}catch(err){
+	// 		throw err;
+	// 	};
+	// };
+
+	static async createConnectionRequest(fromUsername, toUsername){
+		try{
+			let res = await this.request(`users/${fromUsername}/connections/requests`, { 'toUsername' : toUsername}, 'post');
+			return;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async deleteConnectionRequest(id, curUsername){
+		try{
+			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async getPotentialConnections(input, currUsername){
+		try{
+			let res = await this.request(`users/find/${input}`, {currUser : currUsername});
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async getConnectionRequests(username){
+		try{
+			let res = await this.request(`users/${username}/connections/requests`);
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async acceptConnectionRequest(id, curUsername){
+		try{
+			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async deleteConnection(username, connectionId){
+		try{
+			const res = await this.request(`users/${username}/connections/${connectionId}`, {}, 'delete');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+
+	static async getUserProfile(username){
+		try{
+			const res = await this.request(`users/${username}/profile`);
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async getUserInfo(username) {
+		try{
+			const res = await this.request(`users/${username}`);
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async editUser(username, data) {
+		try{
+			console.log(data);
+			const res = await this.request(`users/${username}`, data, 'patch');
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async updatePassword(data) {
+		try{
+			const res = await this.request(`users/${data.username}/password`, data, 'patch');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	
+	static async getAvatarList(){
+		try{
+			const res = await this.request('users/avatars');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async getAvatar(username){
+		try{
+			const res = await this.request(`users/${username}/avatar`);
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+	static async updateAvatar(username, avatarId){
+		try{
+			const res = await this.request(`users/${username}/avatar`, {avatarId:avatarId}, 'patch');
+			return res;
+		}catch(err){
+			throw err;
+		};
+	};
+
+
 
 	static async acceptInvite(username, inviteId){
 		try{
@@ -137,6 +278,8 @@ class G4GApi {
 	};
 
 	static async updateBasicDetails(eventId, data){
+		console.log(eventId)
+		console.log(data)
 		try{
 			let res = await this.request(`events/${eventId}/basic`, {data}, 'put');
 			return res;
@@ -190,10 +333,10 @@ class G4GApi {
 		};
 	};
 
-	static async removeDish(dishId, eventId){
+	static async removeMenuItem(dishId, eventId){
 		try{
-			let res = await this.request(`dishes/${dishId}`, {}, 'delete');
-			return;
+			let res = await this.request(`events/${eventId}/menu/${dishId}`, {}, 'delete');
+			return res;
 		}catch(err){
 			throw err;
 		};
@@ -229,150 +372,6 @@ class G4GApi {
 	static async getEventComments(eventId) {
 		try{
 			let res = await this.request(`events/${eventId}/comments`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getConnections(username){
-		try{
-			let res = await this.request(`users/${username}/connections`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async createConnectionRequest(fromUsername, toUsername){
-		try{
-			let res = await this.request(`users/${fromUsername}/connections/requests`, { 'toUsername' : toUsername}, 'post');
-			return;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getPotentialConnections(input, currUsername){
-		try{
-			let res = await this.request(`users/find/${input}`, {currUser : currUsername});
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getConnectionRequests(username){
-		try{
-			let res = await this.request(`users/${username}/connections/requests`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async acceptConnectionRequest(id, curUsername){
-		try{
-			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'put');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async deleteConnectionRequest(id, curUsername){
-		try{
-			let res = await this.request(`users/${curUsername}/connections/requests/${id}`, {}, 'delete');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getUserProfile(username){
-		try{
-			const res = await this.request(`users/${username}/profile`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getUserInfo(username) {
-		try{
-			const res = await this.request(`users/${username}`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async editUser(username, data) {
-		try{
-			console.log(data);
-			const res = await this.request(`users/${username}`, data, 'patch');
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async updatePassword(data) {
-		try{
-			const res = await this.request(`users/${data.username}/password`, data, 'patch');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async checkUsernameExists(username){
-		try{
-			const res = await this.request(`auth/check/username`, {username:username}, 'get');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-	
-	static async checkEmailExists(email){
-		try{
-			const res = await this.request(`auth/check/email`, {email:email}, 'get');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getAvatarList(){
-		try{
-			const res = await this.request('users/avatars');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async getAvatar(username){
-		try{
-			const res = await this.request(`users/${username}/avatar`);
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async updateAvatar(username, avatarId){
-		try{
-			const res = await this.request(`users/${username}/avatar`, {avatarId:avatarId}, 'patch');
-			return res;
-		}catch(err){
-			throw err;
-		};
-	};
-
-	static async unfollow(username, connectionId){
-		try{
-			const res = await this.request(`users/${username}/connections/${connectionId}`, {}, 'delete');
 			return res;
 		}catch(err){
 			throw err;

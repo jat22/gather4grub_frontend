@@ -72,10 +72,11 @@ const generateSecondaryActions  = (actions, user, type) => {
 			<>
 				{generateGuestListChip(user.rsvp)}
 				{user.rsvp !== 'host' ?
-					<IconButton>
+					<IconButton
+						onClick={()=> actions(user.username)}
+					>
 						<DeleteIcon 
 							fontSize='small' 
-							onClick={()=> actions(user.username)}
 						/>
 					</IconButton> 
 					: null
@@ -113,6 +114,16 @@ const generateSecondaryActions  = (actions, user, type) => {
 						/>
 					)
 				} else if(relationType === 'request' && a.label === 'Request Pending'){
+					return (
+						<Chip 
+							key={a.label}
+							label={a.label}
+							size='small'
+							edge='end'
+							disabled
+						/>
+					)
+				} else if(relationType === 'self' && a.label === 'Self'){
 					return (
 						<Chip 
 							key={a.label}

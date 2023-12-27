@@ -11,7 +11,8 @@ const PotentialConnectionsList = ({ potentials, createConnectionRequest }) => {
 			actions={[
 				{label:"Send Connection Request", function:createConnectionRequest, targetData:'username'},
 				{label:"Request Pending", function: null, targetData: null},
-				{label:'Connected', function: null, targetData: null}
+				{label:'Connected', function: null, targetData: null},
+				{label: 'Self', function:null, targetData:null}
 			]}
 			type="searchResults" 
 		/>

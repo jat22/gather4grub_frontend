@@ -99,7 +99,8 @@ const GatheringDashboard = () => {
 
 	const updateBasicDetails = async (data) => {
 		try{
-			const res = await EventServices.updateBasicDetails(eventId, data);
+			console.log(data)
+			const res = await EventServices.updateBasicDetails(data);
 			setApiErrors({})
 			updateDisplayDetails(res);
 		}catch(err){
@@ -151,7 +152,7 @@ const GatheringDashboard = () => {
 
 	const removeMenuItem = async(dishId) => {
 		try{
-			const res = await EventServices.removeDish(dishId, eventInfo.id);
+			const res = await EventServices.removeMenuItem(dishId, eventInfo.id);
 			setApiErrors({})
 			updateDisplayMenu(res);
 		}catch(err){

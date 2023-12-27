@@ -1,70 +1,32 @@
-# Getting Started with Create React App
+# Gather4Grub Frontend
+This project provides a simple tool for planning a potluck dinner party. Users can create events, invite their friends, and collaborate on the menu. Gather4Grub helps to make sure all you don't end up with three mac and cheese and no veggies.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Requirements
+The frontend of this project was built with React and Material UI's component library.
 
-## Available Scripts
 
-In the project directory, you can run:
+## App Walk Through
+### Landing Page
+From the landing page you can sign-up or login.
+### Sign Up Page
+Enter basic information and create a user account. Upon signup you are immediately logged in.
+### Login Page
+Straight foward login page. Once login has processed you are directed to the user dashboard page.
+### User Dashboard
+This is the main user view, with the following areas:<br>
+- Upcoming Events: list of upcoming events, each links to the event page. If more than three events, see all link appears and will display all events in a modal.
+- Connect: buttons to open modals to view other users you are connected with, find other users, and view any pending requests from other users.
+- Invitations: all pending event invitations will display here.
 
-### `npm start`
+### Event Dashboard
+The event dashboard has all event information. The view is slightly different for the host of the event as they have more access to edit details, invite/remove guests, add courses to the menu, and moderate comments.
+- Main Details - Title, host, data, time, location and a description of the event are displayed at the top of the page. Host view - edit button which opens an edit Dialog allowing the host to edit all details. The guest view includes a button group to update the current user's RSVP.
+- Guests - this is the guest list, display guests information including their current RSVP.
+- Menu - Menu is displayed in accordions for each course. Courses are set by the host and can be added by the host. Guests are abel to add menu items. Both of these buttons open dialogs that allow for interaction.
+- Comments - guests can leave comments. All users can delete their own comments, hosts can delete any comment from the event.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Create Event Page
+Here you can create a new event. Date and Title are the only required fields.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Edit User
+Update user's information. User can pick from a preset list of avatars.

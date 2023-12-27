@@ -3,7 +3,7 @@ import G4GApi from "../G4GApi"
 
 class ConnectionServices {
 	static async getConnections(username) {
-		const res = await G4GApi.getConnections(username)
+		const res = await G4GApi.getUserConnections(username)
 		return res.data.connections
 	}
 
@@ -32,8 +32,8 @@ class ConnectionServices {
 		return res.status
 	}
 
-	static async unfollow(username, connectionId){
-		const res = await G4GApi.unfollow(username, connectionId);
+	static async deleteConnection(username, connectionId){
+		const res = await G4GApi.deleteConnection(username, connectionId);
 		return res.status
 	}
 }

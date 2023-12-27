@@ -62,13 +62,15 @@ class EventServices {
 		}
 	};
 
-	static async updateBasicDetails(eventId, data) {
-
+	static async updateBasicDetails(data) {
+		const eventId = data.id;
+		console.log(eventId)
 		data.date = dayjs(data.date).format('YYYY-MM-DD');
 		if(data.startTime) data.startTime = dayjs(data.startTime).format('HH:mm:ss');
 		if(data.endTime) data.endTime = dayjs(data.endTime).format('HH:mm:ss');
 
 		try{
+			console.log(data)
 			const res = await G4GApi.updateBasicDetails(eventId, data)
 			const eventInfo = res.data.event;
 			eventInfo.date = Format.displayDate(eventInfo.date);
@@ -126,7 +128,7 @@ class EventServices {
 
 	static async uninvitedConnections (username, eventId) {
 		try{
-			const connectionsPromise = G4GApi.getConnections(username);
+			const connectionsPromise = G4GApi.getUserConnections(username);
 			const currentGuestsPromise = G4GApi.getGuests(eventId);
 			const [ connectionsRes, currentGuestsRes ] = 
 				await Promise.all([connectionsPromise, currentGuestsPromise]);
@@ -186,9 +188,9 @@ class EventServices {
 
 	}
 
-	static async removeDish(dishId, eventId) {
+	static async removeMenuItem(dishId, eventId) {
 		try{
-			await G4GApi.removeDish(dishId, eventId)
+			await G4GApi.removeMenuItem(dishId, eventId)
 			const updatedMenu = await this.getEventMenu(eventId)
 			return updatedMenu
 		}catch(err){

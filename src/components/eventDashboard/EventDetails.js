@@ -100,25 +100,25 @@ const EventDetails = ({ eventInfo, basicDetails, updateBasicDetails, apiErrors, 
 						<ButtonGroup>
 							<Button 
 								onClick={()=>handleRsvpUpdate('accept')}
-								variant={eventInfo.currUserRsvp.rsvp === 'accept' ? 'contained' : 'outlined'}
+								variant={eventInfo?.currUserRsvp.rsvp === 'accept' ? 'contained' : 'outlined'}
 							>
 								Attending
 							</Button>
 							<Button
 								onClick={()=>handleRsvpUpdate('decline')}
-								variant={eventInfo.currUserRsvp.rsvp === 'decline' ? 'contained' : 'outlined'}
+								variant={eventInfo?.currUserRsvp.rsvp === 'decline' ? 'contained' : 'outlined'}
 							>
 								Not Attending
 							</Button>
 							<Button
 								onClick={()=>handleRsvpUpdate('pending')}
-								variant={eventInfo.currUserRsvp.rsvp === 'pending' ? 'contained' : 'outlined'}
+								variant={eventInfo?.currUserRsvp.rsvp === 'pending' ? 'contained' : 'outlined'}
 							>
 								TBD
 							</Button>
 						</ButtonGroup>
 					}
-					{apiErrors.rsvp ?
+					{apiErrors?.rsvp ?
 						<Typography >
 							Something went wrong, RSVP not updated.
 						</Typography>

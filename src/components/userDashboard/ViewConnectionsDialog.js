@@ -52,7 +52,7 @@ const ViewConnectionsDialog = () => {
 
 	const handleUnfollow = async (connectionId) => {
 		try{
-			const res = await ConnectionServices.unfollow(user.username, connectionId);
+			const res = await ConnectionServices.deleteConnection(user.username, connectionId);
 			if(res === 204){
 				getConnections()
 			}

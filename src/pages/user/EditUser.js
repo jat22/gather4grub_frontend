@@ -143,9 +143,9 @@ const EditUser = () => {
 			</Typography>
 			<Avatar 
 				sx={{width:100, height:100}} 
-				src={user.avatar.url}
+				src={user.avatar?.url}
 			/>
-			<ChangeAvatarDialog currAvatarId={user.avatar.id}/>
+			<ChangeAvatarDialog currAvatarId={user.avatar?.id}/>
 			{
 				error ?
 					<Typography>Something went wrong, information not updated.</Typography>
