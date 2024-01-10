@@ -99,6 +99,7 @@ const GatheringDashboard = () => {
 
 	const updateBasicDetails = async (data) => {
 		try{
+			console.log(data)
 			const res = await EventServices.updateBasicDetails(data);
 			setApiErrors({})
 			updateDisplayDetails(res);

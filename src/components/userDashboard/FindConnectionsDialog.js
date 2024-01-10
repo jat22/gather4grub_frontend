@@ -64,6 +64,7 @@ const FindConnectionsDialog = () => {
 				await ConnectionServices.getPotential(formData.input, user.username);
 			setPotenialConnections(p => potential);
 		}catch(err){
+			console.log(err)
 			if(err.status === 401){
 				navigate('/error/unauthorized');
 			} else{

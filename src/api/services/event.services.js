@@ -64,11 +64,13 @@ class EventServices {
 
 	static async updateBasicDetails(data) {
 		const eventId = data.id;
+		console.log(eventId)
 		data.date = dayjs(data.date).format('YYYY-MM-DD');
 		if(data.startTime) data.startTime = dayjs(data.startTime).format('HH:mm:ss');
 		if(data.endTime) data.endTime = dayjs(data.endTime).format('HH:mm:ss');
 
 		try{
+			console.log(data)
 			const res = await G4GApi.updateBasicDetails(eventId, data)
 			const eventInfo = res.data.event;
 			eventInfo.date = Format.displayDate(eventInfo.date);

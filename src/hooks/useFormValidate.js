@@ -75,6 +75,7 @@ const useFormValidate = (initialState={}) => {
 	}
 	
 	const validateArray = (field, value, conditions) => {
+		console.log(value)
 		if(conditions.length){
 			const min = conditions.length.min
 			const max = conditions.length.max
