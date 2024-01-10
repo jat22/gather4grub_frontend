@@ -168,9 +168,9 @@ const UserDashboard = () => {
 		getAllData();
 	}, [user]);
 
-	useEffect(()=>{
-		getAllData()
-	}, [])
+	// useEffect(()=>{
+	// 	getAllData()
+	// }, [])
 
 	if(!isLoaded) return (
 		<Loader />

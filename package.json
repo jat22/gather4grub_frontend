@@ -2,6 +2,7 @@
   "name": "gather4grub_frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-react": "^7.23.3",
@@ -31,7 +32,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -53,11 +54,13 @@
     ]
   },
   "jest": {
-    "transform": {
-      "//node_modules/variables/.+\\.(j|t)sx?$": "babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "//node_modules/(?!variables/.*)"
-    ]
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs",
+      "\\.(css|scss)$": "identity-obj-proxy"
+    }
+  },
+  "devDependencies": {
+    "identity-obj-proxy": "^3.0.0"
   }
 }
