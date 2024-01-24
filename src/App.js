@@ -26,9 +26,13 @@ function App() {
 
 	const [ user, setUser ] = useState(initialState);
 
-	useEffect(()=>{
+	const setToken = async() => {
 		localStorage.setItem('currUser', JSON.stringify(user))
 		G4GApi.token = user.token
+	}
+	
+	useEffect(()=>{
+		setToken();
 	}, [user]);
 
 

@@ -154,20 +154,7 @@ const UserDashboard = () => {
 		};
 	};
 
-	// // effect
-	// useEffect(() => {
-	// 	// prevents data fetching on intial render when user is not yet set.
-	// 	if (isFirstRender.current) {
-	// 		isFirstRender.current = false;
-	// 		return;
-	// 	}
-	// 	if(!user.token) {
-	// 		navigate('/error/unauthorized')
-	// 		return;
-	// 	};
-	// 	getAllData();
-	// }, [user]);
-
+	// effect
 	useEffect(()=> {
 		getAllData()
 	}, [user])

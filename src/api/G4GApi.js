@@ -9,16 +9,19 @@ class G4GApi {
 	static token;
 
 	static async request(endpoint, data = {}, method='get'){
+		if(!G4GApi.token){
+			G4GApi.token = JSON.parse(localStorage.getItem('currUser'))?.token || ''
+		}
 		const url = `${BASE_URL}/${endpoint}`;
 		const headers = { Authorization : G4GApi.token};
 		const params = method ==='get' ? data : {};
-
+		console.log("$$$$$$$$$$$$$$$$$$$$")
+		console.log(headers)
+		console.log(endpoint)
 		try{
 			const response = await axios({url, method, data, params, headers});
-			await new Promise(resolve => setTimeout(resolve, 2000));
 			return response;
 		} catch(err){
-			await new Promise(resolve => setTimeout(resolve, 2000));
 			if(err.response){
 				console.error('API Error', err.response);
 				throw new ApiError(err.response.status, err.response.data);
