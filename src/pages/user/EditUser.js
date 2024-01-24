@@ -48,7 +48,6 @@ const EditUser = () => {
 	const { validationErrors, validateForm } = useFormValidate();
 	const { formData, handleChange, resetFormData, updateFormData } = useFields(formInitialState);
 
-	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
 
 
@@ -95,10 +94,6 @@ const EditUser = () => {
 
 	// effects
 	useEffect(() => {
-		if(isFirstRender.current){
-			isFirstRender.current = false;
-			return;
-		}
 		getCurUserInfo();
 	}, []);
 

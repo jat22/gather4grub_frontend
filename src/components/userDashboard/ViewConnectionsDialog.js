@@ -21,7 +21,6 @@ const ViewConnectionsDialog = () => {
 	const [isLoaded, setIsLoaded] = useState(false)
 
 	// hooks
-	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
 
 	// event handlers

@@ -24,7 +24,6 @@ const UserDashboard = () => {
 	const [isLoaded, setIsLoaded] = useState(false)
 
 	// hooks
-	const isFirstRender = useRef(true);
 	const { user } = useContext(UserContext);
 	const { username } = useParams();
 	const navigate = useNavigate();

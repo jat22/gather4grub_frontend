@@ -15,9 +15,7 @@ class G4GApi {
 		const url = `${BASE_URL}/${endpoint}`;
 		const headers = { Authorization : G4GApi.token};
 		const params = method ==='get' ? data : {};
-		console.log("$$$$$$$$$$$$$$$$$$$$")
-		console.log(headers)
-		console.log(endpoint)
+		
 		try{
 			const response = await axios({url, method, data, params, headers});
 			return response;

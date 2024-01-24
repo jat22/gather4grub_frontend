@@ -40,7 +40,6 @@ const GatheringDashboard = () => {
 
 	// hooks
 	const { eventId } = useParams();
-	const isFirstRender = useRef(true);
 	const navigate = useNavigate();
 
 	// 
