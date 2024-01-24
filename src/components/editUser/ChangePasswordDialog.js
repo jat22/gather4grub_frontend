@@ -4,6 +4,7 @@ import { Dialog, Button, DialogTitle, DialogContent, DialogActions, TextField, G
 import useFields from "../../hooks/useFields";
 import UserServices from "../../api/services/user.services";
 import UserContext from "../../context/UserContext";
+import Loader from "../Loader";
 
 
 
@@ -17,6 +18,7 @@ const ChangePasswordDialog = () => {
 	const [incorrectPasswordError, setIncorrectPasswordError] = useState(false)
 	const [disableSubmit, setDisableSubmit] = useState(true)
 	const [otherError, setOtherError] = useState(false)
+	const [processingSubmit, setProcessingSubmit] = useState(false)
 
 
 	// hooks
@@ -40,14 +42,17 @@ const ChangePasswordDialog = () => {
 		setPasswordMatchError(false);
 		setIncorrectPasswordError(false);
 		setOtherError(false);
+		setProcessingSubmit(false)
 	}
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
+		setProcessingSubmit(true)
 		try{
 			await UserServices.updatePassword(formData);
 			handleClose();
 		}catch(err){
+			setProcessingSubmit(false)
 			if(err.status === 401){
 				setIncorrectPasswordError(true);
 				setDisableSubmit(true);
@@ -82,25 +87,23 @@ const ChangePasswordDialog = () => {
 		setDisableSubmit(false);
 	}, [formData]);
 
-	return (
-		<>
-			<Button onClick={handleOpen} size='large' variant='outlined'>
-				Change Password
-			</Button>
-			<Dialog open={open} onClose={e=>handleClose(e)}>
-				<DialogTitle>
-					<Typography component="p" variant='h6'>
-						Update Password
-					</Typography>
-					
-					{otherError ?
-						<Typography>
+	const generateContent = () => {
+		if(otherError){
+			return (
+				<DialogContent>
+					<Typography>
 							Something went wrong, password not updated.
-						</Typography>
-						:null
-					}
-				</DialogTitle>
-				
+					</Typography>
+				</DialogContent>
+			)
+		}else if(processingSubmit){
+			return (
+				<DialogContent>
+					<Loader />
+				</DialogContent>
+			)
+		}else{
+			return (
 				<DialogContent>
 					<Box 
 						component='form'
@@ -160,10 +163,26 @@ const ChangePasswordDialog = () => {
 										passwordMatchError ? 'Does Not Match' : null
 									}
 								/>
+								</Grid>
 							</Grid>
-						</Grid>
-					</Box>
-				</DialogContent>
+						</Box>
+					</DialogContent>
+			)
+		}
+	}
+
+	return (
+		<>
+			<Button onClick={handleOpen} size='large' variant='outlined'>
+				Change Password
+			</Button>
+			<Dialog open={open} onClose={e=>handleClose(e)} fullWidth>
+				<DialogTitle>
+					<Typography component="p" variant='h6'>
+						Update Password
+					</Typography>
+				</DialogTitle>
+				{generateContent()}
 				<DialogActions>
 					<Button onClick={handleClose}>Cancel</Button>
 					<Button onClick={handleSubmit} disabled={disableSubmit} >Submit</Button>

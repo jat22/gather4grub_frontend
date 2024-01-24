@@ -31,6 +31,7 @@ function App() {
 		G4GApi.token = user.token
 	}, [user]);
 
+
 	return (
 		<div className="App">
 			<UserContext.Provider value={{user, setUser}}>

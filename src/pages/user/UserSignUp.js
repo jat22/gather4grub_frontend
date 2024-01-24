@@ -12,6 +12,7 @@ import useFormValidate from '../../hooks/useFormValidate';
 import useFields from '../../hooks/useFields';
 import UserServices from '../../api/services/user.services';
 import useApiValidation from '../../hooks/useApiValidation';
+import Loader from '../../components/Loader';
 
 const validationRules = {
 	firstName: {required:true},
@@ -28,6 +29,7 @@ const UserSignUp = () => {
 	// state
 	const [generalError, setGeneralError] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
+	const [processingSubmit, setProcessingSubmit] = useState(false);
 
 	// hooks
 	const navigate = useNavigate();
@@ -47,6 +49,7 @@ const UserSignUp = () => {
 		event.preventDefault();
 		setGeneralError(false);
 		setSubmitted(true);
+		setProcessingSubmit(true)
 
 		// triggers frontend validations
 		validateForm(formData, validationRules);
@@ -96,6 +99,12 @@ const UserSignUp = () => {
 			navigate(`/users/${user.username}/dashboard`);
 		};
 	},[user]);
+
+	if(processingSubmit){
+		return(
+			<Loader />
+		)
+	}
 
 	return (
 		<Container component="main" maxWidth="xs">

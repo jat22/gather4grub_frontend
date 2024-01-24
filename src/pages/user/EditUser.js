@@ -10,6 +10,7 @@ import Format from "../../utilities/format";
 import ChangeAvatarDialog from "../../components/editUser/ChangeAvatarDialog";
 
 import ChangePasswordDialog from "../../components/editUser/ChangePasswordDialog";
+import Loader from "../../components/Loader";
 
 // inital state variables
 const formInitialState = {
@@ -41,6 +42,7 @@ const EditUser = () => {
 	// state
 	const [error, setError] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
+	const [loaded, setLoaded] = useState(false)
 
 	// hooks
 	const { validationErrors, validateForm } = useFormValidate();
@@ -55,7 +57,6 @@ const EditUser = () => {
 		evt.preventDefault();
 		setError(false);
 		setSubmitted(true);
-		console.log(formData)
 		validateForm(formData, validationRules);
 	};
 
@@ -63,6 +64,7 @@ const EditUser = () => {
 		try{
 			await UserServices.editUser(user.username, formData);
 			navigate(`/users/${user.username}/dashboard`);
+			setLoaded(false)
 			resetFormData();
 		} catch(err){
 			setError(true);
@@ -73,13 +75,14 @@ const EditUser = () => {
 	const getCurUserInfo = async () => {
 		try{
 			const info = await UserServices.getUserInfo(user.username);
-			console.log(info)
 			const fields = Object.keys(formInitialState);
 			fields.forEach(f => {
 				info[f] = info[f] || '' 
 			});
 			updateFormData(info);
+			setLoaded(true)
 		}catch(err){
+			setLoaded(false)
 			if(err.status === 500){
 				navigate('/error/network');
 			} else if(err.status === 401){
@@ -92,6 +95,10 @@ const EditUser = () => {
 
 	// effects
 	useEffect(() => {
+		if(isFirstRender.current){
+			isFirstRender.current = false;
+			return;
+		}
 		getCurUserInfo();
 	}, []);
 
@@ -123,6 +130,12 @@ const EditUser = () => {
 			</FormControl>
 		)
 	};
+
+	if(!loaded){
+		return (
+			<Loader />
+		)
+	}
 
 	return (
 		<Container >

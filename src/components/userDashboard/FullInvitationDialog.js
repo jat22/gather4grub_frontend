@@ -3,6 +3,7 @@ import { Dialog, DialogTitle, IconButton, Button, DialogActions, DialogContent, 
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 
 import EventServices from "../../api/services/event.services";
+import Loader from "../Loader";
 
 const FullInvitationDialog = ({ invitation, acceptInvite, declineInvite }) => {
 	// state
@@ -24,6 +25,7 @@ const FullInvitationDialog = ({ invitation, acceptInvite, declineInvite }) => {
 		currUserHost : false
 	};
 	const [eventInfo, setEventInfo] = useState(eventInfoInitialState);
+	const [loading, setLoading] = useState(true)
 
 	// event handlers
 	const handleClickOpen = () => {
@@ -54,7 +56,7 @@ const FullInvitationDialog = ({ invitation, acceptInvite, declineInvite }) => {
 		}catch(err){
 			setError(true);
 		};
-		
+		setLoading(false)
 	};
 
 	// effects
@@ -63,6 +65,64 @@ const FullInvitationDialog = ({ invitation, acceptInvite, declineInvite }) => {
 			getEventInfo();
 		}
 	}, [open]);
+
+	const generateContent = ()=> {
+		if(error){
+			return (
+				<>
+					<DialogContent>
+						<Typography>
+							Unable to load data at this time.
+						</Typography>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={handleClose}>Cancel</Button>
+					</DialogActions>
+				</>
+			)
+		}else if (loading){
+			return (
+				<>
+					<DialogContent>
+						<Loader />
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={handleClose}>Cancel</Button>
+					</DialogActions>
+				</>
+			)
+		}else {
+			return (
+				<>
+					<DialogContent>
+						<Typography>
+							{eventInfo.title}
+						</Typography>
+						<Typography>
+							Hosted by {eventInfo.host}
+						</Typography>
+						<Typography>
+							{eventInfo.date}
+						</Typography>
+						<Typography>
+							{eventInfo.displayTime}
+						</Typography>
+						<Typography>
+							{eventInfo.location}
+						</Typography>
+						<Typography>
+							{eventInfo.description}
+						</Typography>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={handleClose}>Cancel</Button>
+						<Button onClick={handleAccept}>Accept</Button>
+						<Button onClick={handleDecline}>Decline</Button>
+					</DialogActions>
+				</>
+			)
+		}
+	}
 
 	return (
 		<>
@@ -73,41 +133,9 @@ const FullInvitationDialog = ({ invitation, acceptInvite, declineInvite }) => {
 			>
 				<OpenInFullIcon />
 			</IconButton>
-			<Dialog open={open} >
-				{error ? 
-					<>
-						<DialogTitle>Unable to load data at this time.</DialogTitle>
-						<DialogActions>
-							<Button onClick={handleClose}>Cancel</Button>
-						</DialogActions>
-					</>
-					: 
-					<>
-						<DialogTitle>Invitation from {eventInfo.host}</DialogTitle>
-						<DialogContent>
-							<Typography>
-								{eventInfo.title}
-							</Typography>
-							<Typography>
-								{eventInfo.date}
-							</Typography>
-							<Typography>
-								{eventInfo.displayTime}
-							</Typography>
-							<Typography>
-								{eventInfo.location}
-							</Typography>
-							<Typography>
-								{eventInfo.description}
-							</Typography>
-						</DialogContent>
-						<DialogActions>
-							<Button onClick={handleClose}>Cancel</Button>
-							<Button onClick={handleAccept}>Accept</Button>
-							<Button onClick={handleDecline}>Decline</Button>
-						</DialogActions>
-					</>
-				}
+			<Dialog open={open} fullWidth>
+				<DialogTitle>Invitation</DialogTitle>
+				{generateContent()}
 			</Dialog>
 		</>
 	);

@@ -15,8 +15,10 @@ class G4GApi {
 
 		try{
 			const response = await axios({url, method, data, params, headers});
+			await new Promise(resolve => setTimeout(resolve, 2000));
 			return response;
 		} catch(err){
+			await new Promise(resolve => setTimeout(resolve, 2000));
 			if(err.response){
 				console.error('API Error', err.response);
 				throw new ApiError(err.response.status, err.response.data);
@@ -186,7 +188,6 @@ class G4GApi {
 
 	static async editUser(username, data) {
 		try{
-			console.log(data);
 			const res = await this.request(`users/${username}`, data, 'patch');
 		}catch(err){
 			throw err;
@@ -278,8 +279,6 @@ class G4GApi {
 	};
 
 	static async updateBasicDetails(eventId, data){
-		console.log(eventId)
-		console.log(data)
 		try{
 			let res = await this.request(`events/${eventId}/basic`, {data}, 'put');
 			return res;

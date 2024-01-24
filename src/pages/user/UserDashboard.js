@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Badge, Container, Grid, Paper, Typography } from '@mui/material'
+import { Container, Grid } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom';
 
 import UserContext from '../../context/UserContext';
@@ -162,15 +162,11 @@ const UserDashboard = () => {
 			return;
 		}
 		if(!user.token) {
-			navigate('/unauthorized')
+			navigate('/error/unauthorized')
 			return;
 		};
 		getAllData();
 	}, [user]);
-
-	useEffect(()=>{
-		getAllData()
-	}, [])
 
 	if(!isLoaded) return (
 		<Loader />

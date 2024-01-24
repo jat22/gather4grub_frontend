@@ -1,15 +1,15 @@
 import React from 'react';
-import { CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Grid } from '@mui/material';
+
 
 const Loader = () => {
   return (
-	<Box sx={{
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-	}}>
-    	<CircularProgress />
-    </Box>
+	<Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
+		<Grid item>
+			<CircularProgress />
+		</Grid>
+
+    </Grid>
   );
 }
 

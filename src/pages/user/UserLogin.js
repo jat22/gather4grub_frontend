@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Button, TextField, Link, Grid, Box, Typography, Container  } from '@mui/material';
+import { Button, TextField, Link, Grid, Box, Typography, Container, CircularProgress  } from '@mui/material';
 
 import UserContext from '../../context/UserContext';
 import useFields from '../../hooks/useFields';
 import UserServices from '../../api/services/user.services';
+import Loader from '../../components/Loader';
 
 
 const UserLogin = () => {
@@ -14,6 +15,7 @@ const UserLogin = () => {
 	// state
 	const [loginError, setLoginError] = useState(null);
 	const [disableSubmit, setDisableSubmit] = useState(true);
+	const [processingLogin, setProcessingLogin] = useState(false);
 
 	// hooks
 	const navigate = useNavigate();
@@ -23,6 +25,8 @@ const UserLogin = () => {
 	const handleSubmit = async (event) => {
 		try {
 			event.preventDefault();
+			setDisableSubmit(true);
+			setProcessingLogin(true)
 			const result = await UserServices.login(formData);
 
 			// on successful login user context is set
@@ -30,7 +34,9 @@ const UserLogin = () => {
 
 			setLoginError(e => (null));
 			setDisableSubmit(true)
+			setProcessingLogin(false)
 		} catch(err) {
+			setProcessingLogin(false)
 			if(err.status === 401){
 				setLoginError( e => (
 					'Incorrect Username/Password'));
@@ -60,6 +66,12 @@ const UserLogin = () => {
 			};
 		setDisableSubmit(false);
 	}, [formData]);
+
+	if(processingLogin){
+		return(
+			<Loader />
+		)
+	}
 
   	return (
 		<Container component="main" maxWidth="xs">

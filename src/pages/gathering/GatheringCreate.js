@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useNavigate } from 'react-router-dom';
 import useFormValidate from '../../hooks/useFormValidate';
+import Loader from '../../components/Loader';
 
 const GatheringCreate = () => {
 	// context
@@ -44,7 +45,6 @@ const GatheringCreate = () => {
 		evt.preventDefault();
 		setApiErrors(false);
 		setSubmitted(true);
-
 		validateForm(formData, validationRules);
 	}
 
@@ -93,6 +93,12 @@ const GatheringCreate = () => {
 			setSubmitted(false);
 		};
 	}, [validationErrors]);
+
+	if(submitted){
+		return (
+			<Loader />
+		)
+	}
 
 	return(
 		<Container component='main'>
