@@ -119,11 +119,15 @@ const FindConnectionsDialog = () => {
 		if(findSubmitted && Object.keys(validationErrors).length === 0){
 			getPotentialConnetions()
 			setFindSubmitted(false)
-			setShowResults(r=>true)
+
 		} else{
 			setFindSubmitted(s=>false)
 		}
 	}, [validationErrors])
+
+	useEffect(() => {
+		setShowResults(r=>true)
+	}, [potentialConnections])
 
 	return (
 		<>
